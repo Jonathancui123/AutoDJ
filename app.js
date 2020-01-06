@@ -3,6 +3,7 @@ const path = require('path');
 const app = express();
 
 const clientId = '158a4f4cd2df4c9e8a8122ec6cc3863a';
+const clientSecret = process.env.clientSecret;
 // const redirectUri = 
 
 ///////////////////////////////////////////////
@@ -12,6 +13,9 @@ const clientId = '158a4f4cd2df4c9e8a8122ec6cc3863a';
 // Homepage
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname + '/views/index.html'));
+
+
+
 });
 
 // TODO: Authorization
