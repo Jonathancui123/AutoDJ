@@ -18,7 +18,8 @@
   },
   "homepage": "https://github.com/Jonathancui123/Emotify#readme",
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "request": "^2.88.0"
   },
   "devDependencies": {}
 }
