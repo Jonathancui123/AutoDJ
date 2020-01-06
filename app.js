@@ -12,10 +12,9 @@ const clientSecret = process.env.clientSecret;
 
 // Homepage
 app.get('/', (req, res) => {
+    console.log(clientId);
+    console.log(clientSecret);
     res.sendFile(path.join(__dirname + '/views/index.html'));
-
-
-
 });
 
 // TODO: Authorization
