@@ -34,7 +34,7 @@ app.get('/login', (req, res) => {
 app.get('/loggedin', (req, res) => {
     var code = req.query.code;
     // console.log(code);
-    request.post({ 
+    request.post({ //Request access token using client secret
         headers: {'content-type' : 'application/x-www-form-urlencoded'},
         url: 'https://accounts.spotify.com/api/token',
         body: 'grant_type=authorization_code' + '&code=' + code + 
@@ -47,7 +47,7 @@ app.get('/loggedin', (req, res) => {
         refresh_token = parsed.refresh_token;
         console.log("BODY: ", body);
         console.log("refresh token: " + refresh_token)
-        setInterval(refresh_access, (58*60000));
+        setInterval(refresh_access, (58*60000)); // Refreshes token every 58 minutes, it expires every 60
     })
     res.sendFile(path.join(__dirname + '/views/loggedin.html'));
 })
