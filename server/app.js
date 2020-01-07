@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const app = express();
 const request = require('request');
+const userHelpers = require('./users');
 
 const clientId = '158a4f4cd2df4c9e8a8122ec6cc3863a';
 const clientSecret = process.env.clientSecret;
@@ -9,6 +10,31 @@ var access_token = '';
 var refresh_token = '';
 
 // const redirectUri = 
+
+///////////////////////////////////////////////
+// GLOBAL VARIABLES
+///////////////////////////////////////////////
+var songBank = [];
+var users = [];
+var selectedGenre = '';
+
+function Song(id, name, artist, tags, score, played, link) {
+    this.id = id;
+    this.name = name;
+    this.artist = artist;
+    this.tags = tags;
+    this.score = score;
+    this.played = played;
+    this.link = link;
+}
+
+function User(id, name, spotifyId, role, joinTime) {
+    this.id = id;
+    this.name = name;
+    this.spotifyId = spotifyId;
+    this.role = role;
+    this.joinTime = joinTime;
+}
 
 ///////////////////////////////////////////////
 // ROUTES
