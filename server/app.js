@@ -18,7 +18,8 @@ var refresh_token = '';
 var songBank = [];
 var users = [];
 var selectedGenre = '';
-var playlistLength = 10; // Integer: time in minutes
+var playlistDur = 10; // Integer: time in minutes
+var playlistID = ''; //Spotify ID for the playlist that is made - so it can be edited
 
 function Song(id, name, artist, tags, score, played, link) {
     this.id = id;
@@ -107,9 +108,12 @@ function refresh_access() {
 // HELPER FUNCTIONS
 ///////////////////////////////////////////////
 
-// TODO: Create new playlist on the user's account based on most popular in songBank
-// Make a shortlist of songs (by descending order of score) until playlist length is equal to requested length --> CASE: if there are more songs needed than in the bank
-
+// Make a array of song URIs (by descending order of score) until playlist length is equal to requested length --> CASE: if there are more songs needed than in the bank
+// TODO: Perform a check to see if the saved spotify ID exists as a playlist
+// TODO: Allow naming of the playlist
+// Create a new playlist and save the ID
+// Add all tracks to the playlist ID by song URI's
+// Return a WEB URL to the playlist
 
 app.listen(3000, () => {
     console.log('Listening on port 3000...');
