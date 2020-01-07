@@ -1,6 +1,4 @@
-function compScore(a, b) {
-
-}
+const request = require('request');
 
 // Returns URI's of shortlisted songs
 function genShortListURI(songBank, playlistDur){
@@ -22,6 +20,29 @@ function genShortListURI(songBank, playlistDur){
     return shortList
 }
 
-function createPlaylist(){
-    
+function createNewPlaylist(auth_token, playlistName, userID){
+    var playlistID = 'NULL';
+    request.post({
+        headers : {'Authorization' : auth_token, 'Content-type' : 'application/json'},
+        url: "https://api.spotify.com/v1/users/" + userID + "/playlists",
+        body: {
+            name: playlistName,
+            public: true,
+            description: "Playlist made by the coolest DJ in town"
+        }
+    }, (err, HTTPResponse, body) => {
+        if (err) {
+            console.log("Error creating new playlist")
+        }else{
+            var playlistObj = JSON.parse(body)
+            playlistID = playlistObj.id;
+        }
+    })
+
+    return playlistID
+}
+
+module.exports = {
+    genShortListURI : genShortListURI,
+    createNewPlaylist : createNewPlaylist
 }
