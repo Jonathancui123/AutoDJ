@@ -79,7 +79,14 @@ app.get('/loggedin', (req, res) => {
         refresh_token = parsed.refresh_token;
         console.log("Access token reply: ", access_token);
         console.log("refresh token: " + refresh_token)
+        
+        //////////////////////////////////
+        //TESTING
+        /////////////////////////////////////
         registerUser(access_token);
+        queueHelpers.createNewPlaylist(access_token,"hehexd","frozendarkmatter");
+        /////////////////////////////////////
+
         setInterval(refresh_access, (58*60000)); // Refreshes token every 58 minutes, it expires every 60
     })
     
@@ -127,7 +134,7 @@ function registerUser(access_token) {
             console.log('Response error');
         } else {
             const info = JSON.parse(body);
-            console.log('Response ', info);
+            // console.log('Response ', info);
             // Get current date and time
             const now = new Date();
             users.push(new User(
@@ -137,7 +144,7 @@ function registerUser(access_token) {
                 users.map(user => { return user.role; }).includes('host') ? 'guest' : 'host',
                 now
             ));
-            console.log('Current users', users);
+            // console.log('Current users', users);
         }
     });
 }
