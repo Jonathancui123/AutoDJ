@@ -109,6 +109,7 @@ function refresh_access() {
 ///////////////////////////////////////////////
 
 // Make a array of song URIs (by descending order of score) until playlist length is equal to requested length --> CASE: if there are more songs needed than in the bank
+// TODO: Order the songs by BPM/Pitch/Something useful
 // TODO: Perform a check to see if the saved spotify ID exists as a playlist
 // TODO: Allow naming of the playlist
 // Create a new playlist and save the ID
