@@ -71,7 +71,7 @@ app.get('/loggedin', (req, res) => {
         var parsed = JSON.parse(body)
         access_token = parsed.access_token;
         refresh_token = parsed.refresh_token;
-        console.log("BODY: ", body);
+        console.log("Access token reply: ", body);
         console.log("refresh token: " + refresh_token)
         setInterval(refresh_access, (58*60000)); // Refreshes token every 58 minutes, it expires every 60
     })
@@ -104,6 +104,10 @@ function refresh_access() {
 ///////////////////////////////////////////////
 // HELPER FUNCTIONS
 ///////////////////////////////////////////////
+
+var songBank = {};
+
+//
 
 app.listen(3000, () => {
     console.log('Listening on port 3000...');
