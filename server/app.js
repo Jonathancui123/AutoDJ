@@ -77,11 +77,12 @@ app.get('/loggedin', (req, res) => {
         var parsed = JSON.parse(body)
         access_token = parsed.access_token;
         refresh_token = parsed.refresh_token;
-        console.log("Access token reply: ", body);
+        console.log("Access token reply: ", access_token);
         console.log("refresh token: " + refresh_token)
+        registerUser(access_token);
         setInterval(refresh_access, (58*60000)); // Refreshes token every 58 minutes, it expires every 60
     })
-    registerUser(code);
+    
     res.sendFile(path.join(__dirname + '/views/loggedin.html'));
 })
 
@@ -112,13 +113,14 @@ function refresh_access() {
 // HELPER FUNCTIONS
 ///////////////////////////////////////////////
 
-function registerUser(code) {
+function registerUser(access_token) {
     // Get user info
+    console.log('access token ', access_token);
     request({
         url: 'https://api.spotify.com/v1/me',
         method: 'GET',
         headers: {
-            'Authorization': 'Bearer ' + code
+            'Authorization': 'Bearer ' + access_token
         }
     }, (err, res, body) => {
         if (err) {
@@ -140,12 +142,12 @@ function registerUser(code) {
     });
 }
 
-function getSongs(code) {
+function getSongs(access_token) {
     request({
         url: 'https://api.spotify.com/v1/me/top/tracks',
         method: 'GET',
         headers: {
-            'Authorization': code
+            'Authorization': access_token
         },
         body: 'limit=20'
     }, (err, res, body) => {
@@ -165,7 +167,7 @@ function getSongs(code) {
         var i = 0;
         var matches = 0;
         while (matches < 3 && i < 20) {
-            var genres = genreLookup(code, returnedSongs[i].artists[0]);
+            var genres = genreLookup(access_token, returnedSongs[i].artists[0]);
             if (genres.includes(selectedGenre)) {
                 if (songBankLookup(returnedSongs[i].uri) >= 0) {
                     songBank[i].score++;
@@ -185,12 +187,12 @@ function getSongs(code) {
     });
 }
 
-function genreLookup(code, artist) {
+function genreLookup(access_token, artist) {
     request({
         url: `https://api.spotify.com/v1/artists/${artist.id}`,
         method: 'GET',
         headers: {
-            Authorization: code
+            Authorization: access_token
         }
     }, (err, res, body) => {
         return res.genres;
