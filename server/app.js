@@ -17,9 +17,12 @@ var refresh_token = '';
 ///////////////////////////////////////////////
 var songBank = [];
 var users = [];
+var playlistID = ''; //Spotify ID for the playlist that is made - so it can be edited
+
+//Host inputs:
 var selectedGenre = '';
 var playlistDur = 10; // Integer: time in minutes
-var playlistID = ''; //Spotify ID for the playlist that is made - so it can be edited
+var playlistName = 'FillerName';
 
 function Song(id, name, artist, tags, score, played, link) {
     this.id = id;
@@ -52,7 +55,7 @@ app.get('/', (req, res) => {
 
 //Authorizing the app to get user data
 app.get('/login', (req, res) => {
-    var scopes = 'user-read-private user-read-email';
+    var scopes = 'user-read-private user-read-email playlist-modify-public';
     res.redirect('https://accounts.spotify.com/authorize' +
         '?response_type=code' +
         '&client_id=' + clientId +
