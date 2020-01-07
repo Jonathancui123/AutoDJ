@@ -38,7 +38,6 @@ function createNewPlaylist(auth_token, playlistName, userID){
             playlistID = playlistObj.id;
         }
     })
-
     return playlistID
 }
 

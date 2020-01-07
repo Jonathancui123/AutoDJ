@@ -2,7 +2,7 @@ const express = require('express');
 const path = require('path');
 const app = express();
 const request = require('request');
-// const userHelpers = require('./users');
+const userHelpers = require('./users');
 const queueHelpers = require('./q');
 
 const clientId = '158a4f4cd2df4c9e8a8122ec6cc3863a';
@@ -24,7 +24,7 @@ var nextSongId = 0;
 //Host inputs:
 var selectedGenre = '';
 var playlistDur = 10; // Integer: time in minutes
-var playlistName = 'FillerName';
+var playlistName = '';
 
 function Song(id, name, artist, tags, score, played, link) {
     this.id = id;
@@ -235,13 +235,3 @@ function autoKick() {
 app.listen(3000, () => {
     console.log('Listening on port 3000...');
 })
-
-// module.exports = {
-//     songBank: songBank,
-//     users: users,
-//     selectedGenre: selectedGenre,
-//     playlistDur: playlistDur,
-//     playlistID: playlistID,
-//     Song: Song,
-//     User: User
-// }
