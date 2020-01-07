@@ -81,7 +81,7 @@ app.get('/loggedin', (req, res) => {
         console.log("refresh token: " + refresh_token)
         setInterval(refresh_access, (58*60000)); // Refreshes token every 58 minutes, it expires every 60
     })
-    registerUser(code);
+    registerUser(access_token);
     res.sendFile(path.join(__dirname + '/views/loggedin.html'));
 })
 
@@ -119,22 +119,25 @@ function registerUser(code) {
         method: 'GET',
         headers: {
             'Authorization': 'Bearer ' + code
-        }
+        }//,sdsd
+        // body: 'client_id=' + clientId +
+        // '&client_secret=' + clientSecret
     }, (err, res, body) => {
         if (err) {
             console.log('Response error');
         } else {
-            const info = JSON.parse(body);
-            console.log('Response ', info);
+            console.log('Response body: ', body);
+            // const info = JSON.parse(body);
+            // console.log('Response ', info);
             // Get current date and time
             const now = new Date();
-            users.push(new User(
+            /* users.push(new User(
                 Math.max.apply(Math, users.map(user => { return user.id; })),
                 info.display_name,
                 info.id,
                 users.map(user => { return user.role; }).includes('host') ? 'guest' : 'host',
                 now
-            ));
+            )); */
             console.log('Current users', users);
         }
     });
