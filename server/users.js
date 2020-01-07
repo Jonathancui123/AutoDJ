@@ -1,4 +1,5 @@
 const request = require('request');
+const { songBank, users, selectedGenre, playlistDur, playlistID, Song, User } = require('./app');
 
 function registerUser(code) {
     // Get user info
