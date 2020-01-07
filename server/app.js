@@ -3,6 +3,7 @@ const path = require('path');
 const app = express();
 const request = require('request');
 const userHelpers = require('./users');
+const queueHelpers = require('./q');
 
 const clientId = '158a4f4cd2df4c9e8a8122ec6cc3863a';
 const clientSecret = process.env.clientSecret;
@@ -17,6 +18,7 @@ var refresh_token = '';
 var songBank = [];
 var users = [];
 var selectedGenre = '';
+var playlistLength = 10; // Integer: time in minutes
 
 function Song(id, name, artist, tags, score, played, link) {
     this.id = id;
@@ -105,10 +107,8 @@ function refresh_access() {
 // HELPER FUNCTIONS
 ///////////////////////////////////////////////
 
-var songBank = {};
-
 // TODO: Create new playlist on the user's account based on most popular in songBank
-// 
+// Make a shortlist of songs (by descending order of score) until playlist length is equal to requested length --> CASE: if there are more songs needed than in the bank
 
 
 app.listen(3000, () => {
