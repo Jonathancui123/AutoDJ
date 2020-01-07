@@ -3,6 +3,7 @@ const path = require('path');
 const app = express();
 const request = require('request');
 const userHelpers = require('./users');
+const queueHelpers = require('./q');
 
 const clientId = '158a4f4cd2df4c9e8a8122ec6cc3863a';
 const clientSecret = process.env.clientSecret;
@@ -17,6 +18,8 @@ var refresh_token = '';
 var songBank = [];
 var users = [];
 var selectedGenre = '';
+var playlistDur = 10; // Integer: time in minutes
+var playlistID = ''; //Spotify ID for the playlist that is made - so it can be edited
 
 function Song(id, name, artist, tags, score, played, link) {
     this.id = id;
@@ -105,9 +108,13 @@ function refresh_access() {
 // HELPER FUNCTIONS
 ///////////////////////////////////////////////
 
-var songBank = {};
-
-//
+// Make a array of song URIs (by descending order of score) until playlist length is equal to requested length --> CASE: if there are more songs needed than in the bank
+// TODO: Order the songs by BPM/Pitch/Something useful
+// TODO: Perform a check to see if the saved spotify ID exists as a playlist
+// TODO: Allow naming of the playlist
+// Create a new playlist and save the ID
+// Add all tracks to the playlist ID by song URI's
+// Return a WEB URL to the playlist
 
 app.listen(3000, () => {
     console.log('Listening on port 3000...');
