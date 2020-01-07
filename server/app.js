@@ -18,6 +18,8 @@ var refresh_token = '';
 var songBank = [];
 var users = [];
 var playlistID = ''; //Spotify ID for the playlist that is made - so it can be edited
+var nextUserId = 0;
+var nextSongId = 0;
 
 //Host inputs:
 var selectedGenre = '';
@@ -138,13 +140,14 @@ function registerUser(access_token) {
             // Get current date and time
             const now = new Date();
             users.push(new User(
-                Math.max.apply(Math, users.map(user => { return user.id; })),
+                nextUserId,
                 info.display_name,
                 info.id,
                 users.map(user => { return user.role; }).includes('host') ? 'guest' : 'host',
                 now
             ));
-            // console.log('Current users', users);
+            nextUserId++;
+            console.log('Current users', users);
         }
     });
 }
@@ -180,7 +183,7 @@ function getSongs(access_token) {
                     songBank[i].score++;
                 } else {
                     songBank.push(new Song(
-                        Math.max.apply(Math, users.map(user => { return user.id; })),
+                        nextSongId,
                         returnedSongs[i].name,
                         returnedSongs[i].artists[0],
                         genres,
@@ -188,6 +191,7 @@ function getSongs(access_token) {
                         false,
                         returnedSongs[i].uri
                     ));
+                    nextSongId++;
                 }
             }
         }
