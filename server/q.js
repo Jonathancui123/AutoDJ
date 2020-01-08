@@ -35,6 +35,10 @@ function createNewPlaylist(auth_token, playlistName, userID){
     return promise;
 }
 
+function addSongsToPlaylist(songURIList, playlistID){
+    
+}
+
 module.exports = {
     genShortListURI : genShortListURI,
     createNewPlaylist : createNewPlaylist
