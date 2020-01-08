@@ -20,10 +20,14 @@ function genShortListURI(songBank, playlistDur){
     return shortList
 }
 
-async function createNewPlaylist(auth_token, playlistName, userID){
+function createNewPlaylist(auth_token, playlistName, userID){
     var playlistID = 'NULL';
-    request.post({
-        headers : {'Authorization' : 'Bearer ' + auth_token, 'content-type' : 'application/json'},
+    request({
+        headers : {
+            'Authorization': 'Bearer ' + auth_token,
+            'Content-Type' : 'application/json'
+        },
+        method: 'POST',
         url: "https://api.spotify.com/v1/users/" + userID + "/playlists",
         body: JSON.stringify({
             "name": playlistName,
@@ -36,7 +40,9 @@ async function createNewPlaylist(auth_token, playlistName, userID){
         }else{
             console.log("completed post request for creating playlist")
             var playlistObj = JSON.parse(body)
+            console.log('response body: ', body);
             playlistID = playlistObj.id;
+            console.log('Returned playlist ID: ', playlistID);
             return playlistID
             // console.log(playlistObj);
         }
