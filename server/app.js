@@ -89,14 +89,7 @@ app.get('/loggedin',  (req, res) => {
         /////////////////////////////////////
         registerUser(access_token);
         
-        /////////////////////////////////////
-        setInterval(refresh_access, (58*60000)); // Refreshes token every 58 minutes, it expires every 60
-    })
-    // .then(() => console.log("Playlist ID: ", playlistID))
-    res.sendFile(path.join(__dirname + '/views/loggedin.html'));
-})
-
-queueHelpers.createNewPlaylist(access_token,"hehexd","frozendarkmatter")
+        /* queueHelpers.createNewPlaylist(access_token,"hehexd","frozendarkmatter")
             .then((body)=>{
                 console.log("completed post request for creating playlist")
                 
@@ -106,6 +99,15 @@ queueHelpers.createNewPlaylist(access_token,"hehexd","frozendarkmatter")
             .catch((err)=>{
                 console.error(err);
             })
+            */
+        /////////////////////////////////////
+        setInterval(refresh_access, (58*60000)); // Refreshes token every 58 minutes, it expires every 60
+    })
+    // .then(() => console.log("Playlist ID: ", playlistID))
+    res.sendFile(path.join(__dirname + '/views/loggedin.html'));
+})
+
+
 
 //Run this every 59 mins to refresh the access token for the user
 function refresh_access() {
