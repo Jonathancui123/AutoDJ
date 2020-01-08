@@ -20,7 +20,7 @@ function genShortListURI(songBank, playlistDur){
     return shortList
 }
 
-function createNewPlaylist(auth_token, playlistName, userID){
+async function createNewPlaylist(auth_token, playlistName, userID){
     var playlistID = 'NULL';
     request.post({
         headers : {'Authorization' : 'Bearer ' + auth_token, 'content-type' : 'application/json'},
@@ -37,9 +37,9 @@ function createNewPlaylist(auth_token, playlistName, userID){
             console.log("completed post request for creating playlist")
             var playlistObj = JSON.parse(body)
             playlistID = playlistObj.id;
-            console.log(playlistObj);
+            return playlistID
+            // console.log(playlistObj);
         }
-        return playlistID
     })
 }
 

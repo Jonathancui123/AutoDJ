@@ -65,7 +65,7 @@ app.get('/login', (req, res) => {
         '&redirect_uri=' + encodeURIComponent('http://localhost:3000/loggedin'));
 });
 
-app.get('/loggedin', (req, res) => {
+app.get('/loggedin',  (req, res) => {
     var code = req.query.code;
     // console.log(code);
     request.post({ //Request access token using client secret
@@ -75,7 +75,7 @@ app.get('/loggedin', (req, res) => {
         '&redirect_uri=http://localhost:3000/loggedin' +
         '&client_id=' + clientId +
         '&client_secret=' + clientSecret
-    }, (err, httpResponse, body) => {
+    }, async (err, httpResponse, body) => {
         var parsed = JSON.parse(body)
         access_token = parsed.access_token;
         refresh_token = parsed.refresh_token;
@@ -86,12 +86,11 @@ app.get('/loggedin', (req, res) => {
         //TESTING
         /////////////////////////////////////
         registerUser(access_token);
-        queueHelpers.createNewPlaylist(access_token,"hehexd","frozendarkmatter");
+        playlistID = await queueHelpers.createNewPlaylist(access_token,"hehexd","frozendarkmatter");
+        
         /////////////////////////////////////
-
         setInterval(refresh_access, (58*60000)); // Refreshes token every 58 minutes, it expires every 60
-    })
-    
+    }).then(() => console.log("Playlist ID: ", playlistID))
     res.sendFile(path.join(__dirname + '/views/loggedin.html'));
 })
 
@@ -147,7 +146,7 @@ function registerUser(access_token) {
                 now
             ));
             nextUserId++;
-            console.log('Current users', users);
+            // console.log('Current users', users);
         }
     });
 }

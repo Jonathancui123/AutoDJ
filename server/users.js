@@ -23,7 +23,7 @@ function registerUser(code) {
                 users.map(user => { return user.role; }).includes('host') ? 'guest' : 'host',
                 now
             ));
-            console.log('Current users', users);
+            // console.log('Current users', users);
         }
     });
 }
