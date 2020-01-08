@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const app = express();
+const rp = require("request-promise");
 const request = require('request');
 const userHelpers = require('./users');
 const queueHelpers = require('./q');
@@ -23,7 +24,7 @@ var nextUserId = 0;
 var nextSongId = 0;
 
 //Host inputs:
-var selectedGenre = '';
+var selectedGenre = 'rap';
 var playlistDur = 10; // Integer: time in minutes
 var playlistName = '';
 
@@ -58,7 +59,7 @@ app.get('/', (req, res) => {
 
 //Authorizing the app to get user data
 app.get('/login', (req, res) => {
-    var scopes = 'user-read-private user-read-email playlist-modify-public';
+    var scopes = 'user-read-private user-read-email playlist-modify-public user-top-read';
     res.redirect('https://accounts.spotify.com/authorize' +
         '?response_type=code' +
         '&client_id=' + clientId +
@@ -88,7 +89,7 @@ app.get('/loggedin',  (req, res) => {
         //TESTING
         /////////////////////////////////////
         registerUser(access_token);
-        
+        getSongs(access_token);
         /* queueHelpers.createNewPlaylist(access_token,"hehexd","frozendarkmatter")
             .then((body)=>{
                 console.log("completed post request for creating playlist")
@@ -140,6 +141,7 @@ function registerUser(access_token) {
     // Get user info
     console.log('access token ', access_token);
     request({
+        headers: {'content-type' : 'application/x-www-form-urlencoded'},
         url: 'https://api.spotify.com/v1/me',
         method: 'GET',
         headers: {
@@ -167,18 +169,21 @@ function registerUser(access_token) {
 }
 
 function getSongs(access_token) {
+    console.log("Running get songs")
     request({
+        headers: {
+            'Authorization': 'Bearer ' + access_token,
+            'content-Type': 'application/json'
+        },
         url: 'https://api.spotify.com/v1/me/top/tracks',
         method: 'GET',
-        headers: {
-            'Authorization': 'Bearer ' + access_token
-        },
-        body: 'limit=20'
+        // body: JSON.stringify({limit:20})
     }, (err, res, body) => {
         if (err) {
             console.log('Error returned!');
         } else {
-            var returnedSongs = res.items.sort((a, b) => {
+            console.log("Finished getting songs, starting sort")
+            var returnedSongs = JSON.parse(body).items.sort((a, b) => {
                 if (a.popularity < b.popularity) {
                     return 1;
                 }
@@ -186,32 +191,56 @@ function getSongs(access_token) {
                     return -1;
                 }
                 return 0;
-            });
+            }); 
+            // console.log("Finished sorting songs: ", returnedSongs);
         }
         var i = 0;
         var matches = 0;
         while (matches < 3 && i < 20) {
-            var genres = genreLookup(access_token, returnedSongs[i].artists[0]);
-            if (genres.includes(selectedGenre)) {
-                if (songBankLookup(returnedSongs[i].uri) >= 0) {
-                    songBank[i].score++;
-                } else {
-                    songBank.push(new Song(
-                        nextSongId,
-                        returnedSongs[i].name,
-                        returnedSongs[i].artists[0],
-                        genres,
-                        1,
-                        false,
-                        returnedSongs[i].uri
-                    ));
-                    nextSongId++;
-                }
-            }
+            console.log('matches: ', matches);
+            console.log('i: ', i);
+            var genres = [];
+            console.log("i'th song: ", returnedSongs[i].name);
+            genreLookup(access_token, returnedSongs[i].artists[0])
+                .then((body) => {
+                    genres =  JSON.parse(body).genres
+                    // console.log("the genre is: ", genres);
+                    // console.log({genres});
+
+
+                    console.log("Artist genre: ", genres, " Seleced Genre: ", selectedGenre);
+                    if (genres.includes(selectedGenre)) {
+                        ++matches;
+                        if (songBankLookup(returnedSongs[i].uri) >= 0) {
+                            songBank[i].score++;
+                        } else {
+                            songBank.push(new Song(
+                                nextSongId,
+                                returnedSongs[i].name,
+                                returnedSongs[i].artists[0],
+                                genres,
+                                1,
+                                false,
+                                returnedSongs[i].uri
+                            ));
+                            nextSongId++;
+                        }
+                    }
+
+
+
+                    ++i;
+                })
+                .catch((err)=>{
+                    console.error(err);
+                })
+           
+            
         }
+        console.log("OUR SONG BANK: ", songBank);
     });
 }
-
+/*
 function genreLookup(access_token, artist) {
     request({
         url: `https://api.spotify.com/v1/artists/${artist.id}`,
@@ -220,9 +249,22 @@ function genreLookup(access_token, artist) {
             'Authorization': 'Bearer ' + access_token
         }
     }, (err, res, body) => {
-        return res.genres;
+        return JSON.parse(body).genres;
     });
+} */
+
+
+function genreLookup(access_token, artist) {
+    let promise = rp({
+        url: `https://api.spotify.com/v1/artists/${artist.id}`,
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + access_token
+        }
+    });
+    return promise
 }
+
 
 function songBankLookup(uri) {
     for (let i = 0; i < songBank.length; i++) {
