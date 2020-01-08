@@ -4,6 +4,7 @@ const app = express();
 const request = require('request');
 const userHelpers = require('./users');
 const queueHelpers = require('./q');
+const q_fix = require('./q_fix');
 
 const clientId = '158a4f4cd2df4c9e8a8122ec6cc3863a';
 const clientSecret = process.env.clientSecret;
@@ -75,7 +76,7 @@ app.get('/loggedin',  (req, res) => {
         '&redirect_uri=http://localhost:3000/loggedin' +
         '&client_id=' + clientId +
         '&client_secret=' + clientSecret
-    }, async (err, httpResponse, body) => {
+    }, (err, httpResponse, body) => {
         var parsed = JSON.parse(body)
         access_token = parsed.access_token;
         refresh_token = parsed.refresh_token;
@@ -86,13 +87,24 @@ app.get('/loggedin',  (req, res) => {
         //TESTING
         /////////////////////////////////////
         registerUser(access_token);
-        playlistID = await queueHelpers.createNewPlaylist(access_token,"hehexd","frozendarkmatter");
         
         /////////////////////////////////////
         setInterval(refresh_access, (58*60000)); // Refreshes token every 58 minutes, it expires every 60
-    }).then(() => console.log("Playlist ID: ", playlistID))
+    })
+    // .then(() => console.log("Playlist ID: ", playlistID))
     res.sendFile(path.join(__dirname + '/views/loggedin.html'));
 })
+
+queueHelpers.createNewPlaylist(access_token,"hehexd","frozendarkmatter")
+            .then((body)=>{
+                console.log("completed post request for creating playlist")
+                
+                playlistID = JSON.parse(body).id;
+                console.log("response ID: ", playlistID);
+            })
+            .catch((err)=>{
+                console.error(err);
+            })
 
 //Run this every 59 mins to refresh the access token for the user
 function refresh_access() {

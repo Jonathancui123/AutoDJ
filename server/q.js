@@ -1,4 +1,4 @@
-const request = require('request');
+const rp = require("request-promise");
 
 // Returns URI's of shortlisted songs
 function genShortListURI(songBank, playlistDur){
@@ -20,27 +20,19 @@ function genShortListURI(songBank, playlistDur){
     return shortList
 }
 
-async function createNewPlaylist(auth_token, playlistName, userID){
-    var playlistID = 'NULL';
-    request.post({
+function createNewPlaylist(auth_token, playlistName, userID){
+    var postOptions = {
+        method: 'POST',
         headers : {'Authorization' : 'Bearer ' + auth_token, 'content-type' : 'application/json'},
         url: "https://api.spotify.com/v1/users/" + userID + "/playlists",
         body: JSON.stringify({
             "name": playlistName,
             "public": true,
             "description": "Playlist made by the coolest DJ in town"
-        })
-    }, (err, HTTPResponse, body) => {
-        if (err) {
-            console.error(err)
-        }else{
-            console.log("completed post request for creating playlist")
-            var playlistObj = JSON.parse(body)
-            playlistID = playlistObj.id;
-            return playlistID
-            // console.log(playlistObj);
-        }
-    })
+        }),
+    }
+    let promise = rp(postOptions);
+    return promise;
 }
 
 module.exports = {
