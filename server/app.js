@@ -67,6 +67,7 @@ app.get('/login', (req, res) => {
 });
 
 app.get('/loggedin',  (req, res) => {
+    console.log('Client secret ', clientSecret);
     var code = req.query.code;
     // console.log(code);
     request.post({ //Request access token using client secret
@@ -86,12 +87,21 @@ app.get('/loggedin',  (req, res) => {
         //////////////////////////////////
         //TESTING
         /////////////////////////////////////
+<<<<<<< HEAD
+=======
         registerUser(access_token);
+>>>>>>> 902d4c8380dd0d99a4286d1fbc2758057510f0b9
         
         /////////////////////////////////////
         setInterval(refresh_access, (58*60000)); // Refreshes token every 58 minutes, it expires every 60
     })
+<<<<<<< HEAD
+    registerUser(access_token);
+    playlistID = queueHelpers.createNewPlaylist(access_token,"hehexd","frozendarkmatter");
+    setTimeout(() => console.log('Playlist: ', playlistID), 3000);
+=======
     // .then(() => console.log("Playlist ID: ", playlistID))
+>>>>>>> 902d4c8380dd0d99a4286d1fbc2758057510f0b9
     res.sendFile(path.join(__dirname + '/views/loggedin.html'));
 })
 
@@ -168,7 +178,7 @@ function getSongs(access_token) {
         url: 'https://api.spotify.com/v1/me/top/tracks',
         method: 'GET',
         headers: {
-            'Authorization': access_token
+            'Authorization': 'Bearer ' + access_token
         },
         body: 'limit=20'
     }, (err, res, body) => {
@@ -214,7 +224,7 @@ function genreLookup(access_token, artist) {
         url: `https://api.spotify.com/v1/artists/${artist.id}`,
         method: 'GET',
         headers: {
-            Authorization: access_token
+            'Authorization': 'Bearer ' + access_token
         }
     }, (err, res, body) => {
         return res.genres;
