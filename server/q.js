@@ -21,45 +21,18 @@ function genShortListURI(songBank, playlistDur){
 }
 
 function createNewPlaylist(auth_token, playlistName, userID){
-<<<<<<< HEAD
-    var playlistID = 'NULL';
-    request({
-        headers : {
-            'Authorization': 'Bearer ' + auth_token,
-            'Content-Type' : 'application/json'
-        },
-        method: 'POST',
-=======
     var postOptions = {
         method: 'POST',
         headers : {'Authorization' : 'Bearer ' + auth_token, 'content-type' : 'application/json'},
->>>>>>> 902d4c8380dd0d99a4286d1fbc2758057510f0b9
         url: "https://api.spotify.com/v1/users/" + userID + "/playlists",
         body: JSON.stringify({
             "name": playlistName,
             "public": true,
             "description": "Playlist made by the coolest DJ in town"
-<<<<<<< HEAD
-        })
-    }, (err, HTTPResponse, body) => {
-        if (err) {
-            console.error(err)
-        }else{
-            console.log("completed post request for creating playlist")
-            var playlistObj = JSON.parse(body)
-            console.log('response body: ', body);
-            playlistID = playlistObj.id;
-            console.log('Returned playlist ID: ', playlistID);
-            return playlistID
-            // console.log(playlistObj);
-        }
-    })
-=======
         }),
     }
     let promise = rp(postOptions);
     return promise;
->>>>>>> 902d4c8380dd0d99a4286d1fbc2758057510f0b9
 }
 
 module.exports = {
