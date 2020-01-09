@@ -90,7 +90,7 @@ app.get('/loggedin',  (req, res) => {
         /////////////////////////////////////
         registerUser(access_token);
         // getSongs(access_token);
-        queueHelpers.addSongsToPlaylist(access_token, ["spotify:track:1HfMVBKM75vxSfsQ5VefZ5","spotify:track:41L3O37CECZt3N7ziG2z7l", "spotify:track:4yI3HpbSFSgFZtJP2kDe5m"] ,"1X6w8fa0TEZyhlKEzjCK9N");
+        // queueHelpers.addSongsToPlaylist(access_token, ["spotify:track:1HfMVBKM75vxSfsQ5VefZ5","spotify:track:41L3O37CECZt3N7ziG2z7l", "spotify:track:4yI3HpbSFSgFZtJP2kDe5m"] ,"1X6w8fa0TEZyhlKEzjCK9N");
         /* queueHelpers.createNewPlaylist(access_token,"hehexd","frozendarkmatter")
             .then((body)=>{
                 console.log("completed post request for creating playlist")
