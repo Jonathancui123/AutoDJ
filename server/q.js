@@ -49,7 +49,7 @@ function addSongsToPlaylist(auth_token, songURIList, playlistID){
         if (err) {
             console.error(err)
         }else{
-            console.log("Added songs to the playlist");
+            console.log("Successfully added songs to the playlist");
         }
     })
 }
