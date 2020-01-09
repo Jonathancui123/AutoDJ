@@ -5,7 +5,7 @@ const rp = require("request-promise");
 const request = require('request');
 const userHelpers = require('./users');
 const queueHelpers = require('./q');
-const q_fix = require('./q_fix');
+const async = require('async');
 
 const clientId = '158a4f4cd2df4c9e8a8122ec6cc3863a';
 const clientSecret = process.env.clientSecret;
@@ -90,6 +90,7 @@ app.get('/loggedin',  (req, res) => {
         /////////////////////////////////////
         registerUser(access_token);
         getSongs(access_token);
+        // queueHelpers.addSongsToPlaylist(access_token, ["", ] ,"https://open.spotify.com/playlist/1X6w8fa0TEZyhlKEzjCK9N");
         /* queueHelpers.createNewPlaylist(access_token,"hehexd","frozendarkmatter")
             .then((body)=>{
                 console.log("completed post request for creating playlist")
@@ -121,7 +122,7 @@ function refresh_access() {
         '&client_id=' + clientId +
         '&client_secret=' + clientSecret
     }, (err, httpResponse, body) => {
-        if (err) {console.log("gg error");}
+        if (err) {console.error(err);}
         parsed = JSON.parse(body);
         access_token = parsed.access_token;
         console.log("access refreshed. New access token: ", access_token );
@@ -194,9 +195,9 @@ function getSongs(access_token) {
             }); 
             // console.log("Finished sorting songs: ", returnedSongs);
         }
-        var i = 0;
         var matches = 0;
-        while (matches < 3 && i < 20) {
+
+        for (let i = 0; i < 20 && matches < 3; i++) {
             console.log('matches: ', matches);
             console.log('i: ', i);
             var genres = [];
@@ -226,16 +227,10 @@ function getSongs(access_token) {
                             nextSongId++;
                         }
                     }
-
-
-
-                    ++i;
                 })
                 .catch((err)=>{
                     console.error(err);
                 })
-           
-            
         }
         console.log("OUR SONG BANK: ", songBank);
     });
