@@ -21,10 +21,11 @@ var songBank = [];
 var users = [];
 var playlistID = ''; //Spotify ID for the playlist that is made - so it can be edited
 var nextUserId = 0;
+const songsPerPerson = 10;
 var nextSongId = 0;
 
 //Host inputs:
-var selectedGenre = 'rap';
+var selectedGenre = 'ambeat';
 var playlistDur = 10; // Integer: time in minutes
 var playlistName = '';
 
@@ -89,7 +90,7 @@ app.get('/loggedin',  (req, res) => {
         //TESTING
         /////////////////////////////////////
         registerUser(access_token);
-        // getSongs(access_token);
+        getSongs(access_token);
         // queueHelpers.addSongsToPlaylist(access_token, ["spotify:track:1HfMVBKM75vxSfsQ5VefZ5","spotify:track:41L3O37CECZt3N7ziG2z7l", "spotify:track:4yI3HpbSFSgFZtJP2kDe5m"] ,"1X6w8fa0TEZyhlKEzjCK9N");
         /* queueHelpers.createNewPlaylist(access_token,"hehexd","frozendarkmatter")
             .then((body)=>{
@@ -199,7 +200,7 @@ function getSongs(access_token) {
 
         returnedSongs.forEach(song => {
             console.log('matches: ', matches);
-            console.log('i: ', i);
+            // console.log('i: ', i);
             var genres = [];
             console.log("i'th song: ", song.name);
             genreLookup(access_token, song.artists[0])
@@ -209,31 +210,39 @@ function getSongs(access_token) {
                     // console.log({genres});
 
 
-                    console.log("Artist genre: ", genres, " Seleced Genre: ", selectedGenre);
+                    console.log("Artist genre: ", genres, " Selected Genre: ", selectedGenre);
                     if (genres.includes(selectedGenre)) {
                         ++matches;
-                        var index = songBankLookup(returnedSongs[i].uri)
-                        if (index >= 0) {
-                            songBank[index].score++;
-                        } else {
-                            songBank.push(new Song(
+                        var index = songBankLookup(song.uri)
+                        if (matches <= songsPerPerson){
+                            if (index >= 0) {
+                                songBank[index].score++;
+                            } else {
+                                songBank.push( song.name
+                                
+                                /* 
+                                new Song(
                                 nextSongId,
-                                returnedSongs[i].name,
-                                returnedSongs[i].artists[0],
+                                song.name,
+                                song.artists[0],
                                 genres,
                                 1,
                                 false,
-                                returnedSongs[i].uri
-                            ));
+                                song.uri)
+                                */
+
+
+                            );
                             nextSongId++;
-                        }
+                        }}
+                       
                     }
+                    console.log("OUR SONG BANK: ", songBank);
                 })
-        })
+            })
         // }
 
         
-        console.log("OUR SONG BANK: ", songBank);
     });
 }
 /*
@@ -264,7 +273,7 @@ function genreLookup(access_token, artist) {
 
 function songBankLookup(uri) {
     for (let i = 0; i < songBank.length; i++) {
-        if (uri === song.link) {
+        if (uri === songBank[i].link) {
             return i;
         }
     }
