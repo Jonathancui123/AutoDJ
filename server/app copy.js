@@ -89,9 +89,8 @@ app.get('/loggedin',  (req, res) => {
         /////////////////////////////////////
         //TESTING
         /////////////////////////////////////
-        registerUser(access_token)
-        .then(getSongs(access_token))
-       /* 
+        registerUser(access_token);
+        getSongs(access_token);
         queueHelpers.createNewPlaylist(access_token,"hehexd","frozendarkmatter")
             .then((body)=>{
                 console.log("completed post request for creating playlist")
@@ -104,7 +103,7 @@ app.get('/loggedin',  (req, res) => {
             })
         var shortListURI = queueHelpers.genShortListURI(songBank, playlistDur);
         queueHelpers.addSongsToPlaylist(access_token, shortListURI ,playlistID);
-        */
+
         /////////////////////////////////////
         setInterval(refresh_access, (58*60000)); // Refreshes token every 58 minutes, it expires every 60
     })
@@ -142,10 +141,8 @@ function refresh_access() {
 ///////////////////////////////////////////////
 
 function registerUser(access_token) {
-    console.log("Running register user")
     // Get user info
     console.log('access token ', access_token);
-    let userPromise = new Promise();
     request({
         headers: {'content-type' : 'application/x-www-form-urlencoded'},
         url: 'https://api.spotify.com/v1/me',
@@ -156,7 +153,6 @@ function registerUser(access_token) {
     }, (err, res, body) => {
         if (err) {
             console.log('Response error');
-            userPromise.reject(err);
         } else {
             const info = JSON.parse(body);
             // console.log('Response ', info);
@@ -171,10 +167,8 @@ function registerUser(access_token) {
             ));
             nextUserId++;
             // console.log('Current users', users);
-            userPromise.resolve()
         }
     });
-    return userPromise;
 }
 
 function getSongs(access_token) {

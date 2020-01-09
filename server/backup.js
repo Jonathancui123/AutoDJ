@@ -6,10 +6,6 @@ for (let i = 0; i < 20 && matches < 3; i++) {
             genreLookup(access_token, returnedSongs[i].artists[0])
                 .then((body) => {
                     genres =  JSON.parse(body).genres
-                    // console.log("the genre is: ", genres);
-                    // console.log({genres});
-
-
                     console.log("Artist genre: ", genres, " Seleced Genre: ", selectedGenre);
                     if (genres.includes(selectedGenre)) {
                         ++matches;

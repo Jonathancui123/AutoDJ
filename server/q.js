@@ -18,6 +18,7 @@ function genShortListURI(songBank, playlistDur){
         currPlaylistDur += nextSong.dur;
         i++;
     }
+    console.log("Finished shortlist: ", shortList);
     return shortList
 }
 
