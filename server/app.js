@@ -197,12 +197,12 @@ function getSongs(access_token) {
         }
         var matches = 0;
 
-        for (let i = 0; i < 20 && matches < 3; i++) {
+        returnedSongs.forEach(song => {
             console.log('matches: ', matches);
             console.log('i: ', i);
             var genres = [];
-            console.log("i'th song: ", returnedSongs[i].name);
-            genreLookup(access_token, returnedSongs[i].artists[0])
+            console.log("i'th song: ", song.name);
+            genreLookup(access_token, song.artists[0])
                 .then((body) => {
                     genres =  JSON.parse(body).genres
                     // console.log("the genre is: ", genres);
@@ -212,8 +212,9 @@ function getSongs(access_token) {
                     console.log("Artist genre: ", genres, " Seleced Genre: ", selectedGenre);
                     if (genres.includes(selectedGenre)) {
                         ++matches;
-                        if (songBankLookup(returnedSongs[i].uri) >= 0) {
-                            songBank[i].score++;
+                        var index = songBankLookup(returnedSongs[i].uri)
+                        if (index >= 0) {
+                            songBank[index].score++;
                         } else {
                             songBank.push(new Song(
                                 nextSongId,
@@ -228,10 +229,10 @@ function getSongs(access_token) {
                         }
                     }
                 })
-                .catch((err)=>{
-                    console.error(err);
-                })
-        }
+        })
+        // }
+
+        
         console.log("OUR SONG BANK: ", songBank);
     });
 }
