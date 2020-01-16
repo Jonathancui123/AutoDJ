@@ -63,17 +63,17 @@ class Create extends React.Component {
                                                     <Form.Check
                                                         custom
                                                         type="checkbox"
-                                                        id="id1"
+                                                        id="id3"
                                                         label="rock"
                                                     />
                                                 </div>
                                             </Col>
                                             <Col>
                                                 <div className="mb-3">
-                                                    <Form.Check
+                                                    <Form.Check {...console.log(this.props)}
                                                         custom
                                                         type="checkbox"
-                                                        id="id2"
+                                                        id="id4"
                                                         label="hip hop"
                                                     />
                                                 </div>
