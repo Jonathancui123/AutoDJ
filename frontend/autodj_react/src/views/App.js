@@ -16,7 +16,7 @@ function App() {
               </h3>
         </div>
 
-        <Button variant="primary"> Start building your playlist! </Button>
+        <Button variant="primary" href="/create"> Start building your playlist! </Button>
       </header>
     </div>
   );
