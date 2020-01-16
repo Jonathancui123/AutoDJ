@@ -1,7 +1,7 @@
 import React from 'react';
 import logo from './new_logo.png';
 import Button from 'react-bootstrap/Button';
-import './App.css';
+import './Styles.css';
 
 function App() {
   return (
