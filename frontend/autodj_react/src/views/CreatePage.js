@@ -10,6 +10,28 @@ import Button from 'react-bootstrap/Button';
 import './Styles.css';
 
 class Create extends React.Component {
+    constructor(){
+        super()
+        this.state = {
+            pop: false,
+            rap: false,
+            rock: false,
+            hip_hop: false, 
+            playlistURI: "Null"
+        }
+    }
+
+    changeHandler = event => {
+        const id = event.target.id
+        const isChecked = event.target.checked
+        this.setState({
+            [id]: isChecked
+        })
+        // alert("Pop is " + this.state.pop + ", rap is " + this.state.rap)
+    }
+
+    createPlaylist = event => {}
+
     render() {
         return (
             <div className="App">
@@ -29,7 +51,7 @@ class Create extends React.Component {
                         </Row>
                         <Row>
                             <Col></Col>
-                            <Col xs={6}>
+                            <Col xs={4}>
                                 <div className="Form">
                                     <Form>
                                         <Row>
@@ -38,43 +60,42 @@ class Create extends React.Component {
                                                     <Form.Check
                                                         custom
                                                         type="checkbox"
-                                                        id="id1"
+                                                        id="pop"
                                                         label="pop"
+                                                        checked = {this.state.pop}
+                                                        onChange = {this.changeHandler}
                                                     />
-                                                </div>
-                                            </Col>
-                                            <Col>
-                                                <div className="mb-3">
+
                                                     <Form.Check
                                                         custom
                                                         type="checkbox"
-                                                        id="id2"
+                                                        id="rap"
                                                         label="rap"
+                                                        checked = {this.state.rap}
+                                                        onChange = {this.changeHandler}
                                                     />
                                                 </div>
                                             </Col>
-                                        </Row>
-
-
-
-                                        <Row>
                                             <Col>
                                                 <div className="Checkbox">
                                                     <Form.Check
                                                         custom
                                                         type="checkbox"
-                                                        id="id3"
+                                                        id="rock"
                                                         label="rock"
+                                                        checked = {this.state.rock}
+                                                        onChange = {this.changeHandler}
                                                     />
                                                 </div>
-                                            </Col>
-                                            <Col>
+
                                                 <div className="mb-3">
-                                                    <Form.Check {...console.log(this.props)}
+                                                    <Form.Check
                                                         custom
                                                         type="checkbox"
-                                                        id="id4"
+                                                        id="hip_hop"
                                                         label="hip hop"
+                                                        checked = {this.state.hip_hop}
+                                                        onChange = {this.changeHandler}
                                                     />
                                                 </div>
                                             </Col>
@@ -86,8 +107,17 @@ class Create extends React.Component {
                             </Col>
                         </Row>
                         <Row>
-                        <Col> <Button variant="primary" href="/create"> Create! </Button></Col>
-                       
+                            <Col>
+                                <div className="Playlist">
+                                Playlist URI: {this.state.playlistURI}
+                            </div>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col> 
+                            <Button variant="primary" onClick = {this.createPlaylist}> Create! </Button>
+                            </Col>
+
                         </Row>
                     </Container>
                 </div>
