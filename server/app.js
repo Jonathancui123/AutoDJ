@@ -67,6 +67,7 @@ app.get('/', (req, res) => {
 app.get('/login', (req, res) => {
     
     var scopes = 'user-read-private user-read-email playlist-modify-public user-top-read';
+    console.log("login req received")
     res.redirect('https://accounts.spotify.com/authorize' +
         '?response_type=code' +
         '&client_id=' + clientId +
