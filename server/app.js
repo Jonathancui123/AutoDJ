@@ -10,6 +10,7 @@ const cors = require('cors');
 
 const clientId = '158a4f4cd2df4c9e8a8122ec6cc3863a';
 const clientSecret = process.env.clientSecret;
+const frontEndAddress = 'http://localhost:3001';
 var access_token = '';
 var refresh_token = '';
 
@@ -70,7 +71,7 @@ app.get('/login', (req, res) => {
         '?response_type=code' +
         '&client_id=' + clientId +
         (scopes ? '&scope=' + encodeURIComponent(scopes) : '') +
-        '&redirect_uri=' + encodeURIComponent('http://localhost:3001/create'));
+        '&redirect_uri=' + encodeURIComponent(frontEndAddress + "/create"));
 });
 
 app.get('/loggedin', (req, res) => {
