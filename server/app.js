@@ -14,6 +14,9 @@ const frontEndAddress = 'http://localhost:3001';
 var access_token = '';
 var refresh_token = '';
 
+//Allow CORS
+app.use(cors())
+
 // const redirectUri = 
 
 ///////////////////////////////////////////////
@@ -30,6 +33,7 @@ var nextSongId = 0;
 var selectedGenre = 'rap';
 var playlistDur = 10; // Integer: time in minutes
 var playlistName = '';
+var playlistURI = '';
 
 function Song(id, name, artist, tags, score, played, link) {
     this.id = id;
@@ -52,10 +56,6 @@ function User(id, name, spotifyId, role, joinTime) {
 ///////////////////////////////////////////////
 // ROUTES
 ///////////////////////////////////////////////
-
-//Allow CORS
-app.use(cors())
-
 // Homepage
 app.get('/', (req, res) => {
     // console.log(clientId);
@@ -65,14 +65,14 @@ app.get('/', (req, res) => {
 
 //Authorizing the app to get user data
 app.get('/login', (req, res) => {
-    
     var scopes = 'user-read-private user-read-email playlist-modify-public user-top-read';
     console.log("login req received")
     res.redirect('https://accounts.spotify.com/authorize' +
         '?response_type=code' +
         '&client_id=' + clientId +
         (scopes ? '&scope=' + encodeURIComponent(scopes) : '') +
-        '&redirect_uri=' + encodeURIComponent(frontEndAddress + "/create"));
+        '&redirect_uri=' + encodeURIComponent('http://localhost:3000/loggedin'));
+        // frontEndAddress + "/create"
 });
 
 app.get('/loggedin', (req, res) => {
@@ -83,7 +83,7 @@ app.get('/loggedin', (req, res) => {
         headers: { 'content-type': 'application/x-www-form-urlencoded' },
         url: 'https://accounts.spotify.com/api/token',
         body: 'grant_type=authorization_code' + '&code=' + code +
-            '&redirect_uri=http://localhost:3001' +
+            '&redirect_uri=http://localhost:3000/loggedin' +
             '&client_id=' + clientId +
             '&client_secret=' + clientSecret
     }, (err, httpResponse, body) => {
@@ -125,13 +125,12 @@ app.get('/loggedin', (req, res) => {
     })
     // .then(() => console.log("Playlist ID: ", playlistID))
     // res.sendFile(path.join(__dirname + '/views/loggedin.html'));
-    res.redirect("localhost:3001/create");
+    res.redirect("http://localhost:3001/create");
 })
 
 app.get('/test', (req, res)=>{
     res.send({URI: "SERVED FROM SERVER"})
 })
-
 
  /* 
         /////////////////////////////////////
@@ -153,7 +152,21 @@ app.get('/test', (req, res)=>{
          queueHelpers.addSongsToPlaylist(access_token, shortListURI ,playlistID);
 */
 
-
+app.get('/createPlaylist', (req, res) => {
+    queueHelpers.createNewPlaylist(access_token,"hehexd","frozendarkmatter")
+        .then((body)=>{
+            console.log("completed post request for creating playlist")
+            
+            playlistID = JSON.parse(body).id;
+            console.log("response ID: ", playlistID);
+        })
+        .catch((err)=>{
+            console.error(err);
+        })
+    var shortListURI = queueHelpers.genShortListURI(songBank, playlistDur);
+    queueHelpers.addSongsToPlaylist(access_token, shortListURI, playlistID);
+    return playlistID;
+});
 
 //Run this every 59 mins to refresh the access token for the user
 function refresh_access() {
@@ -172,7 +185,6 @@ function refresh_access() {
         console.log("access refreshed. New access token: ", access_token);
     })
 }
-
 
 // TODO: Rejected login handling
 

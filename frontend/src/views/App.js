@@ -18,7 +18,7 @@ function App() {
               </h3>
         </div>
 
-        <Button variant="primary" href= {"http://localhost:3000" + "/login"}> Start building your playlist! </Button>
+        <Button variant="primary" href= {"http://localhost:3000/login"}> Start building your playlist! </Button>
       </header>
     </div>
   );

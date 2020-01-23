@@ -40,7 +40,11 @@ class Create extends React.Component {
         // alert("Pop is " + this.state.pop + ", rap is " + this.state.rap)
     }
 
-    createPlaylist = event => {}
+    createPlaylist = event => {
+        this.setState({
+            playlistURI: fetch("http://localhost:3000/createPlaylist")
+        });
+    }
 
     render() {
         return (

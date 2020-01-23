@@ -1,2 +1,2 @@
-# Emotify
-Turn your emotions into a spotify playlist
+# AutoDJ
+Create Spotify playlists for your parties from everyone's favourite tracks!
