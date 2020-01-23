@@ -153,7 +153,7 @@ app.get('/test', (req, res)=>{
 */
 
 app.get('/createPlaylist', (req, res) => {
-    queueHelpers.createNewPlaylist(access_token,"hehexd","frozendarkmatter")
+    queueHelpers.createNewPlaylist(access_token,"hehexd","oustan10")
         .then((body)=>{
             console.log("completed post request for creating playlist")
             
