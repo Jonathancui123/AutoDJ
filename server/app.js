@@ -4,7 +4,7 @@ const app = express();
 const rp = require("request-promise");
 const request = require('request');
 const userHelpers = require('./users');
-const queueHelpers = require('./q');
+const queueHelpers = require('./queue');
 const async = require('async');
 const cors = require('cors');
 
@@ -30,7 +30,7 @@ const songsPerPerson = 20;
 var nextSongId = 0;
 
 //Host inputs:
-var selectedGenre = 'c-pop';
+var selectedGenres = ['rap'];
 var playlistDur = 10; // Integer: time in minutes
 var playlistName = '';
 var playlistURI = '';
@@ -259,45 +259,25 @@ function getSongs(access_token) {
             });
             // console.log("Finished sorting songs: ", returnedSongs);
         }
-        var matches = 0;
-
+        
         returnedSongs.forEach(song => {
-            console.log('matches: ', matches);
-            // console.log('i: ', i);
-            var genres = [];
-            console.log("i'th song: ", song.name);
-            genreLookup(access_token, song.artists[0])
-                .then((body) => {
-                    genres = JSON.parse(body).genres
-                    console.log("Artist genre: ", genres, " Selected Genre: ", selectedGenre);
-                    if (genres.includes(selectedGenre)) {
-                        ++matches;
-                        var index = songBankLookup(song.uri)
-                        if (matches <= songsPerPerson) {
-                            if (index >= 0) {
-                                songBank[index].score++;
-                            } else {
-                                songBank.push(
-                                    new Song(
-                                        nextSongId,
-                                        song.name,
-                                        song.artists[0],
-                                        genres,
-                                        1,
-                                        false,
-                                        song.uri)
-                                );
-                                nextSongId++;
-                            }
-                        }
-
-                    }
-                    // console.log("OUR SONG BANK: ", songBank);
-                })
+            var index = songBankLookup(song.uri)
+            if (index >= 0) {
+                songBank[index].score++;
+            } else {
+                songBank.push(
+                    new Song(
+                        nextSongId,
+                        song.name,
+                        song.artists[0],
+                        genres,
+                        1,
+                        false,
+                        song.uri)
+                );
+                nextSongId++;
+            }
         })
-        // }
-
-
     });
 }
 
