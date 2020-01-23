@@ -3,7 +3,9 @@ import logo from './new_logo.png';
 import Button from 'react-bootstrap/Button';
 import './Styles.css';
 
+
 function App() {
+  
   return (
     <div className="App">
       <header className="App-header">
@@ -16,7 +18,7 @@ function App() {
               </h3>
         </div>
 
-        <Button variant="primary" href="/create"> Start building your playlist! </Button>
+        <Button variant="primary" href= {"http://localhost:3000" + "/login"}> Start building your playlist! </Button>
       </header>
     </div>
   );

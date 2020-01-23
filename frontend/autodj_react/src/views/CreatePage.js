@@ -5,11 +5,11 @@ import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 
-
-
 import './Styles.css';
 
 class Create extends React.Component {
+    serverAddress = "http://localhost:3000"
+
     constructor(){
         super()
         this.state = {
@@ -19,6 +19,16 @@ class Create extends React.Component {
             hip_hop: false, 
             playlistURI: "Null"
         }
+    }
+
+    componentDidMount(){
+        fetch(this.serverAddress + "/login")
+        .then(res => res.json())
+        .then((data) => {
+        console.log(data)
+          this.setState({ playlistURI: data.URI })
+        })
+        // .catch(console.log)
     }
 
     changeHandler = event => {
