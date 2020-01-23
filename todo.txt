@@ -1,0 +1,10 @@
+Clean up server side code
+
+CREATE PAGE:
+Allow the host to name their playlist on the create page
+Allow the host to choose playlist duration
+Tell the host to expect a playlist to be created on their account
+
+
+SERVER PLAYLIST:
+Search for the desired genre in other genre names e.g. "pop rap" <= pop

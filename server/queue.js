@@ -1,7 +1,30 @@
 const rp = require("request-promise");
 const request = require("request");
 
-// Returns URI's of shortlisted songs
+// Returns an array of all song objects from the main bank that have at least one of the selected genres
+function createGenredBank(selectedGenres, songBank)
+
+var matches = 0;
+console.log('matches: ', matches);
+// console.log('i: ', i);
+var genres = [];
+console.log( nextSongId, "'th song: ", song.name);
+genreLookup(access_token, song.artists[0])
+    .then((body) => {
+        genres = JSON.parse(body).genres
+        console.log("Artist genre: ", genres, " Selected Genre: ", selectedGenre);
+        if (genres.includes(selectedGenre)) { 
+            ++matches;
+            if (matches <= songsPerPerson) {
+                
+            }
+
+        }
+        // console.log("OUR SONG BANK: ", songBank);
+    })
+
+// Returns URI's of shortlisted songs, to fill the necessary duration
+// Also mutates songBank to be sorted
 function genShortListURI(songBank, playlistDur){
     //Sort the song bank by popularity 
     songBank.sort((a, b) => (a.score < b.score) ? 1 : -1)
