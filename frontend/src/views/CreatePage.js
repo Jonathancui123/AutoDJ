@@ -41,9 +41,13 @@ class Create extends React.Component {
     }
 
     createPlaylist = event => {
-        this.setState({
-            playlistURI: fetch("http://localhost:3000/createPlaylist")
-        });
+        fetch("http://localhost:3000/createPlaylist")
+        .then(res => res.json())
+        .then(body => {
+            this.setState({
+                playlistURI: body.playlistURI
+            });
+        })
     }
 
     render() {
