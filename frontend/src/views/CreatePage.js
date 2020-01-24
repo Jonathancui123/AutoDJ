@@ -5,7 +5,7 @@ import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 
-import "./styles.css";
+import "./Styles.css";
 
 class Create extends React.Component {
   serverAddress = "http://localhost:3000";
@@ -49,18 +49,35 @@ class Create extends React.Component {
 
   render() {
     return (
-      <div id="create">
-        <h1>What do you want to hear?</h1>
-        <form action={this.createPlaylist}>
-          <input name="genres" type="text" placeholder="genres" />
-          <br></br>
-          <input name="playlist" type="text" placeholder="playlist" />
-          <br></br>
-          <Button className="cssbutton" type="submit">
-            Go!
+
+      <div className="square-container">
+        <div className="squares square1" />
+        <div className="squares square2" />
+        <div className="squares square3" />
+        <div className="squares square4" />
+        <div className="squares square5" />
+        <div className="squares square6" />
+        <div className="squares square7" />
+        {/* <Logo className="logo" /> */}
+        <div className="content-container">
+
+
+          <div id="create">
+            <h1>What do you want to hear?</h1>
+            <form action={this.createPlaylist}>
+              <input name="genres" type="text" placeholder="genres" />
+              <br></br>
+              <input name="playlist" type="text" placeholder="playlist" />
+              <br></br>
+              <Button className="cssbutton" type="submit">
+                Go!
           </Button>
-        </form>
+            </form>
+          </div>
+        </div>
       </div>
+
+
     );
   }
 }

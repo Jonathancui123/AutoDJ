@@ -129,7 +129,7 @@ app.get('/loggedin', (req, res) => {
     })
     // .then(() => console.log("Playlist ID: ", playlistID))
     // res.sendFile(path.join(__dirname + '/views/loggedin.html'));
-    res.redirect("http://localhost:3000/createPlaylist");
+    res.redirect("http://localhost:3001/create");
 })
 
 app.get('/test', (req, res) => {
@@ -180,7 +180,7 @@ app.get('/createPlaylist', (req, res) => {
             })
     }, 5000);
 
-    res.redirect('http://localhost:3001' + '/OBVIOUS')
+    res.redirect('http://localhost:3001' + '/create')
 
     return playlistID;
 });

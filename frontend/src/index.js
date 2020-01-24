@@ -6,8 +6,8 @@ import "./index.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import * as serviceWorker from "./serviceWorker";
 
-import App from "./views/app";
-import Create from "./views/createPage";
+import App from "./views/App.js";
+import Create from "./views/CreatePage";
 
 ReactDOM.render(
   <BrowserRouter>
