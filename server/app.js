@@ -30,16 +30,16 @@ const songsPerPerson = 10;
 var nextSongId = 0;
 
 //Host inputs:
-var selectedGenres = ['rap'];
+var selectedGenres = ['rap', 'pop'];
 var playlistDur = 10; // Integer: time in minutes
 var playlistName = '';
 var playlistURI = '';
 
-function Song(id, name, artist, tags, score, played, link) {
+function Song(id, name, artist, genres, score, played, link) {
     this.id = id;
     this.name = name;
     this.artist = artist;
-    this.tags = tags;
+    this.genres = genres;
     this.score = score;
     this.played = played;
     this.link = link;
@@ -72,7 +72,7 @@ app.get('/login', (req, res) => {
         '&client_id=' + clientId +
         (scopes ? '&scope=' + encodeURIComponent(scopes) : '') +
         '&redirect_uri=' + encodeURIComponent('http://localhost:3000/loggedin'));
-        // frontEndAddress + "/create"
+    // frontEndAddress + "/create"
 });
 
 app.get('/loggedin', (req, res) => {
@@ -97,74 +97,86 @@ app.get('/loggedin', (req, res) => {
         //Register the user into our database and get query their songs
         /////////////////////////////////////
         registerUser(access_token)
-        .then((body) => {
-            const info = JSON.parse(body);
-            // console.log('Response ', info);
-            // Get current date and time
-            const now = new Date();
-            users.push(new User(
-                nextUserId,
-                info.display_name,
-                info.id,
-                users.map(user => { return user.role; }).includes('host') ? 'guest' : 'host',
-                now
-            ));
-            nextUserId++;
-            // console.log('Current users', users);
-            /////////////////////////////////////
-            // Get their songs now
-            /////////////////////////////////////
-            getSongs(access_token);
-        })
-        .catch((err)=>{
-            console.error(new Error("Registration error"));
-        })
-               
-       
+            .then((body) => {
+                const info = JSON.parse(body);
+                // console.log('Response ', info);
+                // Get current date and time
+                const now = new Date();
+                users.push(new User(
+                    nextUserId,
+                    info.display_name,
+                    info.id,
+                    users.map(user => { return user.role; }).includes('host') ? 'guest' : 'host',
+                    now
+                ));
+                nextUserId++;
+                // console.log('Current users', users);
+                /////////////////////////////////////
+                // Get their songs now
+                /////////////////////////////////////
+                getSongs(access_token)
+                    .then(body => addSongsToBank(body))
+                    .then(bank => { console.log("SONG BANK SUCCESSFULLY UPDATED") })
+                    .catch(err => console.error(err))
+            })
+            .catch((err) => {
+                console.error(new Error("Registration error"));
+            })
+
+
         setInterval(refresh_access, (58 * 60000)); // Refreshes token every 58 minutes, it expires every 60
     })
     // .then(() => console.log("Playlist ID: ", playlistID))
     // res.sendFile(path.join(__dirname + '/views/loggedin.html'));
-    res.redirect("http://localhost:3001/create");
+    res.redirect("http://localhost:3000/createPlaylist");
 })
 
-app.get('/test', (req, res)=>{
-    res.send({URI: "SERVED FROM SERVER"})
+app.get('/test', (req, res) => {
+    res.send({ URI: "SERVED FROM SERVER" })
 })
 
- /* 
-        /////////////////////////////////////
-        // DO NOT DELETE 
-        // MAKING A NEW PLAYLIST: This should run when the user clicks "Create playlist"
-        /////////////////////////////////////
-        
-         queueHelpers.createNewPlaylist(access_token,"hehexd","frozendarkmatter")
-             .then((body)=>{
-                 console.log("completed post request for creating playlist")
-                 
-                 playlistID = JSON.parse(body).id;
-                 console.log("response ID: ", playlistID);
-             })
-             .catch((err)=>{
-                 console.error(err);
-             })
-         var shortListURI = queueHelpers.genShortListURI(songBank, playlistDur);
-         queueHelpers.addSongsToPlaylist(access_token, shortListURI ,playlistID);
+/* 
+       /////////////////////////////////////
+       // DO NOT DELETE 
+       // MAKING A NEW PLAYLIST: This should run when the user clicks "Create playlist"
+       /////////////////////////////////////
+       
+        queueHelpers.createNewPlaylist(access_token,"hehexd","frozendarkmatter")
+            .then((body)=>{
+                console.log("completed post request for creating playlist")
+                
+                playlistID = JSON.parse(body).id;
+                console.log("response ID: ", playlistID);
+            })
+            .catch((err)=>{
+                console.error(err);
+            })
+        var shortListURI = queueHelpers.genShortListURI(songBank, playlistDur);
+        queueHelpers.addSongsToPlaylist(access_token, shortListURI ,playlistID);
 */
 
+
+//
 app.get('/createPlaylist', (req, res) => {
-    queueHelpers.createNewPlaylist(access_token,"hehexd","oustan10")
-        .then((body)=>{
+    console.log("running create new playlist")
+    queueHelpers.createNewPlaylist(access_token, "hehexd", "frozendarkmatter")
+        .then((body) => {
             console.log("completed post request for creating playlist")
-            
+
             playlistID = JSON.parse(body).id;
             console.log("response ID: ", playlistID);
+
+            //Decide on songs and add it to the new playlist
+            var genreOnlyBank = queueHelpers.createGenredBank(selectedGenres, songBank);
+            var shortListURI = queueHelpers.genShortListURI(genreOnlyBank, playlistDur);
+            queueHelpers.addSongsToPlaylist(access_token, shortListURI, playlistID);
+            console.log("Playlist created and populated successfully")
         })
-        .catch((err)=>{
+        .catch((err) => {
             console.error(err);
         })
-    var shortListURI = queueHelpers.genShortListURI(songBank, playlistDur);
-    queueHelpers.addSongsToPlaylist(access_token, shortListURI, playlistID);
+    res.redirect('http://localhost:3001' + '/OBVIOUS')
+    
     return playlistID;
 });
 
@@ -235,7 +247,8 @@ function registerUser(access_token) {
 
 function getSongs(access_token) {
     console.log("Running get songs")
-    request({
+
+    var reqOptions = {
         headers: {
             'Authorization': 'Bearer ' + access_token,
             'content-Type': 'application/json'
@@ -243,44 +256,68 @@ function getSongs(access_token) {
         url: 'https://api.spotify.com/v1/me/top/tracks',
         method: 'GET',
         // body: JSON.stringify({limit:20})
-    }, (err, res, body) => {
-        if (err) {
-            console.log('Error returned!');
-        } else {
-            console.log("Finished getting songs, starting sort")
-            var returnedSongs = JSON.parse(body).items.sort((a, b) => {
-                if (a.popularity < b.popularity) {
-                    return 1;
-                }
-                if (a.popularity > b.popularity) {
-                    return -1;
-                }
-                return 0;
-            });
-            // console.log("Finished sorting songs: ", returnedSongs);
-        }
-        
-        returnedSongs.forEach(song => {
-            var index = songBankLookup(song.uri)
-            if (index >= 0) {
-                songBank[index].score++;
-            } else {
-                songBank.push(
-                    new Song(
-                        nextSongId,
-                        song.name,
-                        song.artists[0],
-                        genres,
-                        1,
-                        false,
-                        song.uri)
-                );
-                nextSongId++;
-            }
-        })
-    });
+    }
+
+    let getSongsPromise = rp(reqOptions);
+    return getSongsPromise
 }
 
+function addSongsToBank(body) {
+    var returnedSongs = JSON.parse(body).items.sort((a, b) => {
+        if (a.popularity < b.popularity) {
+            return 1;
+        }
+        if (a.popularity > b.popularity) {
+            return -1;
+        }
+        return 0;
+    });
+    console.log("Finished getting and sorting songs");
+    // console.log("Sorted songs: ", returnedSongs);
+
+    const finishedSongBank = new Promise((resolve, reject) => {
+        var songCounter = 0;
+
+        // returnedSongs.forEach(song => {
+        //     console.log(song.artists[0]);
+        // })
+
+        Promise.all(returnedSongs.map(song => genreLookup(access_token, song.artists[0]))) // All (genreLookups go in here)
+            //Once all genre lookups have finished:
+            .then(listOfArtistInfos => {
+                listOfArtistInfos.forEach(artistInfo => {
+                    genres = JSON.parse(artistInfo).genres
+                    var index = songBankLookup(returnedSongs[songCounter].uri);
+                    if (index >= 0) {
+                        songBank[index].score++;
+                    } else {
+                        songBank.push(
+                            new Song(
+                                nextSongId,
+                                returnedSongs[songCounter].name,
+                                returnedSongs[songCounter].artists[0],
+                                genres,
+                                1,
+                                false,
+                                returnedSongs[songCounter].uri,
+                            )
+                        );
+                        console.log(nextSongId, "th song: ", returnedSongs[songCounter].name);
+                        nextSongId++;
+                    }
+                    songCounter++;
+                })
+                resolve(songBank)
+            })
+            .catch(err => {
+                console.log("GENRE LOOKUP ERROR")
+                console.error(err);
+                reject("Could not finish creating song bank")
+            });
+    });
+    return finishedSongBank;
+}
+//Takes in the access token and an artist to look for
 function genreLookup(access_token, artist) {
     let promise = rp({
         url: `https://api.spotify.com/v1/artists/${artist.id}`,
