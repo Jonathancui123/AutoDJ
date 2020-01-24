@@ -5,11 +5,11 @@ const request = require("request");
 function createGenredBank(selectedGenres, songBank) {
     var genredBank = [];
     //Iterate through each song in the song bank
-    
-    for( var i = 0; i < songBank.length; i++){
+
+    for (var i = 0; i < songBank.length; i++) {
         var genresOfSong = songBank[i].genres;
-        for( var j = 0; j < selectedGenres.length; j++){
-            if(genresOfSong.includes(selectedGenres[j])){ //Genre j is tagged in the song
+        for (var j = 0; j < selectedGenres.length; j++) {
+            if (genresOfSong.includes(selectedGenres[j])) { //Genre j is tagged in the song
                 genredBank.push(songBank[i]);
                 break;
             }
@@ -17,21 +17,6 @@ function createGenredBank(selectedGenres, songBank) {
     }
 
     return genredBank;
-}
-
-function checkGenreThenAdd(selectedGenres, song, access_token) {
-    const finishedAdd = new Promise((resolve, reject) => {
-        genreLookup(access_token, song.artists[0])
-            .then((body) => {
-                genres = JSON.parse(body).genres
-                console.log("Artist genre: ", genres, " Selected Genre: ", selectedGenre);
-                if (genres.includes(selectedGenre)) {
-
-                }
-                // console.log("OUR SONG BANK: ", songBank);
-            })
-    })
-    return finishedAdd;
 }
 
 
@@ -52,9 +37,11 @@ function genShortListURI(songBank, playlistDur) {
         }
         var nextSong = songBank[i];
         shortList.push(nextSong.link);
+        console.log("Next song duration: ", nextSong.dur);
         currPlaylistDur += nextSong.dur;
         i++;
     }
+    shortList.pop()
     console.log("Finished shortlist: ", shortList);
     return shortList;
 }

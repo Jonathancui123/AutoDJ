@@ -31,11 +31,11 @@ var nextSongId = 0;
 
 //Host inputs:
 var selectedGenres = ['rap', 'pop'];
-var playlistDur = 10; // Integer: time in minutes
+var playlistDur = 20 * 60 * 1000; // Integer: time in ms
 var playlistName = '';
 var playlistURI = '';
 
-function Song(id, name, artist, genres, score, played, link) {
+function Song(id, name, artist, genres, score, played, link, duration) {
     this.id = id;
     this.name = name;
     this.artist = artist;
@@ -43,6 +43,7 @@ function Song(id, name, artist, genres, score, played, link) {
     this.score = score;
     this.played = played;
     this.link = link;
+    this.dur = duration;
 }
 
 function User(id, name, spotifyId, role, joinTime) {
@@ -159,24 +160,28 @@ app.get('/test', (req, res) => {
 //
 app.get('/createPlaylist', (req, res) => {
     console.log("running create new playlist")
-    queueHelpers.createNewPlaylist(access_token, "hehexd", "frozendarkmatter")
-        .then((body) => {
-            console.log("completed post request for creating playlist")
+    setTimeout(() => {
+        queueHelpers.createNewPlaylist(access_token, "hehexd", "frozendarkmatter")
+            .then((body) => {
+                console.log("completed post request for creating playlist")
 
-            playlistID = JSON.parse(body).id;
-            console.log("response ID: ", playlistID);
+                playlistID = JSON.parse(body).id;
+                console.log("response ID: ", playlistID);
 
-            //Decide on songs and add it to the new playlist
-            var genreOnlyBank = queueHelpers.createGenredBank(selectedGenres, songBank);
-            var shortListURI = queueHelpers.genShortListURI(genreOnlyBank, playlistDur);
-            queueHelpers.addSongsToPlaylist(access_token, shortListURI, playlistID);
-            console.log("Playlist created and populated successfully")
-        })
-        .catch((err) => {
-            console.error(err);
-        })
+                //Decide on songs and add it to the new playlist
+                var genreOnlyBank = queueHelpers.createGenredBank(selectedGenres, songBank);
+                var shortListURI = queueHelpers.genShortListURI(genreOnlyBank, playlistDur);
+                queueHelpers.addSongsToPlaylist(access_token, shortListURI, playlistID);
+                console.log("Playlist created and populated successfully")
+            })
+            .catch((err) => {
+                console.log("Error generating new playlist");
+                console.error(err.message);
+            })
+    }, 5000);
+
     res.redirect('http://localhost:3001' + '/OBVIOUS')
-    
+
     return playlistID;
 });
 
@@ -300,6 +305,7 @@ function addSongsToBank(body) {
                                 1,
                                 false,
                                 returnedSongs[songCounter].uri,
+                                returnedSongs[songCounter].duration_ms
                             )
                         );
                         console.log(nextSongId, "th song: ", returnedSongs[songCounter].name);
