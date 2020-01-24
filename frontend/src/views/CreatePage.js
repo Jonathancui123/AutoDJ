@@ -38,6 +38,7 @@ class Create extends React.Component {
   };
 
   createPlaylist = event => {
+    alert("called create playlist");
     fetch("http://localhost:3000/createPlaylist")
       .then(res => res.json())
       .then(body => {
@@ -64,14 +65,14 @@ class Create extends React.Component {
 
           <div id="create">
             <h1>What do you want to hear?</h1>
-            <form action={this.createPlaylist}>
+            <form onSubmit={this.createPlaylist} >
               <input name="genres" type="text" placeholder="genres" />
               <br></br>
               <input name="playlist" type="text" placeholder="playlist" />
               <br></br>
               <Button className="cssbutton" type="submit">
                 Go!
-          </Button>
+            </Button>
             </form>
           </div>
         </div>
