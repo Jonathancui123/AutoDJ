@@ -52,7 +52,9 @@ class Create extends React.Component {
       <div id="create">
         <h1>What do you want to hear?</h1>
         <form action={this.createPlaylist}>
-          <input name="genres" type="text" />
+          <input name="genres" type="text" placeholder="genres" />
+          <br></br>
+          <input name="playlist" type="text" placeholder="playlist" />
           <br></br>
           <Button className="cssbutton" type="submit">
             Go!
