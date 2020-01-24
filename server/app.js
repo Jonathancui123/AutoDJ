@@ -26,7 +26,7 @@ var songBank = [];
 var users = [];
 var playlistID = ''; //Spotify ID for the playlist that is made - so it can be edited
 var nextUserId = 0;
-const songsPerPerson = 10;
+const songsPerPerson = 20;
 var nextSongId = 0;
 
 //Host inputs:
