@@ -159,6 +159,11 @@ app.get('/test', (req, res) => {
 
 //
 app.get('/createPlaylist', (req, res) => {
+    var playlistName = "";
+    var genres = [];
+    
+    req.body.json()
+    .then()
     console.log("running create new playlist")
     setTimeout(() => {
         queueHelpers.createNewPlaylist(access_token, "hehexd", "frozendarkmatter")
