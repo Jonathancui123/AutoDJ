@@ -1,4 +1,12 @@
+finish playlist ordering function
+Implement "host" view
+// Implement "guest" view
+// Create conditional rendering for "host" and "guest"
+Deploy
 Clean up server side code
+write readme
+
+MONGO DB
 
 CREATE PAGE:
 Allow the host to name their playlist on the create page
@@ -6,5 +14,6 @@ Allow the host to choose playlist duration
 Tell the host to expect a playlist to be created on their account
 
 
-SERVER PLAYLIST:
-Search for the desired genre in other genre names e.g. "pop rap" <= pop
+SERVER:
+Search for the desired genre in Spotify's genre names e.g. "pop rap" <= pop
+Query everyone's names in the same call as their tastes profile from spotify
