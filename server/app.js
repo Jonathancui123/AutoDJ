@@ -140,6 +140,7 @@ app.get("/clientReqUser", (req, res) => {
       // console.log('Response ', info);
       // Get current date and time
       const now = new Date();
+
       users.push(
         new User(
           nextUserId,
