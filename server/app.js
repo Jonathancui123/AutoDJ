@@ -186,10 +186,11 @@ app.post('/test', (req, res)=>{
 app.post('/createPlaylist', (req, res) => {
     var playlistName = req.body.playlistName;
     var genres = req.body.genres.split(" ");
+    var userID = req.body.userID;
 
     console.log("running create new playlist")
     setTimeout(() => {
-        queueHelpers.createNewPlaylist(access_token, playlistName, "frozendarkmatter")
+        queueHelpers.createNewPlaylist(access_token, playlistName, userID)
             .then((body) => {
                 console.log("completed post request for creating playlist")
 
@@ -208,9 +209,7 @@ app.post('/createPlaylist', (req, res) => {
             })
     }, 5000);
 
-    res.redirect('http://localhost:3001' + '/create')
-
-    return playlistID;
+    res.redirect('http://localhost:3001' + '/host');
 });
 
 //Run this every 59 mins to refresh the access token for the user

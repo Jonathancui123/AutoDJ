@@ -14,7 +14,7 @@ class Create extends React.Component {
     super();
     this.state = {
       userID: "",
-      userDP: "hehe",
+      userDP: "woopsies",
       genres: "",
       playlistName: "",
       playlistURI: "Null"
@@ -51,7 +51,8 @@ class Create extends React.Component {
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
         genres: this.state.genres,
-        playlistName: this.state.playlistName
+        playlistName: this.state.playlistName,
+        userID: this.state.userID
       })
     })
       .then(res => res.json())
