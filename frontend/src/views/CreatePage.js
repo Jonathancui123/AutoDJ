@@ -56,10 +56,10 @@ class Create extends React.Component {
         userID: this.state.userID
       })
     })
-      .then(res => res.json())
+      // .then(res => res.json())
       .then(res => {
-        return <Redirect to="/host"/>
       });
+      this.props.history.push('/host')
   };
 
   render() {
