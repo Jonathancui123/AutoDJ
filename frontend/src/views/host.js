@@ -9,6 +9,28 @@ import "./Styles.css";
 
 class Host extends Component {
   state = {};
+
+  constructor() {
+    super();
+    this.state = {
+      users: [],
+      playlistID: ""
+    };
+  }
+
+  componentDidMount() {
+    fetch("http://localhost:3000/getInfo")
+      .then(response => {
+        return response.json();
+      })
+      .then(response => {
+        this.setState({
+          users: response.users,
+          playlistID: response.playlistID
+        });
+      });
+  }
+
   render() {
     return (
       <div class="host">
@@ -24,12 +46,12 @@ class Host extends Component {
             <Row>
               <Col xs={7}>
                 <div className="playerPanel">
-                  <Player />
+                  <Player playlistID={this.state.playlistID} />
                 </div>
               </Col>
               <Col xs={5}>
                 <div className="membersPanel">
-                  <Members />
+                  <Members users={this.state.users} />
                 </div>
               </Col>
             </Row>

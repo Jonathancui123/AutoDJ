@@ -5,7 +5,7 @@ class Player extends Component {
   render() {
     return (
       <iframe
-        src="https://open.spotify.com/embed/playlist/0vvXsWCC9xrXsKd4FyS8kM"
+        src={"https://open.spotify.com/embed/playlist/" + this.props.playlistID}
         width="100%"
         height="700"
         frameborder="0"
