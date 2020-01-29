@@ -4,7 +4,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import {Redirect} from 'react-router-dom';
+import { Redirect } from "react-router-dom";
 
 import "./Styles.css";
 
@@ -18,38 +18,47 @@ class Create extends React.Component {
       userDP: "woopsies",
       genres: "",
       playlistName: "",
-      playlistURI: "Null"
+      playlistURI: "Null",
+      duration: ""
     };
   }
 
   componentDidMount() {
     fetch(this.serverAddress + "/clientReqUser")
-      .then(res => {return res.json()} )
+      .then(res => {
+        return res.json();
+      })
       .then(res => {
         console.log(res);
-        this.setState({ 
+        this.setState({
           userDP: res.display_name,
           userID: res.spotifyID
         });
       })
-      .catch((err) => console.log(err))
+      .catch(err => console.log(err));
   }
 
   handleChange = event => {
     // alert("called change handler");
     const name = event.target.name;
     const value = event.target.value;
+    const duration = event.target.duration;
     this.setState({
-      [name]: value
+      [name]: value,
+      duration: duration
     });
   };
 
   createPlaylist = event => {
     event.preventDefault();
-    alert('called create playlist submitting: ' + this.state.genres + this.state.playlistName);
-    fetch("http://localhost:3000/createPlaylist",{
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
+    alert(
+      "called create playlist submitting: " +
+        this.state.genres +
+        this.state.playlistName
+    );
+    fetch("http://localhost:3000/createPlaylist", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         genres: this.state.genres,
         playlistName: this.state.playlistName,
@@ -57,14 +66,12 @@ class Create extends React.Component {
       })
     })
       // .then(res => res.json())
-      .then(res => {
-      });
-      this.props.history.push('/host')
+      .then(res => {});
+    this.props.history.push("/host");
   };
 
   render() {
     return (
-
       <div className="square-container">
         <div className="squares square1" />
         <div className="squares square2" />
@@ -75,25 +82,41 @@ class Create extends React.Component {
         <div className="squares square7" />
         {/* <Logo className="logo" /> */}
         <div className="content-container">
-
-
           <div id="create">
-        <h1>Welcome, {this.state.userDP}</h1>
+            <h1>Welcome, {this.state.userDP}</h1>
             <h2>What do you want to hear?</h2>
-            <form onSubmit={this.createPlaylist} >
-              <input name="genres" type="text" value={this.state.genres} onChange={this.handleChange} placeholder="genres" />
+            <form onSubmit={this.createPlaylist}>
+              <input
+                name="genres"
+                type="text"
+                value={this.state.genres}
+                onChange={this.handleChange}
+                placeholder="genres"
+              />
               <br></br>
-              <input name="playlistName" type="text" value={this.state.playlistName} onChange={this.handleChange} placeholder="playlist name" />
+              <input
+                name="playlistName"
+                type="text"
+                value={this.state.playlistName}
+                onChange={this.handleChange}
+                placeholder="playlist name"
+              />
+              <br></br>
+              <input
+                name="duration"
+                type="text"
+                value={this.state.duration}
+                onChange={this.handleChange}
+                placeholder="playlist duration (min)"
+              />
               <br></br>
               <Button className="cssbutton" type="submit">
                 Go!
-            </Button>
+              </Button>
             </form>
           </div>
         </div>
       </div>
-
-
     );
   }
 }

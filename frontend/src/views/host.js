@@ -14,7 +14,9 @@ class Host extends Component {
     super();
     this.state = {
       users: [],
-      playlistID: ""
+      playlistID: "",
+      playlistName: "",
+      playlistDuration: ""
     };
   }
 
@@ -26,10 +28,24 @@ class Host extends Component {
       .then(response => {
         this.setState({
           users: response.users,
-          playlistID: response.playlistID
+          playlistID: response.playlistID,
+          playlistName: response.playlistName,
+          duration: response.playlistDur
         });
       });
   }
+
+  callUpdate = () => {
+    fetch("http://localhost:3000/updatePlaylist", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        genres: this.state.genres
+      })
+    }).then(res => {
+      this.props.history.push("/host");
+    });
+  };
 
   render() {
     return (
@@ -51,7 +67,11 @@ class Host extends Component {
               </Col>
               <Col xs={5}>
                 <div className="membersPanel">
+                  <h1>{this.state.playlistName}</h1>
                   <Members users={this.state.users} />
+                  <Button id="join" href={this.callUpdate}>
+                    Update
+                  </Button>
                 </div>
               </Col>
             </Row>
