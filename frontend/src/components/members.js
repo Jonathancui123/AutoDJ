@@ -2,14 +2,12 @@ import React, { Component } from "react";
 import Table from "react-bootstrap/Table";
 
 class Members extends Component {
-  state = {
-    users: ["bob", "joe", "jc", "od"]
-  };
+  state = {};
   render() {
-    var users = this.state.users;
+    var users = this.props.users;
     var memberList = users.map(user => (
       <tr style={{ height: "30px" }}>
-        <td style={{ paddingLeft: "20px" }}>{user}</td>
+        <td style={{ paddingLeft: "20px" }}>{user.name}</td>
         <td style={{ paddingBottom: 0, paddingRight: 0, textAlign: "right" }}>
           <iframe
             src="https://open.spotify.com/follow/1/?uri=spotify:artist:6sFIWsNpZYqfjUpaCgueju&size=basic&theme=dark"
