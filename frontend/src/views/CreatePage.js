@@ -4,6 +4,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
+import {Redirect} from 'react-router-dom';
 
 import "./Styles.css";
 
@@ -14,6 +15,7 @@ class Create extends React.Component {
     super();
     this.state = {
       userID: "",
+      userDP: "woopsies",
       genres: "",
       playlistName: "",
       playlistURI: "Null"
@@ -25,7 +27,10 @@ class Create extends React.Component {
       .then(res => {return res.json()} )
       .then(res => {
         console.log(res);
-        // this.setState({ playlistURI: data.URI });
+        this.setState({ 
+          userDP: res.display_name,
+          userID: res.spotifyID
+        });
       })
       .catch((err) => console.log(err))
   }
@@ -47,15 +52,13 @@ class Create extends React.Component {
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
         genres: this.state.genres,
-        playlistName: this.state.playlistName
+        playlistName: this.state.playlistName,
+        userID: this.state.userID
       })
     })
       .then(res => res.json())
       .then(res => {
-        alert('Recieved: ' + res);
-        // this.setState({
-        //   playlistURI: body.playlistURI
-        // });
+        return <Redirect to="/host"/>
       });
   };
 
@@ -75,7 +78,8 @@ class Create extends React.Component {
 
 
           <div id="create">
-            <h1>What do you want to hear?</h1>
+        <h1>Welcome, {this.state.userDP}</h1>
+            <h2>What do you want to hear?</h2>
             <form onSubmit={this.createPlaylist} >
               <input name="genres" type="text" value={this.state.genres} onChange={this.handleChange} placeholder="genres" />
               <br></br>
