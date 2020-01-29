@@ -88,9 +88,10 @@ class Host extends React.Component {
               </Col>
               <Col xs={5}>
                 <div className="membersPanel">
-                  <h1>{this.state.playlistName}</h1>
+                  <h1 style={{ marginBottom: "10px" }}>{this.state.playlistName}</h1>
                   <Members users={this.state.users} />
-                  <Button id="join" onClick={this.callUpdate}>
+                  <br></br>
+                  <Button id="update" onClick={this.callUpdate}>
                     Update
                   </Button>
                 </div>

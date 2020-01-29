@@ -21,6 +21,21 @@
   color: #282c34;
 }
 
+#update {
+  height: 150px;
+  width: 100%;
+  background-color: transparent;
+  padding-top: 0px;
+  border-color: white;
+  border-width: 5px;
+  font-size: 3em;
+}
+
+#update:hover {
+  background-color: white;
+  color: #282c34;
+}
+
 #create {
   display: block;
   color: white;
@@ -187,6 +202,7 @@ input:focus {
 .playerPanel {
   padding: 5% 3% 3% 5%;
   text-align: left;
+  height: 97vh;
 }
 
 .membersPanel {

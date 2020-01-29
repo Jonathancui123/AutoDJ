@@ -8,8 +8,10 @@ function createGenredBank(selectedGenres, songBank) {
 
     for (var i = 0; i < songBank.length; i++) {
         var genresOfSong = songBank[i].genres;
+        console.log(songBank[i].name)
+        console.log("Genre: ", genresOfSong)
         for (var j = 0; j < selectedGenres.length; j++) {
-            if (genresOfSong.includes(selectedGenres[j])) { //Genre j is tagged in the song
+            if (genresOfSong.toString().includes(selectedGenres[j])) { //Genre j is tagged in the song
                 genredBank.push(songBank[i]);
                 // console.log("Adding to genre only bank: ", songBank[i])
                 break;

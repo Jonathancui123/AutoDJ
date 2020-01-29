@@ -280,7 +280,7 @@ app.post("/updatePlaylist", (req, res) => {
 
 app.post("/createPlaylist", (req, res) => {
   playlistName = req.body.playlistName;
-  genres = req.body.genres.split(" ");
+  genres = req.body.genres.split("/");
   var userID = req.body.userID;
   playlistDur = 60 * 1000 * parseInt(req.body.duration);
   console.log("Playlist duration in ms: ", playlistDur)
@@ -412,9 +412,9 @@ function getSongs(access_token) {
       Authorization: "Bearer " + access_token,
       "content-Type": "application/json"
     },
-    url: "https://api.spotify.com/v1/me/top/tracks",
+    url: "https://api.spotify.com/v1/me/top/tracks" + "?limit=100",
     method: "GET"
-    // body: JSON.stringify({limit:20})
+    // body: JSON.stringify({ limit: 100 })
   };
 
   let getSongsPromise = rp(reqOptions);
