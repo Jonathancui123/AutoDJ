@@ -10,7 +10,11 @@ class Members extends Component {
         <td style={{ paddingLeft: "20px" }}>{user.name}</td>
         <td style={{ paddingBottom: 0, paddingRight: 0, textAlign: "right" }}>
           <iframe
-            src="https://open.spotify.com/follow/1/?uri=spotify:artist:6sFIWsNpZYqfjUpaCgueju&size=basic&theme=dark"
+            src={
+              "https://open.spotify.com/follow/1/?uri=" +
+              user.uri +
+              "&size=basic&theme=dark"
+            }
             width="200"
             height="25"
             scrolling="no"
