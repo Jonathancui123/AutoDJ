@@ -28,6 +28,7 @@ app.use(bodyParser.json());
 ///////////////////////////////////////////////
 var songBank = [];
 var users = [];
+var genres = [];
 var playlistID = "0vvXsWCC9xrXsKd4FyS8kM"; //Spotify ID for the playlist that is made - so it can be edited
 var nextUserId = 0;
 const songsPerPerson = 20;
@@ -162,6 +163,7 @@ function conditionalGetSongs() {
 }
 
 app.get("/clientRegisterUser", (req, res) => {
+  console.log("Received Registration GET request from client");
   conditionalRegUser()
     .then(body => {
       const info = JSON.parse(body);
@@ -169,13 +171,15 @@ app.get("/clientRegisterUser", (req, res) => {
       // Get current date and time
       const now = new Date();
       console.log("Current users: ", users);
-      res.send({
-        display_name: info.display_name,
-        spotifyID: info.id
-      });
+
 
       for (var i = 0; i < users.length; i++) {
-        if (info.id == users[i].id) {
+        if (info.id == users[i].spotifyId) {
+          console.log("Blocking 2nd registrtion attempt and sending response")
+          res.send({
+            display_name: info.display_name,
+            spotifyID: info.id
+          });
           return;
         }
       }
@@ -203,6 +207,13 @@ app.get("/clientRegisterUser", (req, res) => {
       // Get their songs now
       /////////////////////////////////////
 
+      res.send({
+        display_name: info.display_name,
+        spotifyID: info.id
+      });
+
+
+
       conditionalGetSongs()
         .then(body => addSongsToBank(body))
         .then(bank => {
@@ -212,6 +223,9 @@ app.get("/clientRegisterUser", (req, res) => {
     })
     .catch(err => {
       console.log("Registration error - possibly due to second host login attempt");
+      res.send({
+        status: "meaningless response to trigger react refresh"
+      });
     });
 });
 
@@ -253,6 +267,8 @@ app.post("/updatePlaylist", (req, res) => {
     genreOnlyBank,
     playlistDur
   );
+
+
   queueHelpers.addSongsToPlaylist(access_token, shortListURI, playlistID)
     .then(body => {
       console.log("Successfully added songs to the playlist");
@@ -431,7 +447,7 @@ function addSongsToBank(body) {
       //Once all genre lookups have finished:
       .then(listOfArtistInfos => {
         listOfArtistInfos.forEach(artistInfo => {
-          genres = JSON.parse(artistInfo).genres;
+          var temp_genres = JSON.parse(artistInfo).genres;
           var index = songBankLookup(returnedSongs[songCounter].uri);
           if (index >= 0) {
             songBank[index].score++;
@@ -441,7 +457,7 @@ function addSongsToBank(body) {
                 nextSongId,
                 returnedSongs[songCounter].name,
                 returnedSongs[songCounter].artists[0],
-                genres,
+                temp_genres,
                 1,
                 false,
                 returnedSongs[songCounter].uri,

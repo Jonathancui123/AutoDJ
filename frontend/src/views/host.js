@@ -22,25 +22,35 @@ class Host extends React.Component {
     };
   }
 
+  refreshPage() {
+    window.location.reload(true);
+  }
+
   componentDidMount() {
+    alert("COMPONENT MOUNTED")
     fetch(this.serverAddress + "/clientRegisterUser")
-    .then(
-
-      fetch("http://localhost:3000/getInfo")
-      .then(response => {
-        return response.json();
+      .then(res => {
+        return res.json();
       })
-      .then(response => {
-        this.setState({
-          users: response.users,
-          playlistID: response.playlistID,
-          playlistName: response.playlistName,
-          duration: response.playlistDur
-        });
+      .then(res => {
+        alert("USER REGISTERED")
+        fetch("http://localhost:3000/getInfo")
+          .then(response => {
+            return response.json();
+          })
+          .then(response => {
+            alert("SETTING STATE")
+
+            this.setState({
+              users: response.users,
+              playlistID: response.playlistID,
+              playlistName: response.playlistName,
+              duration: response.playlistDur
+            });
+          })
+
       })
 
-    )
-   
   }
 
   callUpdate = () => {
@@ -53,7 +63,8 @@ class Host extends React.Component {
       // })
     }).then(res => {
       alert("RESPONSE RECEIVED")
-      this.props.history.push("/host");
+      // this.props.history.push("/host");
+      this.refreshPage();
     });
   };
 
