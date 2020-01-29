@@ -153,8 +153,7 @@ function conditionalRegUser() {
 }
 
 function conditionalGetSongs() {
-  console.log("Running conditional get songs");
-  if (users.length > 1) {
+  if (users.length > 0) {
     return getSongs(guest_token)
   } else {
     return getSongs(access_token)
@@ -168,17 +167,7 @@ app.get("/clientRegisterUser", (req, res) => {
       // console.log('Response ', info);
       // Get current date and time
       const now = new Date();
-      console.log("Current users: ", users);
-      res.send({
-        display_name: info.display_name,
-        spotifyID: info.id
-      });
 
-      for (var i = 0; i < users.length; i++) {
-        if (info.id == users[i].id) {
-          return;
-        }
-      }
       users.push(
         new User(
           nextUserId,
@@ -196,13 +185,15 @@ app.get("/clientRegisterUser", (req, res) => {
         )
       );
       nextUserId++;
-
+      res.send({
+        display_name: info.display_name,
+        spotifyID: info.id
+      });
 
       // console.log('Current users', users);
       /////////////////////////////////////
       // Get their songs now
       /////////////////////////////////////
-
       conditionalGetSongs()
         .then(body => addSongsToBank(body))
         .then(bank => {
@@ -211,7 +202,7 @@ app.get("/clientRegisterUser", (req, res) => {
         .catch(err => console.error(err));
     })
     .catch(err => {
-      console.log("Registration error - possibly due to second host login attempt");
+      console.error(new Error("Registration error"));
     });
 });
 
@@ -245,10 +236,6 @@ app.post("/updatePlaylist", (req, res) => {
   console.log("running UPDATE playlist");
 
   var genreOnlyBank = queueHelpers.createGenredBank(genres, songBank);
-  console.log("Printing the genre only bank: ")
-  genreOnlyBank.forEach(song => {
-    console.log(song.name);
-  })
   var shortListURI = queueHelpers.genShortListURI(
     genreOnlyBank,
     playlistDur
@@ -457,11 +444,6 @@ function addSongsToBank(body) {
           }
           songCounter++;
         });
-        console.log("Printing songbank: ")
-        songBank.forEach(song => {
-          console.log(song.name);
-        })
-
         resolve(songBank);
       })
       .catch(err => {

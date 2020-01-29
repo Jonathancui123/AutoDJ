@@ -10,18 +10,23 @@ import "./Styles.css";
 class Host extends React.Component {
   state = {};
 
+  serverAddress = "http://localhost:3000"
+
   constructor() {
     super();
     this.state = {
       users: [],
       playlistID: "",
       playlistName: "",
-      playlistDuration: 0
+      playlistDuration: null
     };
   }
 
   componentDidMount() {
-    fetch("http://localhost:3000/getInfo")
+    fetch(this.serverAddress + "/clientRegisterUser")
+    .then(
+
+      fetch("http://localhost:3000/getInfo")
       .then(response => {
         return response.json();
       })
@@ -32,17 +37,22 @@ class Host extends React.Component {
           playlistName: response.playlistName,
           duration: response.playlistDur
         });
-      });
+      })
+
+    )
+   
   }
 
   callUpdate = () => {
+    alert("FETCHING UPDATE")
     fetch("http://localhost:3000/updatePlaylist", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        genres: this.state.genres
-      })
+      // body: JSON.stringify({
+      //   genres: this.state.genres
+      // })
     }).then(res => {
+      alert("RESPONSE RECEIVED")
       this.props.history.push("/host");
     });
   };

@@ -11,11 +11,12 @@ function createGenredBank(selectedGenres, songBank) {
         for (var j = 0; j < selectedGenres.length; j++) {
             if (genresOfSong.includes(selectedGenres[j])) { //Genre j is tagged in the song
                 genredBank.push(songBank[i]);
+                // console.log("Adding to genre only bank: ", songBank[i])
                 break;
             }
         }
     }
-
+    // console.log("Genred bank is: ", genredBank)
     return genredBank;
 }
 
@@ -32,7 +33,7 @@ function genShortListURI(songBank, playlistDur) {
     while (currPlaylistDur < playlistDur) {
         //Check that there are songs remaining in the song Bank
         if (songBank[i] == undefined) {
-            console.error(new Error("NOT ENOUGH SONGS IN BANK TO FILL PLAYLIST DURATION"));
+            console.log("NOT ENOUGH SONGS IN BANK TO FILL PLAYLIST DURATION");
             return shortList;
         }
         var nextSong = songBank[i];
@@ -42,7 +43,7 @@ function genShortListURI(songBank, playlistDur) {
         i++;
     }
     shortList.pop()
-    console.log("Finished shortlist: ", shortList);
+    // console.log("Finished shortlist: ", shortList);
     return shortList;
 }
 
@@ -71,8 +72,8 @@ function addSongsToPlaylist(auth_token, songURIList, playlistID) {
         },
         body: JSON.stringify({ "uris": songURIList })
     }
-    let addSongsPromise = rp(options);
-    return addSongsPromise;
+    const addSongsPromise = rp(options);
+    return addSongsPromise
 }
 
 module.exports = {

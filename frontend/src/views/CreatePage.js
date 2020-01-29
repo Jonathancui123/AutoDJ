@@ -19,12 +19,12 @@ class Create extends React.Component {
       genres: "",
       playlistName: "",
       playlistURI: "Null",
-      duration: 0
+      duration: null
     };
   }
 
   componentDidMount() {
-    fetch(this.serverAddress + "/clientReqUser")
+    fetch(this.serverAddress + "/clientRegisterUser")
       .then(res => {
         return res.json();
       })
@@ -42,10 +42,8 @@ class Create extends React.Component {
     // alert("called change handler");
     const name = event.target.name;
     const value = event.target.value;
-    const duration = event.target.duration;
     this.setState({
       [name]: value,
-      duration: duration
     });
   };
 
@@ -53,8 +51,9 @@ class Create extends React.Component {
     event.preventDefault();
     alert(
       "called create playlist submitting: " +
-        this.state.genres +
-        this.state.playlistName
+        this.state.genres + " " +
+        this.state.playlistName + " " + 
+        this.state.duration
     );
     fetch("http://localhost:3000/createPlaylist", {
       method: "POST",
@@ -62,12 +61,14 @@ class Create extends React.Component {
       body: JSON.stringify({
         genres: this.state.genres,
         playlistName: this.state.playlistName,
-        userID: this.state.userID
+        userID: this.state.userID,
+        duration: this.state.duration
       })
     })
       // .then(res => res.json())
-      .then(res => {});
-    this.props.history.push("/host");
+      .then(res => {
+        this.props.history.push("/host");
+      });
   };
 
   render() {
