@@ -63,6 +63,7 @@ function createNewPlaylist(auth_token, playlistName, userID) {
 
 function addSongsToPlaylist(auth_token, songURIList, playlistID) {
     var options = {
+        method: 'PUT',
         url: "https://api.spotify.com/v1/playlists/" + playlistID + "/tracks",
         headers: {
             "Authorization": "Bearer " + auth_token,
@@ -70,13 +71,8 @@ function addSongsToPlaylist(auth_token, songURIList, playlistID) {
         },
         body: JSON.stringify({ "uris": songURIList })
     }
-    request.put(options, (err, res, body) => {
-        if (err) {
-            console.error(err)
-        } else {
-            console.log("Successfully added songs to the playlist");
-        }
-    })
+    let addSongsPromise = rp(options);
+    return addSongsPromise;
 }
 
 module.exports = {

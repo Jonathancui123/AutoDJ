@@ -38,14 +38,14 @@ var playlistName = "";
 var playlistURI = "";
 
 function Song(id, name, artist, genres, score, played, link, duration) {
-    this.id = id;
-    this.name = name;
-    this.artist = artist;
-    this.genres = genres;
-    this.score = score;
-    this.played = played;
-    this.link = link;
-    this.dur = duration;
+  this.id = id;
+  this.name = name;
+  this.artist = artist;
+  this.genres = genres;
+  this.score = score;
+  this.played = played;
+  this.link = link;
+  this.dur = duration;
 }
 
 function User(id, name, spotifyId, role, uri, joinTime) {
@@ -62,26 +62,26 @@ function User(id, name, spotifyId, role, uri, joinTime) {
 ///////////////////////////////////////////////
 // Homepage
 app.get("/", (req, res) => {
-    // console.log(clientId);
-    // console.log(clientSecret);
-    res.sendFile(path.join(__dirname + "/views/index.html"));
+  // console.log(clientId);
+  // console.log(clientSecret);
+  res.sendFile(path.join(__dirname + "/views/index.html"));
 });
 
 //Authorizing the app to get user data
 app.get("/login", (req, res) => {
-    var scopes =
-        "user-read-private user-read-email playlist-modify-public user-top-read";
-    console.log("login req received");
-    res.redirect(
-        "https://accounts.spotify.com/authorize" +
-        "?response_type=code" +
-        "&client_id=" +
-        clientId +
-        (scopes ? "&scope=" + encodeURIComponent(scopes) : "") +
-        "&redirect_uri=" +
-        encodeURIComponent("http://localhost:3000/loggedin")
-    );
-    // frontEndAddress + "/create"
+  var scopes =
+    "user-read-private user-read-email playlist-modify-public user-top-read";
+  console.log("login req received");
+  res.redirect(
+    "https://accounts.spotify.com/authorize" +
+    "?response_type=code" +
+    "&client_id=" +
+    clientId +
+    (scopes ? "&scope=" + encodeURIComponent(scopes) : "") +
+    "&redirect_uri=" +
+    encodeURIComponent("http://localhost:3000/loggedin")
+  );
+  // frontEndAddress + "/create"
 });
 
 function reqUserInfo(code, clientId, clientSecret) {
@@ -203,10 +203,29 @@ app.post("/test", (req, res) => {
   res.send("Thank you sir");
 });
 
+app.post("/updatePlaylist", (req, res) => {
+  genres = req.body.genres.split(" ")
+  console.log("running UPDATE playlist");
+
+  var genreOnlyBank = queueHelpers.createGenredBank(genres, songBank);
+  var shortListURI = queueHelpers.genShortListURI(
+    genreOnlyBank,
+    playlistDur
+  );
+  queueHelpers.addSongsToPlaylist(access_token, shortListURI, playlistID)
+    .then(body => {
+      console.log("Successfully added songs to the playlist");
+      res.send({
+        status: "successs"
+      })
+    })
+})
+
 app.post("/createPlaylist", (req, res) => {
-  var playlistName = req.body.playlistName;
-  var genres = req.body.genres.split(" ");
+  playlistName = req.body.playlistName;
+  genres = req.body.genres.split(" ");
   var userID = req.body.userID;
+  playlistDur = 60 * 1000 * req.body.duration;
 
   console.log("running create new playlist");
 
@@ -224,11 +243,14 @@ app.post("/createPlaylist", (req, res) => {
         genreOnlyBank,
         playlistDur
       );
-      queueHelpers.addSongsToPlaylist(access_token, shortListURI, playlistID);
-      console.log("Playlist created and populated successfully");
-      res.send({
-        status: "success"
-      });
+      queueHelpers.addSongsToPlaylist(access_token, shortListURI, playlistID)
+        .then(body => {
+          console.log("Playlist created and populated successfully");
+          res.send({
+            status: "success"
+          });
+        })
+
     })
     .catch(err => {
       console.log("Error generating new playlist");
@@ -239,38 +261,42 @@ app.post("/createPlaylist", (req, res) => {
     });
 });
 
+
 app.get("/getInfo", (req, res) => {
   res.send({
     users: users,
-    playlistID: playlistID
+    playlistName: playlistName,
+    playlistID: playlistID,
+    playlistDur: playlistDur,
+    genres: genres
   });
 });
 
 //Run this every 59 mins to refresh the access token for the user
 function refresh_access() {
-    console.log("refreshing access with refresh token: ", refresh_token);
-    request.post(
-        {
-            headers: { "content-type": "application/x-www-form-urlencoded" },
-            url: "https://accounts.spotify.com/api/token",
-            body:
-                "grant_type=refresh_token" +
-                "&refresh_token=" +
-                refresh_token +
-                "&client_id=" +
-                clientId +
-                "&client_secret=" +
-                clientSecret
-        },
-        (err, httpResponse, body) => {
-            if (err) {
-                console.error(err);
-            }
-            parsed = JSON.parse(body);
-            access_token = parsed.access_token;
-            console.log("access refreshed. New access token: ", access_token);
-        }
-    );
+  console.log("refreshing access with refresh token: ", refresh_token);
+  request.post(
+    {
+      headers: { "content-type": "application/x-www-form-urlencoded" },
+      url: "https://accounts.spotify.com/api/token",
+      body:
+        "grant_type=refresh_token" +
+        "&refresh_token=" +
+        refresh_token +
+        "&client_id=" +
+        clientId +
+        "&client_secret=" +
+        clientSecret
+    },
+    (err, httpResponse, body) => {
+      if (err) {
+        console.error(err);
+      }
+      parsed = JSON.parse(body);
+      access_token = parsed.access_token;
+      console.log("access refreshed. New access token: ", access_token);
+    }
+  );
 }
 
 // TODO: Rejected login handling
@@ -304,132 +330,132 @@ function refresh_access() {
 // })
 
 function registerUser(access_token) {
-    console.log("Running register user");
-    // Get user info
-    console.log("access token ", access_token);
-    var reqOptions = {
-        headers: { "content-type": "application/x-www-form-urlencoded" },
-        url: "https://api.spotify.com/v1/me",
-        method: "GET",
-        headers: {
-            Authorization: "Bearer " + access_token
-        }
-    };
+  console.log("Running register user");
+  // Get user info
+  console.log("access token ", access_token);
+  var reqOptions = {
+    headers: { "content-type": "application/x-www-form-urlencoded" },
+    url: "https://api.spotify.com/v1/me",
+    method: "GET",
+    headers: {
+      Authorization: "Bearer " + access_token
+    }
+  };
 
-    let regPromise = rp(reqOptions);
-    return regPromise;
+  let regPromise = rp(reqOptions);
+  return regPromise;
 }
 
 function getSongs(access_token) {
-    console.log("Running get songs");
+  console.log("Running get songs");
 
-    var reqOptions = {
-        headers: {
-            Authorization: "Bearer " + access_token,
-            "content-Type": "application/json"
-        },
-        url: "https://api.spotify.com/v1/me/top/tracks",
-        method: "GET"
-        // body: JSON.stringify({limit:20})
-    };
+  var reqOptions = {
+    headers: {
+      Authorization: "Bearer " + access_token,
+      "content-Type": "application/json"
+    },
+    url: "https://api.spotify.com/v1/me/top/tracks",
+    method: "GET"
+    // body: JSON.stringify({limit:20})
+  };
 
-    let getSongsPromise = rp(reqOptions);
-    return getSongsPromise;
+  let getSongsPromise = rp(reqOptions);
+  return getSongsPromise;
 }
 
 function addSongsToBank(body) {
-    var returnedSongs = JSON.parse(body).items.sort((a, b) => {
-        if (a.popularity < b.popularity) {
-            return 1;
-        }
-        if (a.popularity > b.popularity) {
-            return -1;
-        }
-        return 0;
-    });
-    console.log("Finished getting and sorting songs");
-    // console.log("Sorted songs: ", returnedSongs);
+  var returnedSongs = JSON.parse(body).items.sort((a, b) => {
+    if (a.popularity < b.popularity) {
+      return 1;
+    }
+    if (a.popularity > b.popularity) {
+      return -1;
+    }
+    return 0;
+  });
+  console.log("Finished getting and sorting songs");
+  // console.log("Sorted songs: ", returnedSongs);
 
-    const finishedSongBank = new Promise((resolve, reject) => {
-        var songCounter = 0;
+  const finishedSongBank = new Promise((resolve, reject) => {
+    var songCounter = 0;
 
-        // returnedSongs.forEach(song => {
-        //     console.log(song.artists[0]);
-        // })
+    // returnedSongs.forEach(song => {
+    //     console.log(song.artists[0]);
+    // })
 
-        Promise.all(
-            returnedSongs.map(song => genreLookup(access_token, song.artists[0]))
-        ) // All (genreLookups go in here)
-            //Once all genre lookups have finished:
-            .then(listOfArtistInfos => {
-                listOfArtistInfos.forEach(artistInfo => {
-                    genres = JSON.parse(artistInfo).genres;
-                    var index = songBankLookup(returnedSongs[songCounter].uri);
-                    if (index >= 0) {
-                        songBank[index].score++;
-                    } else {
-                        songBank.push(
-                            new Song(
-                                nextSongId,
-                                returnedSongs[songCounter].name,
-                                returnedSongs[songCounter].artists[0],
-                                genres,
-                                1,
-                                false,
-                                returnedSongs[songCounter].uri,
-                                returnedSongs[songCounter].duration_ms
-                            )
-                        );
-                        console.log(
-                            nextSongId,
-                            "th song: ",
-                            returnedSongs[songCounter].name
-                        );
-                        nextSongId++;
-                    }
-                    songCounter++;
-                });
-                resolve(songBank);
-            })
-            .catch(err => {
-                console.log("GENRE LOOKUP ERROR");
-                console.error(err);
-                reject("Could not finish creating song bank");
-            });
-    });
-    return finishedSongBank;
+    Promise.all(
+      returnedSongs.map(song => genreLookup(access_token, song.artists[0]))
+    ) // All (genreLookups go in here)
+      //Once all genre lookups have finished:
+      .then(listOfArtistInfos => {
+        listOfArtistInfos.forEach(artistInfo => {
+          genres = JSON.parse(artistInfo).genres;
+          var index = songBankLookup(returnedSongs[songCounter].uri);
+          if (index >= 0) {
+            songBank[index].score++;
+          } else {
+            songBank.push(
+              new Song(
+                nextSongId,
+                returnedSongs[songCounter].name,
+                returnedSongs[songCounter].artists[0],
+                genres,
+                1,
+                false,
+                returnedSongs[songCounter].uri,
+                returnedSongs[songCounter].duration_ms
+              )
+            );
+            console.log(
+              nextSongId,
+              "th song: ",
+              returnedSongs[songCounter].name
+            );
+            nextSongId++;
+          }
+          songCounter++;
+        });
+        resolve(songBank);
+      })
+      .catch(err => {
+        console.log("GENRE LOOKUP ERROR");
+        console.error(err);
+        reject("Could not finish creating song bank");
+      });
+  });
+  return finishedSongBank;
 }
 //Takes in the access token and an artist to look for
 function genreLookup(access_token, artist) {
-    let promise = rp({
-        url: `https://api.spotify.com/v1/artists/${artist.id}`,
-        method: "GET",
-        headers: {
-            Authorization: "Bearer " + access_token
-        }
-    });
-    return promise;
+  let promise = rp({
+    url: `https://api.spotify.com/v1/artists/${artist.id}`,
+    method: "GET",
+    headers: {
+      Authorization: "Bearer " + access_token
+    }
+  });
+  return promise;
 }
 
 function songBankLookup(uri) {
-    for (let i = 0; i < songBank.length; i++) {
-        if (uri === songBank[i].link) {
-            return i;
-        }
+  for (let i = 0; i < songBank.length; i++) {
+    if (uri === songBank[i].link) {
+      return i;
     }
-    return -1;
+  }
+  return -1;
 }
 
 function autoKick() {
-    const now = new Date();
-    var i = 0;
-    while (users[i]) {
-        if (now - users[i].joinTime > 60 * 60 * 1000) {
-            users.splice(i, 1);
-        } else {
-            i++;
-        }
+  const now = new Date();
+  var i = 0;
+  while (users[i]) {
+    if (now - users[i].joinTime > 60 * 60 * 1000) {
+      users.splice(i, 1);
+    } else {
+      i++;
     }
+  }
 }
 
 // Make a array of song URIs (by descending order of score) until playlist length is equal to requested length --> CASE: if there are more songs needed than in the bank
@@ -441,5 +467,5 @@ function autoKick() {
 // Return a WEB URL to the playlist
 
 app.listen(3000, () => {
-    console.log("Listening on port 3000...");
+  console.log("Listening on port 3000...");
 });
