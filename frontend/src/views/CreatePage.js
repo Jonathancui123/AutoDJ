@@ -19,7 +19,7 @@ class Create extends React.Component {
       genres: "",
       playlistName: "",
       playlistURI: "Null",
-      duration: ""
+      duration: 0
     };
   }
 

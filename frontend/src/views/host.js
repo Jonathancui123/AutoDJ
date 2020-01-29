@@ -7,7 +7,7 @@ import Members from "../components/members";
 
 import "./Styles.css";
 
-class Host extends Component {
+class Host extends React.Component {
   state = {};
 
   constructor() {
@@ -16,7 +16,7 @@ class Host extends Component {
       users: [],
       playlistID: "",
       playlistName: "",
-      playlistDuration: ""
+      playlistDuration: 0
     };
   }
 
@@ -69,7 +69,7 @@ class Host extends Component {
                 <div className="membersPanel">
                   <h1>{this.state.playlistName}</h1>
                   <Members users={this.state.users} />
-                  <Button id="join" href={this.callUpdate}>
+                  <Button id="join" onClick={this.callUpdate}>
                     Update
                   </Button>
                 </div>
