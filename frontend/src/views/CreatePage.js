@@ -4,6 +4,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
+import {Redirect} from 'react-router-dom';
 
 import "./Styles.css";
 
@@ -57,10 +58,7 @@ class Create extends React.Component {
     })
       .then(res => res.json())
       .then(res => {
-        alert('Recieved: ' + res);
-        // this.setState({
-        //   playlistURI: body.playlistURI
-        // });
+        return <Redirect to="/host"/>
       });
   };
 

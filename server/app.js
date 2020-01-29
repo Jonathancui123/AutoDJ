@@ -79,7 +79,7 @@ app.get('/login', (req, res) => {
     // frontEndAddress + "/create"
 });
 
-function reqUserInfo(code, clientId, clientSecret){
+function reqUserInfo(code, clientId, clientSecret) {
     var reqOptions = { //Request access token using client secret
         method: 'POST',
         headers: { 'content-type': 'application/x-www-form-urlencoded' },
@@ -96,65 +96,65 @@ function reqUserInfo(code, clientId, clientSecret){
 
 app.get('/loggedin', (req, res) => {
     console.log('Client secret ', clientSecret);
-    
+
     var code = req.query.code;
     console.log("code: ", code);
     // console.log(code);
 
     reqUserInfo(code, clientId, clientSecret)
-    .then(body => {
-        var parsed = JSON.parse(body)
-        access_token = parsed.access_token;
-        refresh_token = parsed.refresh_token;
-        console.log("Access token reply: ", access_token);
-        console.log("refresh token: " + refresh_token)
+        .then(body => {
+            var parsed = JSON.parse(body)
+            access_token = parsed.access_token;
+            refresh_token = parsed.refresh_token;
+            console.log("Access token reply: ", access_token);
+            console.log("refresh token: " + refresh_token)
 
-        /////////////////////////////////////
-        //Register the user into our database and get query their songs
-        /////////////////////////////////////          
-        setInterval(refresh_access, (58 * 60000)); // Refreshes token every 58 minutes, it expires every 60
-    })
-    .catch(err => {
-        console.log("Failed to req user info from Spotify: ", err.message);
-    })
+            /////////////////////////////////////
+            //Register the user into our database and get query their songs
+            /////////////////////////////////////          
+            setInterval(refresh_access, (58 * 60000)); // Refreshes token every 58 minutes, it expires every 60
+        })
+        .catch(err => {
+            console.log("Failed to req user info from Spotify: ", err.message);
+        })
     // .then(() => console.log("Playlist ID: ", playlistID))
     // res.sendFile(path.join(__dirname + '/views/loggedin.html'));
     res.redirect("http://localhost:3001/create")
 })
 
-app.get('/clientReqUser', (req, res)=>{
-     registerUser(access_token)
-            .then((body) => {
-                const info = JSON.parse(body);
-                // console.log('Response ', info);
-                // Get current date and time
-                const now = new Date();
-                users.push(new User(
-                    nextUserId,
-                    info.display_name,
-                    info.id,
-                    users.map(user => { return user.role; }).includes('host') ? 'guest' : 'host',
-                    now
-                ));
-                nextUserId++;
-                res.send({
-                    display_name: info.display_name,
-                    spotifyID: info.id
-                    });
-                
-                // console.log('Current users', users);
-                /////////////////////////////////////
-                // Get their songs now
-                /////////////////////////////////////
-                getSongs(access_token)
-                    .then(body => addSongsToBank(body))
-                    .then(bank => { console.log("SONG BANK SUCCESSFULLY UPDATED") })
-                    .catch(err => console.error(err))
-                    
-            })
-            .catch((err) => {
-                console.error(new Error("Registration error"));
-            })
+app.get('/clientReqUser', (req, res) => {
+    registerUser(access_token)
+        .then((body) => {
+            const info = JSON.parse(body);
+            // console.log('Response ', info);
+            // Get current date and time
+            const now = new Date();
+            users.push(new User(
+                nextUserId,
+                info.display_name,
+                info.id,
+                users.map(user => { return user.role; }).includes('host') ? 'guest' : 'host',
+                now
+            ));
+            nextUserId++;
+            res.send({
+                display_name: info.display_name,
+                spotifyID: info.id
+            });
+
+            // console.log('Current users', users);
+            /////////////////////////////////////
+            // Get their songs now
+            /////////////////////////////////////
+            getSongs(access_token)
+                .then(body => addSongsToBank(body))
+                .then(bank => { console.log("SONG BANK SUCCESSFULLY UPDATED") })
+                .catch(err => console.error(err))
+
+        })
+        .catch((err) => {
+            console.error(new Error("Registration error"));
+        })
 })
 
 /* 
@@ -177,7 +177,7 @@ app.get('/clientReqUser', (req, res)=>{
         queueHelpers.addSongsToPlaylist(access_token, shortListURI ,playlistID);
 */
 
-app.post('/test', (req, res)=>{
+app.post('/test', (req, res) => {
     console.log("Recieved test post request", req.body);
     res.send("Thank you sir");
 })
@@ -189,27 +189,32 @@ app.post('/createPlaylist', (req, res) => {
     var userID = req.body.userID;
 
     console.log("running create new playlist")
-    setTimeout(() => {
-        queueHelpers.createNewPlaylist(access_token, playlistName, userID)
-            .then((body) => {
-                console.log("completed post request for creating playlist")
 
-                playlistID = JSON.parse(body).id;
-                console.log("response ID: ", playlistID);
+    queueHelpers.createNewPlaylist(access_token, playlistName, userID)
+        .then((body) => {
+            console.log("completed post request for creating playlist")
 
-                //Decide on songs and add it to the new playlist
-                var genreOnlyBank = queueHelpers.createGenredBank(genres, songBank);
-                var shortListURI = queueHelpers.genShortListURI(genreOnlyBank, playlistDur);
-                queueHelpers.addSongsToPlaylist(access_token, shortListURI, playlistID);
-                console.log("Playlist created and populated successfully")
+            playlistID = JSON.parse(body).id;
+            console.log("response ID: ", playlistID);
+
+            //Decide on songs and add it to the new playlist
+            var genreOnlyBank = queueHelpers.createGenredBank(genres, songBank);
+            var shortListURI = queueHelpers.genShortListURI(genreOnlyBank, playlistDur);
+            queueHelpers.addSongsToPlaylist(access_token, shortListURI, playlistID);
+            console.log("Playlist created and populated successfully");
+            res.send({
+                status: "success"
             })
-            .catch((err) => {
-                console.log("Error generating new playlist");
-                console.error(err.message);
+        })
+        .catch((err) => {
+            console.log("Error generating new playlist");
+            console.error(err.message);
+            res.send({
+                status: "fail"
             })
-    }, 5000);
+        })
 
-    res.redirect('http://localhost:3001' + '/host');
+
 });
 
 //Run this every 59 mins to refresh the access token for the user
