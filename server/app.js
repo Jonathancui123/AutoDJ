@@ -79,8 +79,9 @@ app.get('/login', (req, res) => {
     // frontEndAddress + "/create"
 });
 
-function reqUserInfo(access_token, code, clientId, clientSecret){
+function reqUserInfo(code, clientId, clientSecret){
     var reqOptions = { //Request access token using client secret
+        method: 'POST',
         headers: { 'content-type': 'application/x-www-form-urlencoded' },
         url: 'https://accounts.spotify.com/api/token',
         body: 'grant_type=authorization_code' + '&code=' + code +
@@ -95,10 +96,12 @@ function reqUserInfo(access_token, code, clientId, clientSecret){
 
 app.get('/loggedin', (req, res) => {
     console.log('Client secret ', clientSecret);
+    
     var code = req.query.code;
+    console.log("code: ", code);
     // console.log(code);
 
-    reqUserInfo(access_token, code, clientId, clientSecret)
+    reqUserInfo(code, clientId, clientSecret)
     .then(body => {
         var parsed = JSON.parse(body)
         access_token = parsed.access_token;
@@ -108,8 +111,19 @@ app.get('/loggedin', (req, res) => {
 
         /////////////////////////////////////
         //Register the user into our database and get query their songs
-        /////////////////////////////////////
-        registerUser(access_token)
+        /////////////////////////////////////          
+        setInterval(refresh_access, (58 * 60000)); // Refreshes token every 58 minutes, it expires every 60
+    })
+    .catch(err => {
+        console.log("Failed to req user info from Spotify: ", err.message);
+    })
+    // .then(() => console.log("Playlist ID: ", playlistID))
+    // res.sendFile(path.join(__dirname + '/views/loggedin.html'));
+    res.redirect("http://localhost:3001/create")
+})
+
+app.get('/clientReqUser', (req, res)=>{
+     registerUser(access_token)
             .then((body) => {
                 const info = JSON.parse(body);
                 // console.log('Response ', info);
@@ -141,20 +155,6 @@ app.get('/loggedin', (req, res) => {
             .catch((err) => {
                 console.error(new Error("Registration error"));
             })
-
-           
-        setInterval(refresh_access, (58 * 60000)); // Refreshes token every 58 minutes, it expires every 60
-    })
-    .catch(err => {
-        console.log("Failed to req user info: ", err.message);
-    })
-    // .then(() => console.log("Playlist ID: ", playlistID))
-    // res.sendFile(path.join(__dirname + '/views/loggedin.html'));
-
-})
-
-app.get('/clientReqUser', (req, res)=>{
-    
 })
 
 /* 
