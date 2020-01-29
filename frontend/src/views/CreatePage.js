@@ -13,38 +13,49 @@ class Create extends React.Component {
   constructor() {
     super();
     this.state = {
-      genres: [],
+      userID: "",
+      genres: "",
+      playlistName: "",
       playlistURI: "Null"
     };
   }
 
   componentDidMount() {
-    fetch(this.serverAddress + "/login")
-      .then(res => res.json())
-      .then(data => {
-        console.log(data);
-        this.setState({ playlistURI: data.URI });
-      });
-    // .catch(console.log)
+    fetch(this.serverAddress + "/clientReqUser")
+      .then(res => {return res.json()} )
+      .then(res => {
+        console.log(res);
+        // this.setState({ playlistURI: data.URI });
+      })
+      .catch((err) => console.log(err))
   }
 
-  changeHandler = event => {
-    const id = event.target.id;
-    const isChecked = event.target.checked;
+  handleChange = event => {
+    // alert("called change handler");
+    const name = event.target.name;
+    const value = event.target.value;
     this.setState({
-      [id]: isChecked
+      [name]: value
     });
-    // alert("Pop is " + this.state.pop + ", rap is " + this.state.rap)
   };
 
   createPlaylist = event => {
-    alert("called create playlist");
-    fetch("http://localhost:3000/createPlaylist")
+    event.preventDefault();
+    alert('called create playlist submitting: ' + this.state.genres + this.state.playlistName);
+    fetch("http://localhost:3000/createPlaylist",{
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        genres: this.state.genres,
+        playlistName: this.state.playlistName
+      })
+    })
       .then(res => res.json())
-      .then(body => {
-        this.setState({
-          playlistURI: body.playlistURI
-        });
+      .then(res => {
+        alert('Recieved: ' + res);
+        // this.setState({
+        //   playlistURI: body.playlistURI
+        // });
       });
   };
 
@@ -66,9 +77,9 @@ class Create extends React.Component {
           <div id="create">
             <h1>What do you want to hear?</h1>
             <form onSubmit={this.createPlaylist} >
-              <input name="genres" type="text" placeholder="genres" />
+              <input name="genres" type="text" value={this.state.genres} onChange={this.handleChange} placeholder="genres" />
               <br></br>
-              <input name="playlist" type="text" placeholder="playlist" />
+              <input name="playlistName" type="text" value={this.state.playlistName} onChange={this.handleChange} placeholder="playlist name" />
               <br></br>
               <Button className="cssbutton" type="submit">
                 Go!
