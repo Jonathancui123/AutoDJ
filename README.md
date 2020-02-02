@@ -1,17 +1,16 @@
 # AutoDJ
-Curating playlists for parties based on your/your friends' Spotify profiles
+Helps make a playlist that ALL your friends can jam to by analyzing Spotify top tracks and generating a playlist that includes the people’s favorites
 
 <img style="display: inline" src="https://i.imgur.com/I9egBvS.png" alt="AutoDJ Landing Page" width="45%"> <img style="display: inline" src="https://i.imgur.com/Nqp2dLB.png" alt="Playlist options for the host" width="45%">
 <img style="display: inline" src="https://i.imgur.com/DKsDsln.png" alt="Host page to edit playlist and manage guests" width="45%">
 
-## What it Does
-* Helps you make a playlist that ALL your friends can jam to by analyzing Spotify top tracks and generating a playlist that includes the people’s favorites
+## How it works
 * A host creates a party and invites their guests to log in to AutoDJ with their Spotify accounts
 * AutoDJ analyzes Spotify profiles for top tracks, and decides which songs will be most popular for the given crowd
 * The host chooses any combination of music genres, a playlist duration, and AutoDJ saves the generated playlist directly to their Spotify library
 * Following playlist creation, the host can manage guests in the AutoDJ party and change genres - creating a new playlist or updating the existing one
 
-## How it works
+## How we built it
 * React frontend performs routing and conditional rendering to give hosts unique features
 * Node + Express backend performs secure OAuth authentication with the Spotify API to retrieve users tastes
 * AsyncJS requests to the Spotify API queries tastes and identifies song genre
