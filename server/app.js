@@ -63,9 +63,10 @@ function User(id, name, spotifyId, role, uri, joinTime) {
   this.joinTime = joinTime;
 }
 ///////////////////////////////////////////////
-// DATABASE
+// DATABASE SETUP
 ///////////////////////////////////////////////
-const db = require('./../config/keys.js').mongoURI;
+const db = require('./config/keys.js').mongoURI;
+
 mongoose
   .connect(db, {
     useNewUrlParser: true,
@@ -73,6 +74,25 @@ mongoose
   })
   .then(() => console.log('MongoDB Connected'))
   .catch((err) => console.log(err))
+
+//Get the user class that user objects will inherit from
+const UserClass = require("./models/User");
+
+//Function to store users to DB with the same signature as previous User() function
+function makeNewUser(id, name, spotifyId, role, uri, joinTime) {
+  var newUser = new UserClass({
+    autoDJId: id,
+    name: name,
+    spotifyId: spotifyId,
+    role: role,
+    uri: uri
+    // SET JOINTIME HERE
+  })
+  newUser.save()
+    .then(result => console.log("Saved to DB: ", result))
+}
+
+makeNewUser("test ID", "My name here", "3r09DIF03oekl", "host", "URIHEHE", "jointime");
 
 
 ///////////////////////////////////////////////
@@ -541,9 +561,6 @@ function autoKick() {
 // TODO: Order the songs by BPM/Pitch/Something useful
 // TODO: Perform a check to see if the saved spotify ID exists as a playlist
 // TODO: Allow naming of the playlist
-// Create a new playlist and save the ID
-// Add all tracks to the playlist ID by song URI's
-// Return a WEB URL to the playlist
 
 app.listen(3000, () => {
   console.log("Listening on port 3000...");
