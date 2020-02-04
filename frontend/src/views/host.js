@@ -10,7 +10,7 @@ import "./Styles.css";
 class Host extends React.Component {
   state = {};
 
-  backendAddress = process.env.backendAddress;
+  backendAddress = "https://autodj123.herokuapp.com";
 
   constructor() {
     super();

@@ -550,6 +550,22 @@ function autoKick() {
 // TODO: Perform a check to see if the saved spotify ID exists as a playlist
 // TODO: Allow naming of the playlist
 
+//Temporary function to reset server
+app.get("/restartServer", (req, res) => {
+  songBank = [];
+  users = [];
+  genres = [];
+  playlistID = "0vvXsWCC9xrXsKd4FyS8kM"; //temp playlist
+  nextUserId = 0;
+  nextSongId = 0;
+
+  //Host inputs:
+  playlistDur = 20 * 60 * 1000; // Integer: time in ms
+  playlistName = "";
+  playlistURI = "";
+
+  res.sendFile(path.join(__dirname + "/views/clear.html"));
+});
 
 app.listen(PORT, () => {
   console.log(`Our app is running on port ${PORT}`);

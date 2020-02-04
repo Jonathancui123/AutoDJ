@@ -9,7 +9,7 @@ import { Redirect } from "react-router-dom";
 import "./Styles.css";
 
 class Create extends React.Component {
-  backendAddress = process.env.backendAddress;
+  backendAddress = "https://autodj123.herokuapp.com";
 
   constructor() {
     super();

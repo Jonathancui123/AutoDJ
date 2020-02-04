@@ -5,7 +5,7 @@ import "./Styles.css";
 import Logo from "../components/logo";
 
 function App() {
-  const backendAddress = process.env.backendAddress;
+  const backendAddress = "https://autodj123.herokuapp.com";
   return (
     <div className="app">
       <div className="square-container">
