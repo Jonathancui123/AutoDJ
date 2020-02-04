@@ -6,7 +6,9 @@ const request = require("request");
 const async = require("async");
 const cors = require("cors");
 const config = require("config");
+const mongoose = require("mongoose");
 var bodyParser = require("body-parser");
+
 
 const userHelpers = require("./users");
 const queueHelpers = require("./queue");
@@ -60,6 +62,18 @@ function User(id, name, spotifyId, role, uri, joinTime) {
   this.uri = uri;
   this.joinTime = joinTime;
 }
+///////////////////////////////////////////////
+// DATABASE
+///////////////////////////////////////////////
+const db = require('./../config/keys.js').mongoURI;
+mongoose
+  .connect(db, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  })
+  .then(() => console.log('MongoDB Connected'))
+  .catch((err) => console.log(err))
+
 
 ///////////////////////////////////////////////
 // ROUTES
