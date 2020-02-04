@@ -3,11 +3,13 @@ const path = require("path");
 const app = express();
 const rp = require("request-promise");
 const request = require("request");
-const userHelpers = require("./users");
-const queueHelpers = require("./queue");
 const async = require("async");
 const cors = require("cors");
+const config = require("config");
 var bodyParser = require("body-parser");
+
+const userHelpers = require("./users");
+const queueHelpers = require("./queue");
 
 const clientId = "158a4f4cd2df4c9e8a8122ec6cc3863a";
 const clientSecret = process.env.clientSecret;
