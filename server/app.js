@@ -13,9 +13,11 @@ var bodyParser = require("body-parser");
 const userHelpers = require("./users");
 const queueHelpers = require("./queue");
 
+const PORT = process.env.PORT || 3000;
 const clientId = "158a4f4cd2df4c9e8a8122ec6cc3863a";
 const clientSecret = process.env.clientSecret;
-const frontEndAddress = "http://localhost:3001";
+const frontendAddress = require("./config/keys").frontendAddress;
+const backendAddress = require("./config/keys").backendAddress;
 var access_token = "";
 var guest_token = "";
 var refresh_token = "";
@@ -84,16 +86,12 @@ function makeNewUser(id, name, spotifyId, role, uri, joinTime) {
     autoDJId: id,
     name: name,
     spotifyId: spotifyId,
-    role: role,
-    uri: uri
-    // SET JOINTIME HERE
+    uri: uri,
+    parties: []
   })
   newUser.save()
     .then(result => console.log("Saved to DB: ", result))
 }
-
-makeNewUser("test ID", "My name here", "3r09DIF03oekl", "host", "URIHEHE", "jointime");
-
 
 ///////////////////////////////////////////////
 // ROUTES
@@ -117,7 +115,7 @@ app.get("/login", (req, res) => {
     clientId +
     (scopes ? "&scope=" + encodeURIComponent(scopes) : "") +
     "&redirect_uri=" +
-    encodeURIComponent("http://localhost:3000/loggedin")
+    encodeURIComponent(backendAddress + "/loggedin")
   );
   // frontEndAddress + "/create"
 });
@@ -154,9 +152,9 @@ app.get("/loggedin", (req, res) => {
   // .then(() => console.log("Playlist ID: ", playlistID))
   // res.sendFile(path.join(__dirname + '/views/loggedin.html'));
   if (users.length > 0) {
-    res.redirect("http://localhost:3001/host")
+    res.redirect(frontendAddress + "/host")
   } else {
-    res.redirect("http://localhost:3001/create");
+    res.redirect(frontendAddress + "/create");
   }
 });
 
@@ -170,7 +168,8 @@ function reqUserInfo(code, clientId, clientSecret) {
       "grant_type=authorization_code" +
       "&code=" +
       code +
-      "&redirect_uri=http://localhost:3000/loggedin" +
+      "&redirect_uri=" +
+      encodeURIComponent(backendAddress + "/loggedin") +
       "&client_id=" +
       clientId +
       "&client_secret=" +
@@ -219,6 +218,15 @@ app.get("/clientRegisterUser", (req, res) => {
           return;
         }
       }
+      makeNewUser(nextUserId, info.display_name, info.id, users
+        .map(user => {
+          return user.role;
+        })
+        .includes("host")
+        ? "guest"
+        : "host"
+        , info.uri, now);
+
       users.push(
         new User(
           nextUserId,
@@ -264,26 +272,6 @@ app.get("/clientRegisterUser", (req, res) => {
       });
     });
 });
-
-/* 
-       /////////////////////////////////////
-       // DO NOT DELETE 
-       // MAKING A NEW PLAYLIST: This should run when the user clicks "Create playlist"
-       /////////////////////////////////////
-       
-        queueHelpers.createNewPlaylist(access_token,"hehexd","frozendarkmatter")
-            .then((body)=>{
-                console.log("completed post request for creating playlist")
-                
-                playlistID = JSON.parse(body).id;
-                console.log("response ID: ", playlistID);
-            })
-            .catch((err)=>{
-                console.error(err);
-            })
-        var shortListURI = queueHelpers.genShortListURI(songBank, playlistDur);
-        queueHelpers.addSongsToPlaylist(access_token, shortListURI ,playlistID);
-*/
 
 app.post("/test", (req, res) => {
   console.log("Recieved test post request", req.body);
@@ -562,6 +550,7 @@ function autoKick() {
 // TODO: Perform a check to see if the saved spotify ID exists as a playlist
 // TODO: Allow naming of the playlist
 
-app.listen(3000, () => {
-  console.log("Listening on port 3000...");
+
+app.listen(PORT, () => {
+  console.log(`Our app is running on port ${PORT}`);
 });

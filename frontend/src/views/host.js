@@ -10,7 +10,7 @@ import "./Styles.css";
 class Host extends React.Component {
   state = {};
 
-  serverAddress = "http://localhost:3000"
+  backendAddress = process.env.backendAddress;
 
   constructor() {
     super();
@@ -27,19 +27,19 @@ class Host extends React.Component {
   }
 
   componentDidMount() {
-    alert("COMPONENT MOUNTED")
-    fetch(this.serverAddress + "/clientRegisterUser")
+    // alert("COMPONENT MOUNTED")
+    fetch(this.backendAddress + "/clientRegisterUser")
       .then(res => {
         return res.json();
       })
       .then(res => {
-        alert("USER REGISTERED")
-        fetch("http://localhost:3000/getInfo")
+        // alert("USER REGISTERED")
+        fetch(this.backendAddress + "/getInfo")
           .then(response => {
             return response.json();
           })
           .then(response => {
-            alert("SETTING STATE")
+            // alert("SETTING STATE")
 
             this.setState({
               users: response.users,
@@ -54,15 +54,15 @@ class Host extends React.Component {
   }
 
   callUpdate = () => {
-    alert("FETCHING UPDATE")
-    fetch("http://localhost:3000/updatePlaylist", {
+    // alert("FETCHING UPDATE")
+    fetch(this.backendAddress + "/updatePlaylist", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       // body: JSON.stringify({
       //   genres: this.state.genres
       // })
     }).then(res => {
-      alert("RESPONSE RECEIVED")
+      // alert("RESPONSE RECEIVED")
       // this.props.history.push("/host");
       this.refreshPage();
     });

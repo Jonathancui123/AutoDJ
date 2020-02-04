@@ -5,12 +5,8 @@ const userSchema = new mongoose.Schema({
     autoDJId: String,
     name: String,
     spotifyId: String,
-    role: String,
     uri: String,
-    joinTime: {
-        type: Date,
-        default: Date.now
-    }
+    parties: [String]
 })
 
 //Returns a CLASS of object with the above schema

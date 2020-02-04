@@ -9,7 +9,7 @@ import { Redirect } from "react-router-dom";
 import "./Styles.css";
 
 class Create extends React.Component {
-  serverAddress = "http://localhost:3000";
+  backendAddress = process.env.backendAddress;
 
   constructor() {
     super();
@@ -24,7 +24,7 @@ class Create extends React.Component {
   }
 
   componentDidMount() {
-    fetch(this.serverAddress + "/clientRegisterUser")
+    fetch(this.backendAddress + "/clientRegisterUser")
       .then(res => {
         return res.json();
       })
@@ -49,13 +49,13 @@ class Create extends React.Component {
 
   createPlaylist = event => {
     event.preventDefault();
-    alert(
-      "called create playlist submitting: " +
-        this.state.genres + " " +
-        this.state.playlistName + " " + 
-        this.state.duration
-    );
-    fetch("http://localhost:3000/createPlaylist", {
+    // alert(
+    //   "called create playlist submitting: " +
+    //     this.state.genres + " " +
+    //     this.state.playlistName + " " + 
+    //     this.state.duration
+    // );
+    fetch(this.backendAddress + "/createPlaylist", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -92,7 +92,7 @@ class Create extends React.Component {
                 type="text"
                 value={this.state.genres}
                 onChange={this.handleChange}
-                placeholder="genres"
+                placeholder="genre1/genre2/genre3"
               />
               <br></br>
               <input
