@@ -1,6 +1,8 @@
 # AutoDJ
 Helps make a playlist that ALL your friends can jam to by analyzing Spotify top tracks and generating a playlist that includes the people’s favorites
 
+Current build: http://autodj0.herokuapp.com/home
+
 <img style="display: inline" src="https://i.imgur.com/I9egBvS.png" alt="AutoDJ Landing Page" width="45%"> <img style="display: inline" src="https://i.imgur.com/Nqp2dLB.png" alt="Playlist options for the host" width="45%">
 <img style="display: inline" src="https://i.imgur.com/DKsDsln.png" alt="Host page to edit playlist and manage guests" width="45%">
 
