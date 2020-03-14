@@ -18,3 +18,5 @@ SERVER:
 Handle multiple visits to the login page from the same user
 Search for the desired genre in Spotify's genre names e.g. "pop rap" <= pop
 Query everyone's names in the same call as their tastes profile from spotify
+Add party links (unique invite links to each party) --> support several parties
+
