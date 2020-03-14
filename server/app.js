@@ -10,7 +10,6 @@ const mongoose = require("mongoose");
 var bodyParser = require("body-parser");
 
 
-const userHelpers = require("./users");
 const queueHelpers = require("./queue");
 
 const PORT = process.env.PORT || 3000;
@@ -273,11 +272,6 @@ app.get("/clientRegisterUser", (req, res) => {
     });
 });
 
-app.post("/test", (req, res) => {
-  console.log("Recieved test post request", req.body);
-  res.send("Thank you sir");
-});
-
 app.post("/updatePlaylist", (req, res) => {
   // genres = req.body.genres.split(" ")
   console.log("running UPDATE playlist");
@@ -380,6 +374,11 @@ function refresh_access() {
     }
   );
 }
+
+app.post("/test", (req, res) => {
+  console.log("Recieved test post request", req.body);
+  res.send("Thank you sir");
+});
 
 // TODO: Rejected login handling
 
@@ -545,11 +544,6 @@ function autoKick() {
   }
 }
 
-// Make a array of song URIs (by descending order of score) until playlist length is equal to requested length --> CASE: if there are more songs needed than in the bank
-// TODO: Order the songs by BPM/Pitch/Something useful
-// TODO: Perform a check to see if the saved spotify ID exists as a playlist
-// TODO: Allow naming of the playlist
-
 //Temporary function to reset server
 app.get("/restartServer", (req, res) => {
   songBank = [];
@@ -568,5 +562,5 @@ app.get("/restartServer", (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Our app is running on port ${PORT}`);
+  console.log(`AutoDJ is running on port ${PORT}`);
 });
