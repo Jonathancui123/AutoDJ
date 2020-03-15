@@ -10,6 +10,8 @@ import App from "./views/App";
 import Create from "./views/CreatePage";
 import Host from "./views/host";
 
+// DONT FORGET TO SET CURR_ENV=development for development
+
 ReactDOM.render(
   <BrowserRouter>
     <Switch>

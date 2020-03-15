@@ -1,3 +1,4 @@
+
 const express = require("express");
 const path = require("path");
 const app = express();
@@ -5,17 +6,17 @@ const rp = require("request-promise");
 const request = require("request");
 const async = require("async");
 const cors = require("cors");
-const config = require("config");
+// const config = require("config");
 const mongoose = require("mongoose");
 var bodyParser = require("body-parser");
 
-
-const userHelpers = require("./users");
 const queueHelpers = require("./queue");
 
-const PORT = process.env.PORT || 3000;
+// DONT FORGET TO SET CLIENT SECRET IN ENV --> USE CMD (NOT POWERSHELL) AS ADMIN
+
 const clientId = "158a4f4cd2df4c9e8a8122ec6cc3863a";
 const clientSecret = process.env.clientSecret;
+const PORT = process.env.PORT || 3000;
 const frontendAddress = require("./config/keys").frontendAddress;
 const backendAddress = require("./config/keys").backendAddress;
 var access_token = "";
@@ -160,7 +161,7 @@ app.get("/loggedin", (req, res) => {
 
 function reqUserInfo(code, clientId, clientSecret) {
   var reqOptions = {
-    //Request access token using client secret
+    //Request access token by trading authorization code 
     method: "POST",
     headers: { "content-type": "application/x-www-form-urlencoded" },
     url: "https://accounts.spotify.com/api/token",
@@ -273,11 +274,6 @@ app.get("/clientRegisterUser", (req, res) => {
     });
 });
 
-app.post("/test", (req, res) => {
-  console.log("Recieved test post request", req.body);
-  res.send("Thank you sir");
-});
-
 app.post("/updatePlaylist", (req, res) => {
   // genres = req.body.genres.split(" ")
   console.log("running UPDATE playlist");
@@ -380,6 +376,11 @@ function refresh_access() {
     }
   );
 }
+
+app.post("/test", (req, res) => {
+  console.log("Recieved test post request", req.body);
+  res.send("Thank you sir");
+});
 
 // TODO: Rejected login handling
 
@@ -545,11 +546,6 @@ function autoKick() {
   }
 }
 
-// Make a array of song URIs (by descending order of score) until playlist length is equal to requested length --> CASE: if there are more songs needed than in the bank
-// TODO: Order the songs by BPM/Pitch/Something useful
-// TODO: Perform a check to see if the saved spotify ID exists as a playlist
-// TODO: Allow naming of the playlist
-
 //Temporary function to reset server
 app.get("/restartServer", (req, res) => {
   songBank = [];
@@ -568,5 +564,5 @@ app.get("/restartServer", (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Our app is running on port ${PORT}`);
+  console.log(`AutoDJ is running on port ${PORT}`);
 });

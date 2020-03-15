@@ -4,13 +4,15 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Player from "../components/player";
 import Members from "../components/members";
+import config from "../constants.js";
+
 
 import "./Styles.css";
 
 class Host extends React.Component {
   state = {};
 
-  backendAddress = "https://autodj123.herokuapp.com";
+  backendAddress = config.backendAddress;
 
   constructor() {
     super();
