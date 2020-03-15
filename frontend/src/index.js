@@ -6,8 +6,9 @@ import "./index.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import * as serviceWorker from "./serviceWorker";
 
-import App from "./views/App.js";
+import App from "./views/App";
 import Create from "./views/CreatePage";
+import Host from "./views/host";
 
 ReactDOM.render(
   <BrowserRouter>
@@ -18,6 +19,7 @@ ReactDOM.render(
         path="/landing-page"
         render={props => <LandingPage {...props} />}
       /> */}
+      <Route path="/host" render={props => <Host {...props} />} />
       <Redirect from="/" to="/home" />
     </Switch>
   </BrowserRouter>,

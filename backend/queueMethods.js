@@ -5,18 +5,27 @@ const request = require("request");
 function createGenredBank(selectedGenres, songBank) {
   var genredBank = [];
   //Iterate through each song in the song bank
+  console.log(
+    "Running createGenred Bank with selected genres:",
+    selectedGenres,
+    " and the given songBank: ",
+    songBank
+  );
 
   for (var i = 0; i < songBank.length; i++) {
     var genresOfSong = songBank[i].genres;
+    // console.log(songBank[i].name)
+    // console.log("Genre: ", genresOfSong)
     for (var j = 0; j < selectedGenres.length; j++) {
-      if (genresOfSong.includes(selectedGenres[j])) {
+      if (genresOfSong.toString().includes(selectedGenres[j])) {
         //Genre j is tagged in the song
         genredBank.push(songBank[i]);
+        console.log("Adding to genre only bank: ", songBank[i]);
         break;
       }
     }
   }
-
+  console.log("Genred bank is: ", genredBank);
   return genredBank;
 }
 
@@ -24,6 +33,7 @@ function createGenredBank(selectedGenres, songBank) {
 // Also mutates songBank to be sorted
 function genShortListURI(songBank, playlistDur) {
   //Sort the song bank by popularity
+  console.log("Running genShortListURI with given genreBank: ", songBank);
   songBank.sort((a, b) => (a.score < b.score ? 1 : -1));
   var currPlaylistDur = 0;
   var i = 0;
@@ -31,9 +41,7 @@ function genShortListURI(songBank, playlistDur) {
   while (currPlaylistDur < playlistDur) {
     //Check that there are songs remaining in the song Bank
     if (songBank[i] == undefined) {
-      console.error(
-        new Error("NOT ENOUGH SONGS IN BANK TO FILL PLAYLIST DURATION")
-      );
+      console.log("NOT ENOUGH SONGS IN BANK TO FILL PLAYLIST DURATION");
       return shortList;
     }
     var nextSong = songBank[i];
@@ -67,6 +75,7 @@ function createNewPlaylist(auth_token, playlistName, userID) {
 
 function addSongsToPlaylist(auth_token, songURIList, playlistID) {
   var options = {
+    method: "PUT",
     url: "https://api.spotify.com/v1/playlists/" + playlistID + "/tracks",
     headers: {
       Authorization: "Bearer " + auth_token,
@@ -74,13 +83,8 @@ function addSongsToPlaylist(auth_token, songURIList, playlistID) {
     },
     body: JSON.stringify({ uris: songURIList })
   };
-  request.put(options, (err, res, body) => {
-    if (err) {
-      console.error(err);
-    } else {
-      console.log("Successfully added songs to the playlist");
-    }
-  });
+  const addSongsPromise = rp(options);
+  return addSongsPromise;
 }
 
 module.exports = {

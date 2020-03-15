@@ -4,7 +4,11 @@
   "description": "Turn your emotions into a spotify playlist",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "engines": {
+    "node": "10.16.3"
   },
   "repository": {
     "type": "git",
@@ -19,8 +23,11 @@
   "homepage": "https://github.com/Jonathancui123/Emotify#readme",
   "dependencies": {
     "async": "^3.1.0",
+    "body-parser": "^1.19.0",
+    "config": "^3.2.5",
     "cors": "^2.8.5",
     "express": "^4.17.1",
+    "mongoose": "^5.8.11",
     "request": "^2.88.0",
     "request-promise": "^4.2.5"
   },

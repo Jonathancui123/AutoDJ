@@ -5,12 +5,9 @@ import "./Styles.css";
 import Logo from "../components/logo";
 
 function App() {
+  const backendAddress = "https://autodj123.herokuapp.com";
   return (
-
-
-
     <div className="app">
-
       <div className="square-container">
         <div className="squares square1" />
         <div className="squares square2" />
@@ -19,30 +16,14 @@ function App() {
         <div className="squares square5" />
         <div className="squares square6" />
         <div className="squares square7" />
-        {/* <Logo className="logo" /> */}
         <div className="content-container">
-
-
           <header className="app-header">
-            {/* <img src={logo} className="App-logo" alt="logo" /> */}
-            {/*         
-        <div className="content-center brand">
-            <h1 className="h1-seo">AutoDJ</h1>
-            <h3 className="d-none d-sm-block">
-            Using spotify profiles to curate a playlist perfect for your party
-              </h3>
-        </div> */}
-
-            <Button id="join" href={"http://localhost:3000/login"}>
+            <Button id="join" href={backendAddress + "/login"}>
               Join the party.
-        </Button>
+            </Button>
           </header>
-
-          
         </div>
       </div>
-
-
     </div>
   );
 }

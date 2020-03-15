@@ -4,53 +4,75 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
+import { Redirect } from "react-router-dom";
 
 import "./Styles.css";
 
 class Create extends React.Component {
-  serverAddress = "http://localhost:3000";
+  backendAddress = "https://autodj123.herokuapp.com";
 
   constructor() {
     super();
     this.state = {
-      genres: [],
-      playlistURI: "Null"
+      userID: "",
+      userDP: "woopsies",
+      genres: "",
+      playlistName: "",
+      playlistURI: "Null",
+      duration: null
     };
   }
 
   componentDidMount() {
-    fetch(this.serverAddress + "/login")
-      .then(res => res.json())
-      .then(data => {
-        console.log(data);
-        this.setState({ playlistURI: data.URI });
-      });
-    // .catch(console.log)
+    fetch(this.backendAddress + "/clientRegisterUser")
+      .then(res => {
+        return res.json();
+      })
+      .then(res => {
+        console.log(res);
+        this.setState({
+          userDP: res.display_name,
+          userID: res.spotifyID
+        });
+      })
+      .catch(err => console.log(err));
   }
 
-  changeHandler = event => {
-    const id = event.target.id;
-    const isChecked = event.target.checked;
+  handleChange = event => {
+    // alert("called change handler");
+    const name = event.target.name;
+    const value = event.target.value;
     this.setState({
-      [id]: isChecked
+      [name]: value,
     });
-    // alert("Pop is " + this.state.pop + ", rap is " + this.state.rap)
   };
 
   createPlaylist = event => {
-    alert("called create playlist");
-    fetch("http://localhost:3000/createPlaylist")
-      .then(res => res.json())
-      .then(body => {
-        this.setState({
-          playlistURI: body.playlistURI
-        });
+    event.preventDefault();
+    // alert(
+    //   "called create playlist submitting: " +
+    //     this.state.genres + " " +
+    //     this.state.playlistName + " " + 
+    //     this.state.duration
+    // );
+    fetch(this.backendAddress + "/createPlaylist", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        genres: this.state.genres,
+        playlistName: this.state.playlistName,
+        userID: this.state.userID,
+        duration: this.state.duration
+      })
+    })
+      // .then(res => res.json())
+      .then(res => {
+        this.props.history.push("/host");
       });
   };
 
   render() {
     return (
-
       <div className="square-container">
         <div className="squares square1" />
         <div className="squares square2" />
@@ -61,24 +83,41 @@ class Create extends React.Component {
         <div className="squares square7" />
         {/* <Logo className="logo" /> */}
         <div className="content-container">
-
-
           <div id="create">
-            <h1>What do you want to hear?</h1>
-            <form onSubmit={this.createPlaylist} >
-              <input name="genres" type="text" placeholder="genres" />
+            <h1>Welcome, {this.state.userDP}</h1>
+            <h2>What do you want to hear?</h2>
+            <form onSubmit={this.createPlaylist}>
+              <input
+                name="genres"
+                type="text"
+                value={this.state.genres}
+                onChange={this.handleChange}
+                placeholder="genre1/genre2/genre3"
+              />
               <br></br>
-              <input name="playlist" type="text" placeholder="playlist" />
+              <input
+                name="playlistName"
+                type="text"
+                value={this.state.playlistName}
+                onChange={this.handleChange}
+                placeholder="playlist name"
+              />
+              <br></br>
+              <input
+                name="duration"
+                type="text"
+                value={this.state.duration}
+                onChange={this.handleChange}
+                placeholder="playlist duration (min)"
+              />
               <br></br>
               <Button className="cssbutton" type="submit">
                 Go!
-            </Button>
+              </Button>
             </form>
           </div>
         </div>
       </div>
-
-
     );
   }
 }
