@@ -68,15 +68,15 @@ function User(id, name, spotifyId, role, uri, joinTime) {
 ///////////////////////////////////////////////
 // DATABASE SETUP
 ///////////////////////////////////////////////
-const db = require('./config/keys.js').mongoURI;
+const db = require("./config/keys.js").mongoURI;
 
 mongoose
   .connect(db, {
     useNewUrlParser: true,
     useUnifiedTopology: true
   })
-  .then(() => console.log('MongoDB Connected'))
-  .catch((err) => console.log(err))
+  .then(() => console.log("MongoDB Connected"))
+  .catch(err => console.log(err));
 
 //Get the user class that user objects will inherit from
 const UserClass = require("./models/User");
@@ -89,9 +89,8 @@ function makeNewUser(id, name, spotifyId, role, uri, joinTime) {
     spotifyId: spotifyId,
     uri: uri,
     parties: []
-  })
-  newUser.save()
-    .then(result => console.log("Saved to DB: ", result))
+  });
+  newUser.save().then(result => console.log("Saved to DB: ", result));
 }
 
 ///////////////////////////////////////////////
@@ -128,8 +127,6 @@ app.get("/loggedin", (req, res) => {
   console.log("code: ", code);
   // console.log(code);
 
-
-
   reqUserInfo(code, clientId, clientSecret)
     .then(body => {
       var parsed = JSON.parse(body);
@@ -153,7 +150,7 @@ app.get("/loggedin", (req, res) => {
   // .then(() => console.log("Playlist ID: ", playlistID))
   // res.sendFile(path.join(__dirname + '/views/loggedin.html'));
   if (users.length > 0) {
-    res.redirect(frontendAddress + "/host")
+    res.redirect(frontendAddress + "/host");
   } else {
     res.redirect(frontendAddress + "/create");
   }
@@ -183,18 +180,18 @@ function reqUserInfo(code, clientId, clientSecret) {
 
 function conditionalRegUser() {
   if (users.length > 0) {
-    return registerUser(guest_token)
+    return registerUser(guest_token);
   } else {
-    return registerUser(access_token)
+    return registerUser(access_token);
   }
 }
 
 function conditionalGetSongs() {
   console.log("Running conditional get songs");
   if (users.length > 1) {
-    return getSongs(guest_token)
+    return getSongs(guest_token);
   } else {
-    return getSongs(access_token)
+    return getSongs(access_token);
   }
 }
 
@@ -208,10 +205,9 @@ app.get("/clientRegisterUser", (req, res) => {
       const now = new Date();
       console.log("Current users: ", users);
 
-
       for (var i = 0; i < users.length; i++) {
         if (info.id == users[i].spotifyId) {
-          console.log("Blocking 2nd registrtion attempt and sending response")
+          console.log("Blocking 2nd registrtion attempt and sending response");
           res.send({
             display_name: info.display_name,
             spotifyID: info.id
@@ -219,14 +215,20 @@ app.get("/clientRegisterUser", (req, res) => {
           return;
         }
       }
-      makeNewUser(nextUserId, info.display_name, info.id, users
-        .map(user => {
-          return user.role;
-        })
-        .includes("host")
-        ? "guest"
-        : "host"
-        , info.uri, now);
+      makeNewUser(
+        nextUserId,
+        info.display_name,
+        info.id,
+        users
+          .map(user => {
+            return user.role;
+          })
+          .includes("host")
+          ? "guest"
+          : "host",
+        info.uri,
+        now
+      );
 
       users.push(
         new User(
@@ -246,7 +248,6 @@ app.get("/clientRegisterUser", (req, res) => {
       );
       nextUserId++;
 
-
       // console.log('Current users', users);
       /////////////////////////////////////
       // Get their songs now
@@ -257,8 +258,6 @@ app.get("/clientRegisterUser", (req, res) => {
         spotifyID: info.id
       });
 
-
-
       conditionalGetSongs()
         .then(body => addSongsToBank(body))
         .then(bank => {
@@ -267,7 +266,9 @@ app.get("/clientRegisterUser", (req, res) => {
         .catch(err => console.error(err));
     })
     .catch(err => {
-      console.log("Registration error - possibly due to second host login attempt");
+      console.log(
+        "Registration error - possibly due to second host login attempt"
+      );
       res.send({
         status: "meaningless response to trigger react refresh"
       });
@@ -279,31 +280,28 @@ app.post("/updatePlaylist", (req, res) => {
   console.log("running UPDATE playlist");
 
   var genreOnlyBank = queueHelpers.createGenredBank(genres, songBank);
-  console.log("Printing the genre only bank: ")
+  console.log("Printing the genre only bank: ");
   genreOnlyBank.forEach(song => {
     console.log(song.name);
-  })
-  var shortListURI = queueHelpers.genShortListURI(
-    genreOnlyBank,
-    playlistDur
-  );
+  });
+  var shortListURI = queueHelpers.genShortListURI(genreOnlyBank, playlistDur);
 
-
-  queueHelpers.addSongsToPlaylist(access_token, shortListURI, playlistID)
+  queueHelpers
+    .addSongsToPlaylist(access_token, shortListURI, playlistID)
     .then(body => {
       console.log("Successfully added songs to the playlist");
       res.send({
         status: "successs"
-      })
-    })
-})
+      });
+    });
+});
 
 app.post("/createPlaylist", (req, res) => {
   playlistName = req.body.playlistName;
   genres = req.body.genres.split("/");
   var userID = req.body.userID;
   playlistDur = 60 * 1000 * parseInt(req.body.duration);
-  console.log("Playlist duration in ms: ", playlistDur)
+  console.log("Playlist duration in ms: ", playlistDur);
 
   console.log("running create new playlist");
 
@@ -321,14 +319,14 @@ app.post("/createPlaylist", (req, res) => {
         genreOnlyBank,
         playlistDur
       );
-      queueHelpers.addSongsToPlaylist(access_token, shortListURI, playlistID)
+      queueHelpers
+        .addSongsToPlaylist(access_token, shortListURI, playlistID)
         .then(body => {
           console.log("Playlist created and populated successfully");
           res.send({
             status: "success"
           });
-        })
-
+        });
     })
     .catch(err => {
       console.log("Error generating new playlist");
@@ -338,7 +336,6 @@ app.post("/createPlaylist", (req, res) => {
       });
     });
 });
-
 
 app.get("/getInfo", (req, res) => {
   res.send({
@@ -498,10 +495,10 @@ function addSongsToBank(body) {
           }
           songCounter++;
         });
-        console.log("Printing songbank: ")
+        console.log("Printing songbank: ");
         songBank.forEach(song => {
           console.log(song.name);
-        })
+        });
 
         resolve(songBank);
       })
