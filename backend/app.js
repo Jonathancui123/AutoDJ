@@ -9,8 +9,8 @@ const config = require("config");
 const mongoose = require("mongoose");
 var bodyParser = require("body-parser");
 
-const userHelpers = require("./users");
-const queueHelpers = require("./queue");
+const userHelpers = require("./userMethods");
+const queueHelpers = require("./queueMethods");
 
 const PORT = process.env.PORT || 3000;
 const clientId = "158a4f4cd2df4c9e8a8122ec6cc3863a";
