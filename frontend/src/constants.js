@@ -1,10 +1,11 @@
 const production = {
-    backendAddress : "https://autodj123.herokuapp.com"
+  backendAddress: "http://autodj123.herokuapp.com"
 };
 
 const development = {
-    backendAddress : "https://localhost:3000"
+  backendAddress: "http://localhost:3000"
 };
 
-
-export default process.env.NODE_ENV === 'development' ? development : production;
+export default process.env.NODE_ENV === "development"
+  ? development
+  : production;

@@ -28,8 +28,6 @@
 //     console.log("code: ", code);
 //     // console.log(code);
 
-
-
 //     reqUserInfo(code, clientId, clientSecret)
 //         .then(body => {
 //             var parsed = JSON.parse(body);
@@ -61,7 +59,7 @@
 
 // function reqUserInfo(code, clientId, clientSecret) {
 //     var reqOptions = {
-//         //Request access token by trading authorization code 
+//         //Request access token by trading authorization code
 //         method: "POST",
 //         headers: { "content-type": "application/x-www-form-urlencoded" },
 //         url: "https://accounts.spotify.com/api/token",
