@@ -1,14 +1,12 @@
-finish playlist ordering function
-Implement "host" view
-// Implement "guest" view
-// Create conditional rendering for "host" and "guest"
-Deploy
-Clean up server side code
-write readme
+NOTE: Test if the environment variable for react works with heroku (it may be unable to communicate with backend)
 
 MONGO DB
+DOCKER>??
 
-CREATE PAGE:
+REACT:
+// Implement "guest" view
+// Create conditional rendering for "host" and "guest"
+Create page:
 Allow the host to name their playlist on the create page
 Allow the host to choose playlist duration
 Tell the host to expect a playlist to be created on their account
@@ -19,8 +17,6 @@ Reorganizing app.js into 3 route files:
 - Authorization (with spotify API)
 - Getting user/playlist info (from Spotify API)
 - Modifying/creating party playlist
-
-
 Handle multiple visits to the login page from the same user
 Search for the desired genre in Spotify's genre names e.g. "pop rap" <= pop
 Query everyone's names in the same call as their tastes profile from spotify

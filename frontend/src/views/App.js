@@ -3,9 +3,10 @@ import React from "react";
 import Button from "react-bootstrap/Button";
 import "./Styles.css";
 import Logo from "../components/logo";
+import config from "../constants.js";
 
 function App() {
-  const backendAddress = "https://autodj123.herokuapp.com";
+  
   return (
     <div className="app">
       <div className="square-container">
@@ -18,7 +19,7 @@ function App() {
         <div className="squares square7" />
         <div className="content-container">
           <header className="app-header">
-            <Button id="join" href={backendAddress + "/login"}>
+            <Button id="join" href={config.backendAddress + "/login"}>
               Join the party.
             </Button>
           </header>

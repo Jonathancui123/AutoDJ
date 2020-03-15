@@ -1,3 +1,4 @@
+
 const express = require("express");
 const path = require("path");
 const app = express();
@@ -5,16 +6,17 @@ const rp = require("request-promise");
 const request = require("request");
 const async = require("async");
 const cors = require("cors");
-const config = require("config");
+// const config = require("config");
 const mongoose = require("mongoose");
 var bodyParser = require("body-parser");
 
-
 const queueHelpers = require("./queue");
 
-const PORT = process.env.PORT || 3000;
+// DONT FORGET TO SET CLIENT SECRET IN ENV
+
 const clientId = "158a4f4cd2df4c9e8a8122ec6cc3863a";
 const clientSecret = process.env.clientSecret;
+const PORT = process.env.PORT || 3000;
 const frontendAddress = require("./config/keys").frontendAddress;
 const backendAddress = require("./config/keys").backendAddress;
 var access_token = "";
@@ -159,7 +161,7 @@ app.get("/loggedin", (req, res) => {
 
 function reqUserInfo(code, clientId, clientSecret) {
   var reqOptions = {
-    //Request access token using client secret
+    //Request access token by trading authorization code 
     method: "POST",
     headers: { "content-type": "application/x-www-form-urlencoded" },
     url: "https://accounts.spotify.com/api/token",

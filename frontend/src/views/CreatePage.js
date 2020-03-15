@@ -5,11 +5,13 @@ import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { Redirect } from "react-router-dom";
+import config from "../constants.js";
+
 
 import "./Styles.css";
 
 class Create extends React.Component {
-  backendAddress = "https://autodj123.herokuapp.com";
+  backendAddress = config.backendAddress;
 
   constructor() {
     super();
