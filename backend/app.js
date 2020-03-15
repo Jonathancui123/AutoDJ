@@ -10,7 +10,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 var bodyParser = require("body-parser");
 
-const queueHelpers = require("./queue");
+const queueHelpers = require("./queueMethods");
 
 // DONT FORGET TO SET CLIENT SECRET IN ENV --> USE CMD (NOT POWERSHELL) AS ADMIN
 
