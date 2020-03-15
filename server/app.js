@@ -12,7 +12,7 @@ var bodyParser = require("body-parser");
 
 const queueHelpers = require("./queue");
 
-// DONT FORGET TO SET CLIENT SECRET IN ENV
+// DONT FORGET TO SET CLIENT SECRET IN ENV --> USE CMD (NOT POWERSHELL) AS ADMIN
 
 const clientId = "158a4f4cd2df4c9e8a8122ec6cc3863a";
 const clientSecret = process.env.clientSecret;
