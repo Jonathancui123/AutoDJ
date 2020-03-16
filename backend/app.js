@@ -1,19 +1,24 @@
-
+// Modules
 const express = require("express");
 const path = require("path");
-const app = express();
 const rp = require("request-promise");
 const request = require("request");
 const async = require("async");
 const cors = require("cors");
-// const config = require("config");
+const config = require("config");
 const mongoose = require("mongoose");
-var bodyParser = require("body-parser");
-
+const bodyParser = require("body-parser");
+const session = require("express-session");
 const queueHelpers = require("./queueMethods");
+
+const app = express();
+app.use(cors()); // Allow CORS
+app.use(bodyParser.json()); // Parse body from front end POST requests
+app.use(session({ secret: "vagabond" }));
 
 // DONT FORGET TO SET CLIENT SECRET IN ENV --> USE CMD (NOT POWERSHELL) AS ADMIN
 
+// Environment vars
 const clientId = "158a4f4cd2df4c9e8a8122ec6cc3863a";
 const clientSecret = process.env.clientSecret;
 const PORT = process.env.PORT || 3000;
@@ -23,25 +28,18 @@ var access_token = "";
 var guest_token = "";
 var refresh_token = "";
 
-//Allow CORS
-app.use(cors());
-//Parse body from front end POST requests
-app.use(bodyParser.json());
-
-// const redirectUri =
-
 ///////////////////////////////////////////////
 // GLOBAL VARIABLES
 ///////////////////////////////////////////////
 var songBank = [];
 var users = [];
 var genres = [];
-var playlistID = "0vvXsWCC9xrXsKd4FyS8kM"; //Spotify ID for the playlist that is made - so it can be edited
+var playlistID = "0vvXsWCC9xrXsKd4FyS8kM"; // Spotify ID for the playlist that is made - so it can be edited; default - Lofi beats
 var nextUserId = 0;
 const songsPerPerson = 20;
 var nextSongId = 0;
 
-//Host inputs:
+// Host inputs:
 var playlistDur = 20 * 60 * 1000; // Integer: time in ms
 var playlistName = "";
 var playlistURI = "";
@@ -65,6 +63,7 @@ function User(id, name, spotifyId, role, uri, joinTime) {
   this.uri = uri;
   this.joinTime = joinTime;
 }
+
 ///////////////////////////////////////////////
 // DATABASE SETUP
 ///////////////////////////////////////////////
@@ -78,48 +77,56 @@ mongoose
   .then(() => console.log("MongoDB Connected"))
   .catch(err => console.log(err));
 
-//Get the user class that user objects will inherit from
-const UserClass = require("./models/User");
+// Get the user class that user objects will inherit from
+const UserClass = require("./models/User").model;
+const PartyClass = require("./models/Party").model;
 
-//Function to store users to DB with the same signature as previous User() function
-function makeNewUser(id, name, spotifyId, role, uri, joinTime) {
+// Store users to DB with the same signature as previous User() function
+async function makeNewUser(name, spotifyId, uri, access_token, refresh_token) {
   var newUser = new UserClass({
-    autoDJId: id,
     name: name,
     spotifyId: spotifyId,
     uri: uri,
-    parties: []
+    parties: [],
+    access_token: access_token,
+    refresh_token: refresh_token
   });
-  newUser.save().then(result => console.log("Saved to DB: ", result));
+  await newUser.save().then(result => console.log("Saved to DB: ", result));
+}
+
+async function makeNewParty(host) {
+  var newParty = new PartyClass({
+    id: db.parties.find().count(),
+    members: [],
+    host: host,
+    songs: [],
+    playlistId: ""
+  });
+  await newParty.save().then(result => console.log("Party saved to DB: ", result))
 }
 
 ///////////////////////////////////////////////
 // ROUTES
 ///////////////////////////////////////////////
-// Homepage
 app.get("/", (req, res) => {
-  // console.log(clientId);
-  // console.log(clientSecret);
   res.sendFile(path.join(__dirname + "/views/index.html"));
 });
 
-//Authorizing the app to get user data
+// Login Page - authorizing the app to get user data
 app.get("/login", (req, res) => {
   var scopes =
     "user-read-private user-read-email playlist-modify-public user-top-read";
   console.log("login req received");
   res.redirect(
-    "https://accounts.spotify.com/authorize" +
-    "?response_type=code" +
-    "&client_id=" +
-    clientId +
+    "https://accounts.spotify.com/authorize?" +
+    "response_type=code" +
+    "&client_id=" + clientId +
     (scopes ? "&scope=" + encodeURIComponent(scopes) : "") +
-    "&redirect_uri=" +
-    encodeURIComponent(backendAddress + "/loggedin")
+    "&redirect_uri=" + encodeURIComponent(backendAddress + "/loggedin")
   );
-  // frontEndAddress + "/create"
 });
 
+// Redirect after login
 app.get("/loggedin", (req, res) => {
   console.log("Client secret ", clientSecret);
 
@@ -140,15 +147,19 @@ app.get("/loggedin", (req, res) => {
       console.log("refresh token: " + refresh_token);
 
       /////////////////////////////////////
-      //Register the user into our database and get query their songs
+      // Register the user into database and get songs
       /////////////////////////////////////
+      // If user is not in database yet, add them
+      if (!getUsers(parsed.uri)) {
+        makeNewUser(parsed.display_name, parsed.id, parsed.uri, access_token, refresh_token);
+      }
+
       setInterval(refresh_access, 58 * 60000); // Refreshes token every 58 minutes, it expires every 60
     })
     .catch(err => {
       console.log("Failed to req user info from Spotify: ", err.message);
     });
   // .then(() => console.log("Playlist ID: ", playlistID))
-  // res.sendFile(path.join(__dirname + '/views/loggedin.html'));
   if (users.length > 0) {
     res.redirect(frontendAddress + "/host");
   } else {
@@ -156,45 +167,7 @@ app.get("/loggedin", (req, res) => {
   }
 });
 
-function reqUserInfo(code, clientId, clientSecret) {
-  var reqOptions = {
-    //Request access token by trading authorization code 
-    method: "POST",
-    headers: { "content-type": "application/x-www-form-urlencoded" },
-    url: "https://accounts.spotify.com/api/token",
-    body:
-      "grant_type=authorization_code" +
-      "&code=" +
-      code +
-      "&redirect_uri=" +
-      encodeURIComponent(backendAddress + "/loggedin") +
-      "&client_id=" +
-      clientId +
-      "&client_secret=" +
-      clientSecret
-  };
-
-  const userInfoPromise = rp(reqOptions);
-  return userInfoPromise;
-}
-
-function conditionalRegUser() {
-  if (users.length > 0) {
-    return registerUser(guest_token);
-  } else {
-    return registerUser(access_token);
-  }
-}
-
-function conditionalGetSongs() {
-  console.log("Running conditional get songs");
-  if (users.length > 1) {
-    return getSongs(guest_token);
-  } else {
-    return getSongs(access_token);
-  }
-}
-
+// Enter new user into database
 app.get("/clientRegisterUser", (req, res) => {
   console.log("Received Registration GET request from client");
   conditionalRegUser()
@@ -215,42 +188,19 @@ app.get("/clientRegisterUser", (req, res) => {
           return;
         }
       }
-      makeNewUser(
-        nextUserId,
-        info.display_name,
-        info.id,
-        users
-          .map(user => {
-            return user.role;
-          })
-          .includes("host")
-          ? "guest"
-          : "host",
-        info.uri,
-        now
+      makeNewUser(nextUserId, info.display_name, info.id,
+        users.map(user => { return user.role; }).includes("host") ? "guest" : "host",
+        info.uri, now
       );
 
-      users.push(
-        new User(
-          nextUserId,
-          info.display_name,
-          info.id,
-          users
-            .map(user => {
-              return user.role;
-            })
-            .includes("host")
-            ? "guest"
-            : "host",
-          info.uri,
-          now
-        )
-      );
-      nextUserId++;
+      users.push(new User(nextUserId, info.display_name, info.id,
+        users.map(user => { return user.role; }).includes("host") ? "guest" : "host",
+        info.uri, now
+      ));
 
       // console.log('Current users', users);
       /////////////////////////////////////
-      // Get their songs now
+      // Get songs now
       /////////////////////////////////////
 
       res.send({
@@ -275,6 +225,7 @@ app.get("/clientRegisterUser", (req, res) => {
     });
 });
 
+// Update playlist
 app.post("/updatePlaylist", (req, res) => {
   // genres = req.body.genres.split(" ")
   console.log("running UPDATE playlist");
@@ -296,6 +247,7 @@ app.post("/updatePlaylist", (req, res) => {
     });
 });
 
+// Create new playlist
 app.post("/createPlaylist", (req, res) => {
   playlistName = req.body.playlistName;
   genres = req.body.genres.split("/");
@@ -337,6 +289,7 @@ app.post("/createPlaylist", (req, res) => {
     });
 });
 
+// Retrieves info about user
 app.get("/getInfo", (req, res) => {
   res.send({
     users: users,
@@ -355,8 +308,7 @@ function refresh_access() {
       headers: { "content-type": "application/x-www-form-urlencoded" },
       url: "https://accounts.spotify.com/api/token",
       body:
-        "grant_type=refresh_token" +
-        "&refresh_token=" +
+        "grant_type=refresh_token&refresh_token=" +
         refresh_token +
         "&client_id=" +
         clientId +
@@ -378,6 +330,44 @@ app.post("/test", (req, res) => {
   console.log("Recieved test post request", req.body);
   res.send("Thank you sir");
 });
+
+function reqUserInfo(code, clientId, clientSecret) {
+  var reqOptions = {
+    //Request access token by trading authorization code
+    method: "POST",
+    headers: { "content-type": "application/x-www-form-urlencoded" },
+    url: "https://accounts.spotify.com/api/token",
+    body:
+      "grant_type=authorization_code&code=" +
+      code +
+      "&redirect_uri=" +
+      encodeURIComponent(backendAddress + "/loggedin") +
+      "&client_id=" +
+      clientId +
+      "&client_secret=" +
+      clientSecret
+  };
+
+  const userInfoPromise = rp(reqOptions);
+  return userInfoPromise;
+}
+
+function conditionalRegUser() {
+  if (users.length > 0) {
+    return registerUser(guest_token);
+  } else {
+    return registerUser(access_token);
+  }
+}
+
+function conditionalGetSongs() {
+  console.log("Running conditional get songs");
+  if (users.length > 1) {
+    return getSongs(guest_token);
+  } else {
+    return getSongs(access_token);
+  }
+}
 
 // TODO: Rejected login handling
 
@@ -434,7 +424,7 @@ function getSongs(access_token) {
       Authorization: "Bearer " + access_token,
       "content-Type": "application/json"
     },
-    url: "https://api.spotify.com/v1/me/top/tracks" + "?limit=100",
+    url: "https://api.spotify.com/v1/me/top/tracks?limit=100",
     method: "GET"
     // body: JSON.stringify({ limit: 100 })
   };
@@ -543,7 +533,14 @@ function autoKick() {
   }
 }
 
-//Temporary function to reset server
+function getUsers(uri) {
+  const users = db.users.findOne({
+    uri: uri
+  });
+  return typeof users !== "undefined" && users;
+}
+
+// Temporary function to reset server
 app.get("/restartServer", (req, res) => {
   songBank = [];
   users = [];
