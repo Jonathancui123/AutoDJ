@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 //Defines the user schema for mongoose
 const userSchema = new mongoose.Schema({
-  //   id: String,
+  _id: Number,
   name: String,
   spotifyId: String,
   uri: String,

@@ -12,7 +12,7 @@ var partyUserSchema = new mongoose.Schema({
 
 //Defines the party schema for mongoose
 const partySchema = new mongoose.Schema({
-  partyId: String,
+  _id: Number,
   members: [partyUserSchema],
   host: partyUserSchema,
   songs: [String],

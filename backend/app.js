@@ -84,6 +84,7 @@ const PartyClass = require("./models/Party").model;
 // Store users to DB with the same signature as previous User() function
 async function makeNewUser(name, spotifyId, uri, access_token, refresh_token) {
   var newUser = new UserClass({
+    _id: getNextCounter("users"),
     name: name,
     spotifyId: spotifyId,
     uri: uri,
@@ -96,7 +97,7 @@ async function makeNewUser(name, spotifyId, uri, access_token, refresh_token) {
 
 async function makeNewParty(host) {
   var newParty = new PartyClass({
-    id: db.parties.find().count(),
+    _id: getNextCounter("parties"),
     members: [],
     host: host,
     songs: [],
@@ -132,19 +133,19 @@ app.get("/loggedin", (req, res) => {
 
   var code = req.query.code;
   console.log("code: ", code);
-  // console.log(code);
 
   reqUserInfo(code, clientId, clientSecret)
     .then(body => {
       var parsed = JSON.parse(body);
-      if (users.length > 0) {
-        guest_token = parsed.access_token;
-      } else {
-        access_token = parsed.access_token;
-      }
+      access_token = parsed.access_token;
+      // if (users.length > 0) {
+      //   guest_token = parsed.access_token;
+      // } else {
+      //   access_token = parsed.access_token;
+      // }
       refresh_token = parsed.refresh_token;
-      console.log("Access token reply: ", access_token);
-      console.log("refresh token: " + refresh_token);
+      console.log(`Access token: ${access_token}`);
+      console.log(`Refresh token: ${refresh_token}`);
 
       /////////////////////////////////////
       // Register the user into database and get songs
@@ -154,65 +155,53 @@ app.get("/loggedin", (req, res) => {
         makeNewUser(parsed.display_name, parsed.id, parsed.uri, access_token, refresh_token);
       }
 
-      setInterval(refresh_access, 58 * 60000); // Refreshes token every 58 minutes, it expires every 60
+      req.session.id =
+
+        setInterval(refresh_access, 58 * 60000); // Refreshes token every 58 minutes, it expires every 60
     })
     .catch(err => {
-      console.log("Failed to req user info from Spotify: ", err.message);
+      console.log(`Failed to retrieve user info from Spotify: ${err.message}`);
     });
-  // .then(() => console.log("Playlist ID: ", playlistID))
-  if (users.length > 0) {
-    res.redirect(frontendAddress + "/host");
-  } else {
-    res.redirect(frontendAddress + "/create");
-  }
+
+  res.redirect(frontendAddress + "/select");
 });
 
 // Enter new user into database
 app.get("/clientRegisterUser", (req, res) => {
-  console.log("Received Registration GET request from client");
+  console.log("Received registration GET request from client");
   conditionalRegUser()
     .then(body => {
       const info = JSON.parse(body);
-      // console.log('Response ', info);
-      // Get current date and time
-      const now = new Date();
+      const now = new Date(); // Current date and time
       console.log("Current users: ", users);
 
-      for (var i = 0; i < users.length; i++) {
-        if (info.id == users[i].spotifyId) {
-          console.log("Blocking 2nd registrtion attempt and sending response");
-          res.send({
-            display_name: info.display_name,
-            spotifyID: info.id
-          });
-          return;
-        }
-      }
-      makeNewUser(nextUserId, info.display_name, info.id,
-        users.map(user => { return user.role; }).includes("host") ? "guest" : "host",
-        info.uri, now
-      );
+      // Remove? Do we really need to check for duplicate signins now? Consider if double their songs get added
+      // for (var i = 0; i < users.length; i++) {
+      //   if (info.id == users[i].spotifyId) {
+      //     console.log("Blocking 2nd registration attempt and sending response");
+      //     res.send({
+      //       display_name: info.display_name,
+      //       spotifyID: info.id
+      //     });
+      //     return;
+      //   }
+      // }
 
-      users.push(new User(nextUserId, info.display_name, info.id,
-        users.map(user => { return user.role; }).includes("host") ? "guest" : "host",
-        info.uri, now
-      ));
-
-      // console.log('Current users', users);
-      /////////////////////////////////////
-      // Get songs now
-      /////////////////////////////////////
+      // Remove later
+      // users.push(new User(nextUserId, info.display_name, info.id,
+      //   users.map(user => { return user.role; }).includes("host") ? "guest" : "host",
+      //   info.uri, now
+      // ));
 
       res.send({
         display_name: info.display_name,
         spotifyID: info.id
       });
 
+      // Get songs
       conditionalGetSongs()
         .then(body => addSongsToBank(body))
-        .then(bank => {
-          console.log("SONG BANK SUCCESSFULLY UPDATED");
-        })
+        .then(console.log("SONG BANK SUCCESSFULLY UPDATED"))
         .catch(err => console.error(err));
     })
     .catch(err => {
@@ -220,15 +209,14 @@ app.get("/clientRegisterUser", (req, res) => {
         "Registration error - possibly due to second host login attempt"
       );
       res.send({
-        status: "meaningless response to trigger react refresh"
+        status: "Meaningless response to trigger React refresh"
       });
     });
 });
 
 // Update playlist
 app.post("/updatePlaylist", (req, res) => {
-  // genres = req.body.genres.split(" ")
-  console.log("running UPDATE playlist");
+  console.log("Running UPDATE playlist");
 
   var genreOnlyBank = queueHelpers.createGenredBank(genres, songBank);
   console.log("Printing the genre only bank: ");
@@ -289,7 +277,7 @@ app.post("/createPlaylist", (req, res) => {
     });
 });
 
-// Retrieves info about user
+// Retrieves info about user - EDIT FOR DATABASE IMPLEMENTATION
 app.get("/getInfo", (req, res) => {
   res.send({
     users: users,
@@ -538,6 +526,23 @@ function getUsers(uri) {
     uri: uri
   });
   return typeof users !== "undefined" && users;
+}
+
+async function getNextCounter(collection) {
+  var result = await db.counters.findAndModify({
+    query: { _id: collection },
+    update: { $inc: { value: 1 } },
+    new: true
+  });
+
+  return result.value;
+}
+
+async function getUserId(spotifyId) {
+  var result = await db.users.findOne({
+    spotifyId: spotifyId
+  })
+  return result._id;
 }
 
 // Temporary function to reset server
