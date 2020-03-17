@@ -22,14 +22,14 @@
   },
   "homepage": "https://github.com/Jonathancui123/Emotify#readme",
   "dependencies": {
-    "async": "^3.1.0",
+    "async": "^3.2.0",
     "body-parser": "^1.19.0",
-    "config": "^3.2.5",
+    "config": "^3.3.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-session": "^1.17.0",
-    "mongoose": "^5.8.11",
-    "request": "^2.88.0",
+    "mongoose": "^5.9.5",
+    "request": "^2.88.2",
     "request-promise": "^4.2.5"
   },
   "devDependencies": {}

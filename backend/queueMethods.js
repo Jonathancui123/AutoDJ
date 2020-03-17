@@ -4,28 +4,19 @@ const request = require("request");
 // Returns an array of all song objects from the main bank that have at least one of the selected genres
 function createGenredBank(selectedGenres, songBank) {
   var genredBank = [];
-  //Iterate through each song in the song bank
-  console.log(
-    "Running createGenred Bank with selected genres:",
-    selectedGenres,
-    " and the given songBank: ",
-    songBank
-  );
+  console.log("Running createGenred Bank on genres: " + selectedGenres + " and the given songBank: " + songBank);
 
   for (var i = 0; i < songBank.length; i++) {
     var genresOfSong = songBank[i].genres;
-    // console.log(songBank[i].name)
-    // console.log("Genre: ", genresOfSong)
     for (var j = 0; j < selectedGenres.length; j++) {
       if (genresOfSong.toString().includes(selectedGenres[j])) {
-        //Genre j is tagged in the song
         genredBank.push(songBank[i]);
         console.log("Adding to genre only bank: ", songBank[i]);
         break;
       }
     }
   }
-  console.log("Genred bank is: ", genredBank);
+  console.log("Genred bank: " + genredBank);
   return genredBank;
 }
 
@@ -46,12 +37,12 @@ function genShortListURI(songBank, playlistDur) {
     }
     var nextSong = songBank[i];
     shortList.push(nextSong.link);
-    console.log("Next song duration: ", nextSong.dur);
+    console.log("Next song duration: " + nextSong.dur);
     currPlaylistDur += nextSong.dur;
     i++;
   }
   shortList.pop();
-  console.log("Finished shortlist: ", shortList);
+  console.log("Finished shortlist: " + shortList);
   return shortList;
 }
 

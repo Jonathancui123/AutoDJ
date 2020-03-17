@@ -93,9 +93,10 @@ class Host extends React.Component {
                   <h1 style={{ marginBottom: "10px" }}>{this.state.playlistName}</h1>
                   <Members users={this.state.users} />
                   <br></br>
-                  <Button id="update" onClick={this.callUpdate}>
+                  {/* Temporarily removed update functionality while migrating to database */}
+                  {/* <Button id="update" onClick={this.callUpdate}>
                     Update
-                  </Button>
+                  </Button> */}
                 </div>
               </Col>
             </Row>
