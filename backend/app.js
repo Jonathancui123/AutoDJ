@@ -13,7 +13,12 @@ const dbMethods = require('./dbMethods');
 const app = express();
 app.use(cors()); // Allow CORS
 app.use(bodyParser.json()); // Parse body from front end POST requests
-app.use(session({ secret: "vagabond" }));
+app.use(session({
+  resave: false,
+  saveUninitialized: false,
+  secret: "vagabond",
+  cookie: { secure: false }
+}));
 
 // DONT FORGET TO SET CLIENT SECRET IN ENV --> USE CMD (NOT POWERSHELL) AS ADMIN
 
@@ -75,6 +80,7 @@ app.get('/login', (req, res) => {
 
 // Redirect after login
 app.get('/loggedin', (req, res) => {
+  console.log('* /loggedin called');
   console.log('Client secret ', clientSecret);
 
   var code = req.query.code;
@@ -82,13 +88,17 @@ app.get('/loggedin', (req, res) => {
 
   addUser(code)
     .then((ret) => {
-      req.session.id = ret;
+      req.session.userData = {
+        id: ret
+      }
+      console.log(req.session);
+    })
+    .then(() => {
+      req.session.save();
+      console.log(`Saved user id: ${req.session.userData.id}`);
+      res.redirect(frontendAddress + '/select');
+      res.end();
     });
-
-  // .then((id) => { req.session.id = id; })
-  // .catch(console.log('Could not get user database id'));
-
-  res.redirect(frontendAddress + '/select');
 });
 
 // Create new party
@@ -111,8 +121,8 @@ app.get('/newParty', (req, res) => {
 // Get user's info (name, spotifyId, parties)
 app.get('/getUserInfo', (req, res) => {
   console.log('* /getUserInfo called');
-  console.log('Session id: ' + req.session.id);
-  dbMethods.getUserInfo(req.session.id)
+  console.log(req.session);
+  dbMethods.getUserInfo(req.session.userData.id)
     .then((info) => {
       res.send(info);
     })
@@ -248,6 +258,7 @@ async function addUser(code) {
   tokenInfo = await JSON.parse(tokenInfo);
   var userInfo = await getUserInfo(tokenInfo.access_token);
   userInfo = await JSON.parse(userInfo);
+  console.log(userInfo);
 
   // If user is not in database yet, add them
   if (!await dbMethods.getUsers(userInfo.id)) {
@@ -257,8 +268,7 @@ async function addUser(code) {
   }
 
   // Get database index id of user
-  var id = await dbMethods.getUserId(userInfo._id);
-  console.log('Id return: ' + id);
+  var id = await dbMethods.getUserId(userInfo.id);
   return id;
 }
 
