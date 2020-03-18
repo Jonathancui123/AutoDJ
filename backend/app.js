@@ -19,6 +19,12 @@ app.use(session({
   secret: "vagabond",
   cookie: { secure: false }
 }));
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', frontendAddress);
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  res.header('Access-Control-Allow-Credentials', true);
+  next();
+});
 
 // DONT FORGET TO SET CLIENT SECRET IN ENV --> USE CMD (NOT POWERSHELL) AS ADMIN
 
@@ -28,8 +34,6 @@ const clientSecret = process.env.clientSecret;
 const PORT = process.env.PORT || 3000;
 const frontendAddress = config.frontendAddress;
 const backendAddress = config.backendAddress;
-var accessToken = "";
-var refreshToken = "";
 
 ///////////////////////////////////////////////
 // GLOBAL VARIABLES
@@ -90,14 +94,10 @@ app.get('/loggedin', (req, res) => {
     .then((ret) => {
       req.session.userData = {
         id: ret
-      }
-      console.log(req.session);
-    })
-    .then(() => {
-      req.session.save();
+      };
       console.log(`Saved user id: ${req.session.userData.id}`);
+      console.log(`Saved session id: ${req.session.id}`);
       res.redirect(frontendAddress + '/select');
-      res.end();
     });
 });
 
@@ -121,13 +121,14 @@ app.get('/newParty', (req, res) => {
 // Get user's info (name, spotifyId, parties)
 app.get('/getUserInfo', (req, res) => {
   console.log('* /getUserInfo called');
-  console.log(req.session);
+  // console.log(req.session);
+  // console.log(`Returned session id: ${req.session.id}`);
   dbMethods.getUserInfo(req.session.userData.id)
     .then((info) => {
       res.send(info);
     })
-    .catch(console.log('Could not get user info'));
-})
+    .catch((err) => console.log('Could not get user info, ' + err));
+});
 
 // Create new playlist
 app.post('/createPlaylist', (req, res) => {
@@ -258,7 +259,6 @@ async function addUser(code) {
   tokenInfo = await JSON.parse(tokenInfo);
   var userInfo = await getUserInfo(tokenInfo.access_token);
   userInfo = await JSON.parse(userInfo);
-  console.log(userInfo);
 
   // If user is not in database yet, add them
   if (!await dbMethods.getUsers(userInfo.id)) {

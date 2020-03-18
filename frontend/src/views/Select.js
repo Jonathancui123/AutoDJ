@@ -15,16 +15,22 @@ class Select extends Component {
 
     componentDidMount() {
         console.log('Component mounted');
-        fetch(`${this.backendAddress}/getUserInfo`)
-            .then(res => { return res.json() })
+        fetch(`${this.backendAddress}/getUserInfo`, {
+            method: "GET",
+            credentials: "include"
+        })
+            .then(res => {
+                return res.json();
+            })
             .then(res => {
                 console.log(res);
                 this.setState({
                     name: res.name,
                     spotifyId: res.spotifyId,
                     parties: res.parties
-                })
+                });
             })
+            .catch(err => console.log(err));
     }
 
     newParty() {
