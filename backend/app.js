@@ -7,7 +7,7 @@ const cors = require('cors');
 const config = require('./config/keys');
 const bodyParser = require('body-parser');
 const session = require('express-session');
-const queueHelpers = require('./queueMethods');
+const queueMethods = require('./queueMethods');
 const dbMethods = require('./dbMethods');
 
 const app = express();
@@ -34,12 +34,6 @@ const clientSecret = process.env.clientSecret;
 const PORT = process.env.PORT || 3000;
 const frontendAddress = config.frontendAddress;
 const backendAddress = config.backendAddress;
-
-///////////////////////////////////////////////
-// GLOBAL VARIABLES
-///////////////////////////////////////////////
-var playlistID = "0vvXsWCC9xrXsKd4FyS8kM"; // Spotify ID for the playlist that is made - so it can be edited; default - Lofi beats
-var nextSongId = 0;
 
 function Song(id, name, artist, genres, score, played, link, duration) {
   this.id = id;
@@ -123,25 +117,26 @@ app.get('/getUserInfo', (req, res) => {
 
 // Create new playlist
 app.post('/createPlaylist', (req, res) => {
+  console.log('* /createPlaylist called');
   const playlistName = req.body.playlistName;
   const genres = req.body.genres.split("/");
-  var userId = req.body.userId;
-  playlistDur = 60 * 1000 * parseInt(req.body.duration);
+  const userId = req.body.userId;
+  const playlistDur = 60 * 1000 * parseInt(req.body.duration);
   // console.log("Playlist duration in ms: " + playlistDur);
 
   console.log("CREATING NEW PLAYLIST");
   var tempBank = dbMethods.getSongBank(partyId);
-  queueHelpers.createNewPlaylist(accessToken, playlistName, userId)
+  queueMethods.createNewPlaylist(accessToken, playlistName, userId)
     .then(body => {
       console.log("Completed POST request for creating playlist");
 
-      playlistID = JSON.parse(body).id;
+      const playlistID = JSON.parse(body).id;
       console.log("Playlist ID Response: " + playlistID);
 
       //Decide on songs and add it to the new playlist
-      var genreOnlyBank = queueHelpers.createGenredBank(genres, tempBank);
-      var shortListURI = queueHelpers.genShortListURI(genreOnlyBank, playlistDur);
-      queueHelpers.addSongsToPlaylist(accessToken, shortListURI, playlistID)
+      var genreOnlyBank = queueMethods.createGenredBank(genres, tempBank);
+      var shortListURI = queueMethods.genShortListURI(genreOnlyBank, playlistDur);
+      queueMethods.addSongsToPlaylist(accessToken, shortListURI, playlistID)
         .then(body => {
           console.log("Playlist created and populated successfully");
           res.send({
