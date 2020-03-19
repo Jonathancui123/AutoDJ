@@ -11,6 +11,10 @@ mongoose
     .then(() => console.log("MongoDB Connected"))
     .catch(err => console.log(err));
 
+Counter.remove({}, () => {
+    console.log('Collection Counter cleared');
+});
+
 const partyCounter = new Counter({
     _id: "parties",
     value: "0"

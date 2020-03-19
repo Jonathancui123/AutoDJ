@@ -123,7 +123,7 @@ async function getSongBank(partyId) {
         _id: partyId
     }).select({
         songs: 1
-    })
+    });
     return result;
 }
 

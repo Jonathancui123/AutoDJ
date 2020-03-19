@@ -1,10 +1,11 @@
 const rp = require("request-promise");
 const request = require("request");
+const dbMethods = require('./dbMethods');
 
 // Returns an array of all song objects from the main bank that have at least one of the selected genres
 function createGenredBank(selectedGenres, songBank) {
   var genredBank = [];
-  console.log("Running createGenred Bank on genres: " + selectedGenres + " and the given songBank: " + songBank);
+  console.log("Running createGenredBank on genres: " + selectedGenres + " and the songBank: " + songBank);
 
   for (var i = 0; i < songBank.length; i++) {
     var genresOfSong = songBank[i].genres;
@@ -46,11 +47,11 @@ function genShortListURI(songBank, playlistDur) {
   return shortList;
 }
 
-function createNewPlaylist(auth_token, playlistName, userID) {
+function createNewPlaylist(authToken, playlistName, userID) {
   var postOptions = {
     method: "POST",
     headers: {
-      Authorization: "Bearer " + auth_token,
+      Authorization: "Bearer " + authToken,
       "content-type": "application/json"
     },
     url: "https://api.spotify.com/v1/users/" + userID + "/playlists",
@@ -64,12 +65,12 @@ function createNewPlaylist(auth_token, playlistName, userID) {
   return promise;
 }
 
-function addSongsToPlaylist(auth_token, songURIList, playlistID) {
+function addSongsToPlaylist(authToken, songURIList, playlistID) {
   var options = {
     method: "PUT",
     url: "https://api.spotify.com/v1/playlists/" + playlistID + "/tracks",
     headers: {
-      Authorization: "Bearer " + auth_token,
+      Authorization: "Bearer " + authToken,
       "Content-Type": "application/json"
     },
     body: JSON.stringify({ uris: songURIList })

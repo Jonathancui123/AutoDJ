@@ -16,25 +16,23 @@ class Create extends React.Component {
   constructor() {
     super();
     this.state = {
-      userID: "",
-      userDP: "woopsies",
-      genres: "",
-      playlistName: "",
-      playlistURI: "Null",
-      duration: null
+      name: "<placeholder>",
+      spotifyId: "",
+      parties: []
     };
   }
 
   componentDidMount() {
-    fetch(this.backendAddress + "/clientRegisterUser")
+    fetch(this.backendAddress + "/getUserInfo")
       .then(res => {
         return res.json();
       })
       .then(res => {
         console.log(res);
         this.setState({
-          userDP: res.display_name,
-          userID: res.spotifyID
+          name: res.name,
+          spotifyId: res.spotifyId,
+          parties: res.parties
         });
       })
       .catch(err => console.log(err));
@@ -63,7 +61,7 @@ class Create extends React.Component {
       body: JSON.stringify({
         genres: this.state.genres,
         playlistName: this.state.playlistName,
-        userID: this.state.userID,
+        userId: this.state.userId,
         duration: this.state.duration
       })
     })
@@ -86,7 +84,7 @@ class Create extends React.Component {
         {/* <Logo className="logo" /> */}
         <div className="content-container">
           <div id="create">
-            <h1>Welcome, {this.state.userDP}</h1>
+            <h1>Welcome, {this.state.name}</h1>
             <h2>What do you want to hear?</h2>
             <form onSubmit={this.createPlaylist}>
               <input
