@@ -9,6 +9,8 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const queueMethods = require('./queueMethods');
 const dbMethods = require('./dbMethods');
+const MongoStore = require('connect-mongo')(session);
+
 
 // DONT FORGET TO SET CLIENT SECRET IN ENV --> USE CMD (NOT POWERSHELL) AS ADMIN
 
@@ -25,11 +27,14 @@ app.use(cors({
   credentials: true
 })); // Allow CORS
 app.use(bodyParser.json()); // Parse body from front end POST requests
+
+const dbUrl = require('./config/keys.js').mongoURI;
 app.use(session({
   resave: false,
   saveUninitialized: false,
   secret: "vagabond",
-  cookie: { secure: false }
+  cookie: { secure: false },
+  store: new MongoStore({ url: dbUrl })
 }));
 app.use((req, res, next) => {
   res.set({
@@ -83,11 +88,17 @@ app.get('/loggedin', (req, res) => {
 
   addUser(code)
     .then((ret) => {
+      var id = ret.id
+      var access_token = ret.access_token
+
       req.session.userData = {
-        id: ret
+        id: id,
+        access_token: access_token
       };
+      
       console.log(`Saved user id: ${req.session.userData.id}`);
       console.log(`Saved session id: ${req.session.id}`);
+      console.log(`Saved user access token: ${req.session.userData.access_token}`)
       res.redirect(frontendAddress + '/select');
     });
 });
@@ -251,7 +262,11 @@ async function addUser(code) {
 
   // Get database index id of user
   var id = await dbMethods.getUserId(userInfo.id);
-  return id;
+  var ret = {
+    id: id,
+    access_token: tokenInfo.access_token
+  }
+  return ret;
 }
 
 ///////////////////////////////////////////////

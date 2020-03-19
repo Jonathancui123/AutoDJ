@@ -2,6 +2,9 @@ const mongoose = require("mongoose");
 const Counter = require("./models/Counter");
 const dbUrl = require("./config/keys").mongoURI;
 
+// Make sure you have a running DB called 'autoDJ': /localhost:27017/autoDJ
+// Needs 3 collections in the autoDJ db called 'counters', 'parties', 'users'
+
 mongoose
     .connect(dbUrl, {
         useNewUrlParser: true,
