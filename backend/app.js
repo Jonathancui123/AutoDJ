@@ -225,23 +225,6 @@ function getToken(code) {
   return userInfoPromise;
 }
 
-// Get a user's PROFILE INFO
-function getUserInfo(accessToken) {
-  console.log("* Running getUserInfo");
-  console.log(`Access token: ${accessToken}`);
-  var reqOptions = {
-    headers: { "content-type": "application/x-www-form-urlencoded" },
-    url: "https://api.spotify.com/v1/me",
-    method: "GET",
-    headers: {
-      Authorization: "Bearer " + accessToken
-    }
-  };
-
-  var regPromise = rp(reqOptions);
-  return regPromise;
-}
-
 // Add a user to database
 async function addUser(code) {
   console.log("* Running addUser");
@@ -265,6 +248,24 @@ async function addUser(code) {
   }
   return ret;
 }
+
+
+// Get a user's PROFILE INFO
+function getUserInfo(accessToken) {
+  console.log("* Running getUserInfo");
+  console.log(`Access token: ${accessToken}`);
+  var reqOptions = {
+    headers: { "content-type": "application/x-www-form-urlencoded" },
+    url: "https://api.spotify.com/v1/me",
+    method: "GET",
+    headers: {
+      Authorization: "Bearer " + accessToken
+    }
+  };
+
+  var regPromise = rp(reqOptions);
+  return regPromise;
+} 
 
 ///////////////////////////////////////////////
 // SONG/PLAYLIST FUNCTIONS
