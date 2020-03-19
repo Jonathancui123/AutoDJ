@@ -18,7 +18,7 @@ class Host extends React.Component {
     super();
     this.state = {
       users: [],
-      playlistID: "",
+      playlistId: "",
       playlistName: "",
       playlistDuration: null
     };
@@ -29,9 +29,9 @@ class Host extends React.Component {
   }
 
   componentDidMount() {
-    // alert("COMPONENT MOUNTED")
-    this.state.playlistID = this.props.match.params;
-    fetch(this.backendAddress + "/getPartyInfo")
+    const { match: { params } } = this.props;
+    this.state.playlistId = params.playlistId;
+    fetch(`${this.backendAddress}/getPartyInfo/${this.state.playlistId}`)
       .then(response => {
         return response.json();
       })
@@ -42,6 +42,7 @@ class Host extends React.Component {
           playlistName: response.playlistName
         });
       });
+    console.log(this.state);
   }
 
   callUpdate = () => {
@@ -62,7 +63,7 @@ class Host extends React.Component {
             <Row>
               <Col xs={7}>
                 <div className="playerPanel">
-                  <Player playlistID={this.state.playlistID} />
+                  <Player playlistID={this.state.playlistId} />
                 </div>
               </Col>
               <Col xs={5}>

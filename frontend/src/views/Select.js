@@ -58,6 +58,7 @@ class Select extends Component {
                 duration: this.state.duration
             })
         })
+            .then(res => { return res.json(); })
             .then(res => {
                 this.props.history.push(`/host/${res.playlistId}`);
             });

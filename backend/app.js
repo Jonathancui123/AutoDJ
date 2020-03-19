@@ -41,17 +41,6 @@ app.use((req, res, next) => {
   next();
 });
 
-function Song(id, name, artist, genres, score, played, link, duration) {
-  this.id = id;
-  this.name = name;
-  this.artist = artist;
-  this.genres = genres;
-  this.score = score;
-  this.played = played;
-  this.link = link;
-  this.dur = duration;
-}
-
 ///////////////////////////////////////////////
 // ROUTES
 ///////////////////////////////////////////////
@@ -107,7 +96,6 @@ app.get('/getUserInfo', (req, res) => {
 // Create new party/playlist
 app.post('/newParty', async (req, res) => {
   console.log('* /newParty called');
-  var tempBank = [];
   const playlistName = req.body.playlistName;
   const genres = req.body.genres.split("/");
   const playlistDur = 60 * 1000 * parseInt(req.body.duration);
@@ -120,23 +108,29 @@ app.post('/newParty', async (req, res) => {
   console.log(`User ID: ${userId}`);
 
   // Generate new playlist
+  var tempBank = await queueMethods.getSongs(accessToken);
+  tempBank = await queueMethods.addSongsToBank(tempBank, accessToken);
+  console.log(tempBank.slice(0, 10));
   var createdPlaylist = await queueMethods.createNewPlaylist(accessToken, playlistName, userId);
-  const playlistID = JSON.parse(createdPlaylist).id;
+  const playlistId = JSON.parse(createdPlaylist).id;
+  console.log(`Playlist ID: ${playlistId}`);
   var genreOnlyBank = queueMethods.createGenredBank(genres, tempBank);
   var shortListURI = queueMethods.genShortListURI(genreOnlyBank, playlistDur);
   console.log('Playlist generated');
 
   // Make new party & host object
   const host = await dbMethods.makeNewPartyUser(userId, 'host');
-  const partyId = await dbMethods.makeNewParty(host, playlistName, shortlistURI);
-  var tempBank = await dbMethods.getSongBank(partyId);
+  const partyId = await dbMethods.makeNewParty(host, playlistName, playlistId);
   console.log('Party created');
 
+  // Add party to current user's profile
+  await dbMethods.addParty(req.session.userData.id, playlistId);
+
   try {
-    await queueMethods.addSongsToPlaylist(accessToken, shortListURI, playlistID);
+    await queueMethods.addSongsToPlaylist(accessToken, shortListURI, playlistId);
     res.send({
       status: "success",
-      playlistId: playlistID
+      playlistId: playlistId
     });
   } catch {
     console.log('Could not add songs to playlist');
@@ -146,9 +140,12 @@ app.post('/newParty', async (req, res) => {
   }
 });
 
-app.get('/getPartyInfo', async (req, res) => {
-  const partyInfo = await dbMethods.getPartyInfo;
-  return partyInfo;
+app.get('/getPartyInfo/:playlistId', async (req, res) => {
+  console.log(`* /getPartyInfo/${req.params.playlistId} called`);
+  const playlistId = req.params.playlistId;
+  const partyInfo = await dbMethods.getPartyInfo(playlistId);
+  console.log(partyInfo);
+  res.send(partyInfo);
 });
 
 // Retrieves info about party - TODO: ADAPT FOR DATABASE INSTEAD OF GLOBAL LIST
@@ -257,107 +254,6 @@ async function addUser(code) {
 ///////////////////////////////////////////////
 // SONG/PLAYLIST FUNCTIONS
 ///////////////////////////////////////////////
-
-// Get user's top 100 songs (all genres)
-function getSongs(accessToken) {
-  console.log("Running getSongs");
-
-  var reqOptions = {
-    headers: {
-      Authorization: "Bearer " + accessToken,
-      "content-Type": "application/json"
-    },
-    url: "https://api.spotify.com/v1/me/top/tracks?limit=100",
-    method: "GET"
-  };
-
-  let getSongsPromise = rp(reqOptions);
-  return getSongsPromise;
-}
-
-function addSongsToBank(body, partyId) {
-  // List of songs in order of popularity
-  var returnedSongs = JSON.parse(body).items.sort((a, b) => {
-    if (a.popularity < b.popularity) {
-      return 1;
-    }
-    if (a.popularity > b.popularity) {
-      return -1;
-    }
-    return 0;
-  });
-  console.log("Finished getting and sorting songs");
-
-  var tempBank = [];
-
-  const finishedSongBank = new Promise((resolve, reject) => {
-    var songCounter = 0; // Iterator for current song (need to go through all of them to tag genres)
-
-    // Tag each song by genre
-    Promise.all(returnedSongs.map(song => genreLookup(accessToken, song.artists[0])))
-      .then(listOfArtistInfos => {
-        listOfArtistInfos.forEach(artistInfo => {
-          var temp_genres = JSON.parse(artistInfo).genres;
-          var index = songBankLookup(tempBank, returnedSongs[songCounter].uri);
-          if (index >= 0) {
-            tempBank[index].score++;
-          } else {
-            tempBank.push(
-              new Song(
-                nextSongId,
-                returnedSongs[songCounter].name,
-                returnedSongs[songCounter].artists[0],
-                temp_genres,
-                1,
-                false,
-                returnedSongs[songCounter].uri,
-                returnedSongs[songCounter].duration_ms
-              )
-            );
-            console.log(`${nextSongId}: ${returnedSongs[songCounter].name}`);
-            nextSongId++;
-          }
-          songCounter++;
-        });
-
-        // console.log("Printing songbank: ");
-        // tempBank.forEach(song => {
-        //   console.log(song.name);
-        // });
-
-        updateSongs(tempBank, partyId);
-
-        resolve(tempBank);
-      })
-      .catch(err => {
-        console.log("GENRE LOOKUP ERROR: " + err);
-        reject("Could not finish creating song bank");
-      });
-  });
-  return finishedSongBank;
-}
-
-// Takes in the access token and an artist to look for, returns genre of song
-function genreLookup(accessToken, artist) {
-  let promise = rp({
-    url: `https://api.spotify.com/v1/artists/${artist.id}`,
-    method: "GET",
-    headers: {
-      Authorization: "Bearer " + accessToken
-    }
-  });
-  return promise;
-}
-
-// Returns index of song in song bank
-function songBankLookup(songBank, uri) {
-  for (let i = 0; i < songBank.length; i++) {
-    if (uri === songBank[i].link) {
-      return i;
-    }
-  }
-  return -1;
-}
 
 function autoKick() { // TODO: REDESIGN - Does Spotify expiration kick 
   const now = new Date();
