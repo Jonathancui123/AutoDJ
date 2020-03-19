@@ -38,24 +38,30 @@ async function makeNewUser(name, spotifyId, uri, accessToken, refreshToken) {
 }
 
 async function makeNewParty(host, playlistName, playlistId) {
-    var tempId = await getNextCounter('parties');
-    var newParty = new Party({
+    console.log('Making new party');
+    const tempId = await getNextCounter('parties');
+    const tempData = {
         _id: tempId,
         members: [host],
         host: host,
         playlistName: playlistName,
         playlistId: playlistId
-    });
+    };
+    var newParty = new Party(tempData);
     await newParty.save().then(result => console.log('Party saved to DB: ', result))
     return tempId;
 }
 
-function makeNewPartyUser(id, role) {
-    var newPartyUser = new PartyUser({
-        id: id,
+async function makeNewPartyUser(spotifyId, role) {
+    console.log('Making new party user');
+    const userInfo = await getUserInfoFromSpotifyId(spotifyId);
+    var newPartyUser = {
+        name: userInfo.name,
+        spotifyId: spotifyId,
         role: role,
+        uri: userInfo.uri,
         joinTime: Date.now()
-    })
+    };
     return newPartyUser;
 }
 
@@ -92,6 +98,13 @@ async function getUserInfo(id) {
     return info;
 }
 
+async function getUserInfoFromSpotifyId(spotifyId) {
+    const info = await User.findOne({
+        spotifyId: spotifyId
+    });
+    return info;
+}
+
 async function getAccessToken(id) {
     const info = await User.findOne({
         _id: id
@@ -117,6 +130,12 @@ async function updateTokens(spotifyId, accessToken, refreshToken) {
     })
 }
 
+async function addParty(userId, playlistId) {
+    await User.updateOne({ _id: userId }, {
+        $push: { parties: playlistId }
+    })
+}
+
 // TODO: Update party function (new spotify link, host, etc)
 
 ///////////////////////////////////////////////
@@ -132,6 +151,7 @@ async function updateSongs(tempBank, partyId) {
     return result;
 }
 
+// POTENTIALLY REMOVE
 async function getSongBank(partyId) {
     var result = await Party.find({
         _id: partyId
@@ -149,9 +169,11 @@ module.exports = {
     getNextCounter: getNextCounter,
     getUserId: getUserId,
     getUserInfo: getUserInfo,
+    getUserInfoFromSpotifyId: getUserInfoFromSpotifyId,
     getAccessToken: getAccessToken,
     getPartyInfo: getPartyInfo,
     updateTokens: updateTokens,
+    addParty: addParty,
     updateSongs: updateSongs,
     getSongBank: getSongBank
 }
