@@ -1,10 +1,6 @@
 import React from "react";
-import Container from "react-bootstrap/Container";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import Form from "react-bootstrap/Form";
+import Squares from '../components/squares';
 import Button from "react-bootstrap/Button";
-import { Redirect } from "react-router-dom";
 import config from "../constants.js";
 
 
@@ -49,12 +45,6 @@ class Create extends React.Component {
 
   createPlaylist = event => {
     event.preventDefault();
-    // alert(
-    //   "called create playlist submitting: " +
-    //     this.state.genres + " " +
-    //     this.state.playlistName + " " + 
-    //     this.state.duration
-    // );
     fetch(this.backendAddress + "/createPlaylist", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -67,21 +57,14 @@ class Create extends React.Component {
     })
       // .then(res => res.json())
       .then(res => {
-        this.props.history.push("/host");
+        this.props.history.push(`/host/${res.playlistId}`);
       });
   };
 
   render() {
     return (
       <div className="square-container">
-        <div className="squares square1" />
-        <div className="squares square2" />
-        <div className="squares square3" />
-        <div className="squares square4" />
-        <div className="squares square5" />
-        <div className="squares square6" />
-        <div className="squares square7" />
-        {/* <Logo className="logo" /> */}
+        <Squares />
         <div className="content-container">
           <div id="create">
             <h1>Welcome, {this.state.name}</h1>

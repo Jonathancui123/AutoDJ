@@ -10,22 +10,6 @@ const session = require('express-session');
 const queueMethods = require('./queueMethods');
 const dbMethods = require('./dbMethods');
 
-const app = express();
-app.use(cors()); // Allow CORS
-app.use(bodyParser.json()); // Parse body from front end POST requests
-app.use(session({
-  resave: false,
-  saveUninitialized: false,
-  secret: "vagabond",
-  cookie: { secure: false }
-}));
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', frontendAddress);
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  res.header('Access-Control-Allow-Credentials', true);
-  next();
-});
-
 // DONT FORGET TO SET CLIENT SECRET IN ENV --> USE CMD (NOT POWERSHELL) AS ADMIN
 
 // Environment vars
@@ -34,6 +18,28 @@ const clientSecret = process.env.clientSecret;
 const PORT = process.env.PORT || 3000;
 const frontendAddress = config.frontendAddress;
 const backendAddress = config.backendAddress;
+
+const app = express();
+app.use(cors({
+  origin: frontendAddress,
+  credentials: true
+})); // Allow CORS
+app.use(bodyParser.json()); // Parse body from front end POST requests
+app.use(session({
+  resave: false,
+  saveUninitialized: false,
+  secret: "vagabond",
+  cookie: { secure: false }
+}));
+app.use((req, res, next) => {
+  res.set({
+    'Access-Control-Allow-Origin': frontendAddress,
+    'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, Authorization',
+    'Access-Control-Allow-Methods': 'GET, PUT, POST, DELETE, OPTIONS',
+    'Access-Control-Allow-Credentials': true
+  });
+  next();
+});
 
 function Song(id, name, artist, genres, score, played, link, duration) {
   this.id = id;
@@ -86,23 +92,6 @@ app.get('/loggedin', (req, res) => {
     });
 });
 
-// Create new party
-app.get('/newParty', (req, res) => {
-  const reqBody = JSON.parse(req.body);
-  const newPartyHost = dbMethods.makeNewPartyUser(reqBody.spotifyId, 'host')
-    .then((host) => {
-      const newPartyId = dbMethods.makeNewParty(newPartyHost);
-    })
-    .then(() => {
-      req.session.role = 'host';
-      req.session.party = newPartyId;
-    })
-    .then(() => {
-      res.redirect(`${frontendAddress}/host`);
-    })
-    .catch(console.log('makeNewPartyUser failed'));
-});
-
 // Get user's info (name, spotifyId, parties)
 app.get('/getUserInfo', (req, res) => {
   console.log('* /getUserInfo called');
@@ -115,42 +104,51 @@ app.get('/getUserInfo', (req, res) => {
     .catch((err) => console.log('Could not get user info, ' + err));
 });
 
-// Create new playlist
-app.post('/createPlaylist', (req, res) => {
-  console.log('* /createPlaylist called');
+// Create new party/playlist
+app.post('/newParty', async (req, res) => {
+  console.log('* /newParty called');
+  var tempBank = [];
   const playlistName = req.body.playlistName;
   const genres = req.body.genres.split("/");
-  const userId = req.body.userId;
   const playlistDur = 60 * 1000 * parseInt(req.body.duration);
-  // console.log("Playlist duration in ms: " + playlistDur);
+  const retrievedUserData = await dbMethods.getUserInfo(req.session.userData.id);
+  const accessToken = retrievedUserData.accessToken;
+  const userId = retrievedUserData.spotifyId;
+  console.log('Variable declaration done');
+  console.log(`Access token: ${accessToken}`);
+  console.log(`Playlist name: ${playlistName}`);
+  console.log(`User ID: ${userId}`);
 
-  console.log("CREATING NEW PLAYLIST");
-  var tempBank = dbMethods.getSongBank(partyId);
-  queueMethods.createNewPlaylist(accessToken, playlistName, userId)
-    .then(body => {
-      console.log("Completed POST request for creating playlist");
+  // Generate new playlist
+  var createdPlaylist = await queueMethods.createNewPlaylist(accessToken, playlistName, userId);
+  const playlistID = JSON.parse(createdPlaylist).id;
+  var genreOnlyBank = queueMethods.createGenredBank(genres, tempBank);
+  var shortListURI = queueMethods.genShortListURI(genreOnlyBank, playlistDur);
+  console.log('Playlist generated');
 
-      const playlistID = JSON.parse(body).id;
-      console.log("Playlist ID Response: " + playlistID);
+  // Make new party & host object
+  const host = await dbMethods.makeNewPartyUser(userId, 'host');
+  const partyId = await dbMethods.makeNewParty(host, playlistName, shortlistURI);
+  var tempBank = await dbMethods.getSongBank(partyId);
+  console.log('Party created');
 
-      //Decide on songs and add it to the new playlist
-      var genreOnlyBank = queueMethods.createGenredBank(genres, tempBank);
-      var shortListURI = queueMethods.genShortListURI(genreOnlyBank, playlistDur);
-      queueMethods.addSongsToPlaylist(accessToken, shortListURI, playlistID)
-        .then(body => {
-          console.log("Playlist created and populated successfully");
-          res.send({
-            status: "success"
-          });
-        });
-    })
-    .catch(err => {
-      console.log("Error generating new playlist");
-      console.error(err.message);
-      res.send({
-        status: "fail"
-      });
+  try {
+    await queueMethods.addSongsToPlaylist(accessToken, shortListURI, playlistID);
+    res.send({
+      status: "success",
+      playlistId: playlistID
     });
+  } catch {
+    console.log('Could not add songs to playlist');
+    res.send({
+      status: "fail"
+    });
+  }
+});
+
+app.get('/getPartyInfo', async (req, res) => {
+  const partyInfo = await dbMethods.getPartyInfo;
+  return partyInfo;
 });
 
 // Retrieves info about party - TODO: ADAPT FOR DATABASE INSTEAD OF GLOBAL LIST

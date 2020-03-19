@@ -6,7 +6,7 @@ const partySchema = new mongoose.Schema({
   _id: Number,
   members: [partyUserSchema],
   host: partyUserSchema,
-  songs: [String],
+  playlistName: String,
   playlistId: String
 });
 

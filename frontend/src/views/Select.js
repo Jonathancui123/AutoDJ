@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import Squares from '../components/squares';
+import Button from "react-bootstrap/Button";
 import config from '../constants';
 
 class Select extends Component {
@@ -9,7 +11,10 @@ class Select extends Component {
         this.state = {
             name: "<placeholder>",
             spotifyId: "",
-            parties: []
+            parties: [],
+            genres: "",
+            playlistName: "",
+            duration: ""
         }
     }
 
@@ -33,24 +38,72 @@ class Select extends Component {
             .catch(err => console.log(err));
     }
 
-    newParty() {
+    handleChange = event => {
+        const name = event.target.name;
+        const value = event.target.value;
+        this.setState({
+            [name]: value,
+        });
+    };
+
+    newParty = event => {
+        event.preventDefault();
         fetch(`${this.backendAddress}/newParty`, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { "Content-Type": "application/json" },
+            method: "POST",
+            credentials: "include",
             body: JSON.stringify({
-                spotifyId: this.state.spotifyId
+                genres: this.state.genres,
+                playlistName: this.state.playlistName,
+                duration: this.state.duration
             })
         })
-            .then(console.log('* newParty called to backend'))
-            .catch((err) => console.log('Error when calling newParty: ' + err));
+            .then(res => {
+                this.props.history.push(`/host/${res.playlistId}`);
+            });
     }
 
     render() {
         return (
             <div>
-                <h1>Temp select screen</h1>
-                <h2>Hello, {this.state.name}</h2>
-                <h3><a href='/create' onClick={this.newParty}>New party - Go to create screen (sets role to host)</a></h3>
+                <div className="square-container">
+                    <Squares />
+                    <div className="content-container">
+                        <div id="create">
+                            <h1>Welcome, {this.state.name}</h1>
+                            <h2>What do you want to hear?</h2>
+                            <form onSubmit={this.newParty}>
+                                <input
+                                    name="genres"
+                                    type="text"
+                                    value={this.state.genres}
+                                    onChange={this.handleChange}
+                                    placeholder="genre1/genre2/genre3"
+                                />
+                                <br></br>
+                                <input
+                                    name="playlistName"
+                                    type="text"
+                                    value={this.state.playlistName}
+                                    onChange={this.handleChange}
+                                    placeholder="playlist name"
+                                />
+                                <br></br>
+                                <input
+                                    name="duration"
+                                    type="text"
+                                    value={this.state.duration}
+                                    onChange={this.handleChange}
+                                    placeholder="playlist duration (min)"
+                                />
+                                <br></br>
+                                <Button className="cssbutton" type="submit">
+                                    Go!
+                                </Button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
         );
     }

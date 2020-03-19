@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import Button from "react-bootstrap/Button";
+import Squares from '../components/squares';
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Player from "../components/player";
@@ -30,42 +30,25 @@ class Host extends React.Component {
 
   componentDidMount() {
     // alert("COMPONENT MOUNTED")
-    fetch(this.backendAddress + "/clientRegisterUser")
-      .then(res => {
-        return res.json();
+    this.state.playlistID = this.props.match.params;
+    fetch(this.backendAddress + "/getPartyInfo")
+      .then(response => {
+        return response.json();
       })
-      .then(res => {
-        // alert("USER REGISTERED")
-        fetch(this.backendAddress + "/getInfo")
-          .then(response => {
-            return response.json();
-          })
-          .then(response => {
-            // alert("SETTING STATE")
-
-            this.setState({
-              users: response.users,
-              playlistID: response.playlistID,
-              playlistName: response.playlistName,
-              duration: response.playlistDur
-            });
-          })
-
-      })
-
+      .then(response => {
+        this.setState({
+          users: response.members,
+          playlistID: response.playlistId,
+          playlistName: response.playlistName
+        });
+      });
   }
 
   callUpdate = () => {
-    // alert("FETCHING UPDATE")
     fetch(this.backendAddress + "/updatePlaylist", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      // body: JSON.stringify({
-      //   genres: this.state.genres
-      // })
     }).then(res => {
-      // alert("RESPONSE RECEIVED")
-      // this.props.history.push("/host");
       this.refreshPage();
     });
   };
@@ -74,13 +57,7 @@ class Host extends React.Component {
     return (
       <div class="host">
         <div className="square-container">
-          <div className="squares square1" />
-          <div className="squares square2" />
-          <div className="squares square3" />
-          <div className="squares square4" />
-          <div className="squares square5" />
-          <div className="squares square6" />
-          <div className="squares square7" />
+          <Squares />
           <div className="content-container">
             <Row>
               <Col xs={7}>

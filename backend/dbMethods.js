@@ -37,22 +37,22 @@ async function makeNewUser(name, spotifyId, uri, accessToken, refreshToken) {
     return tempId;
 }
 
-async function makeNewParty(host) {
+async function makeNewParty(host, playlistName, playlistId) {
     var tempId = await getNextCounter('parties');
     var newParty = new Party({
         _id: tempId,
-        members: [],
+        members: [host],
         host: host,
-        songs: [],
-        playlistId: ""
+        playlistName: playlistName,
+        playlistId: playlistId
     });
     await newParty.save().then(result => console.log('Party saved to DB: ', result))
     return tempId;
 }
 
-function makeNewPartyUser(spotifyId, role) {
+function makeNewPartyUser(id, role) {
     var newPartyUser = new PartyUser({
-        spotifyId: spotifyId,
+        id: id,
         role: role,
         joinTime: Date.now()
     })
@@ -88,6 +88,20 @@ async function getUserId(spotifyId) {
 async function getUserInfo(id) {
     const info = await User.findOne({
         _id: id
+    });
+    return info;
+}
+
+async function getAccessToken(id) {
+    const info = await User.findOne({
+        _id: id
+    });
+    return info.accessToken;
+}
+
+async function getPartyInfo(playlistId) {
+    const info = await Party.findOne({
+        playlistId: playlistId
     });
     return info;
 }
@@ -135,6 +149,8 @@ module.exports = {
     getNextCounter: getNextCounter,
     getUserId: getUserId,
     getUserInfo: getUserInfo,
+    getAccessToken: getAccessToken,
+    getPartyInfo: getPartyInfo,
     updateTokens: updateTokens,
     updateSongs: updateSongs,
     getSongBank: getSongBank
