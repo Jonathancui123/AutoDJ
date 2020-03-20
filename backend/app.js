@@ -1,23 +1,27 @@
-// Modules
+// Third Party
 const express = require('express');
 const path = require('path');
 const rp = require('request-promise');
 const request = require('request');
 const cors = require('cors');
-const config = require('./config/keys');
 const bodyParser = require('body-parser');
 const session = require('express-session');
-const queueMethods = require('./queueMethods');
-const dbMethods = require('./dbMethods');
 const MongoStore = require('connect-mongo')(session);
 
+// Our modules
+const queueMethods = require('./queueMethods');
+const dbMethods = require('./dbMethods');
+const config = require('./config/keys');
+const authRouter = require('./routes/api/spotifyAuth.js')
 
 // DONT FORGET TO SET CLIENT SECRET IN ENV --> USE CMD (NOT POWERSHELL) AS ADMIN
 
 // Environment vars
-const clientId = "158a4f4cd2df4c9e8a8122ec6cc3863a";
-const clientSecret = process.env.clientSecret;
 const PORT = process.env.PORT || 3000;
+
+//Config -- import these variables to modules
+const clientSecret = config.clientSecret;
+const clientId = config.clientId;
 const frontendAddress = config.frontendAddress;
 const backendAddress = config.backendAddress;
 
@@ -53,44 +57,8 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname + '/views/index.html'));
 });
 
-// Login Page - authorizing the app to get user data
-app.get('/login', (req, res) => {
-  var scopes =
-    'user-read-private user-read-email playlist-modify-public user-top-read';
-  console.log('login req received');
-  res.redirect(
-    'https://accounts.spotify.com/authorize?' +
-    'response_type=code' +
-    '&client_id=' + clientId +
-    (scopes ? '&scope=' + encodeURIComponent(scopes) : '') +
-    '&redirect_uri=' + encodeURIComponent(backendAddress + '/loggedin')
-  );
-});
-
-// Redirect after login
-app.get('/loggedin', (req, res) => {
-  console.log('* /loggedin called');
-  console.log('Client secret ', clientSecret);
-
-  var code = req.query.code;
-  console.log('User code: ', code);
-
-  addUser(code)
-    .then((ret) => {
-      var id = ret.id
-      var access_token = ret.access_token
-
-      req.session.userData = {
-        id: id,
-        access_token: access_token
-      };
-      
-      console.log(`Saved user id: ${req.session.userData.id}`);
-      console.log(`Saved session id: ${req.session.id}`);
-      console.log(`Saved user access token: ${req.session.userData.access_token}`)
-      res.redirect(frontendAddress + '/select');
-    });
-});
+// Handles all routes for spotify authentication
+app.use(authRouter);
 
 // Get user's info (name, spotifyId, parties)
 app.get('/getUserInfo', (req, res) => {
@@ -102,6 +70,14 @@ app.get('/getUserInfo', (req, res) => {
       res.send(info);
     })
     .catch((err) => console.log('Could not get user info, ' + err));
+});
+
+app.get('/getPartyInfo/:playlistId', async (req, res) => {
+  console.log(`* /getPartyInfo/${req.params.playlistId} called`);
+  const playlistId = req.params.playlistId;
+  const partyInfo = await dbMethods.getPartyInfo(playlistId);
+  console.log(partyInfo);
+  res.send(partyInfo);
 });
 
 // Create new party/playlist
@@ -151,13 +127,7 @@ app.post('/newParty', async (req, res) => {
   }
 });
 
-app.get('/getPartyInfo/:playlistId', async (req, res) => {
-  console.log(`* /getPartyInfo/${req.params.playlistId} called`);
-  const playlistId = req.params.playlistId;
-  const partyInfo = await dbMethods.getPartyInfo(playlistId);
-  console.log(partyInfo);
-  res.send(partyInfo);
-});
+
 
 // Retrieves info about party - TODO: ADAPT FOR DATABASE INSTEAD OF GLOBAL LIST
 // app.get("/getInfo", (req, res) => {
@@ -205,67 +175,6 @@ app.post("/test", (req, res) => {
 ///////////////////////////////////////////////
 // USER LOGIN FUNCTIONS
 ///////////////////////////////////////////////
-
-// Authorize a user and get their ACCESS TOKEN
-function getToken(code) {
-  console.log('* Running getToken');
-  var reqOptions = {
-    //Request access token by trading authorization code
-    method: "POST",
-    headers: { "content-type": "application/x-www-form-urlencoded" },
-    url: "https://accounts.spotify.com/api/token",
-    body:
-      "grant_type=authorization_code&code=" + code +
-      "&redirect_uri=" + encodeURIComponent(backendAddress + "/loggedin") +
-      "&client_id=" + clientId +
-      "&client_secret=" + clientSecret
-  };
-
-  const userInfoPromise = rp(reqOptions);
-  return userInfoPromise;
-}
-
-// Add a user to database
-async function addUser(code) {
-  console.log("* Running addUser");
-  var tokenInfo = await getToken(code);
-  tokenInfo = await JSON.parse(tokenInfo);
-  var userInfo = await getUserInfo(tokenInfo.access_token);
-  userInfo = await JSON.parse(userInfo);
-
-  // If user is not in database yet, add them
-  if (!await dbMethods.getUsers(userInfo.id)) {
-    await dbMethods.makeNewUser(userInfo.display_name, userInfo.id, userInfo.uri, tokenInfo.access_token, tokenInfo.refresh_token);
-  } else {
-    await dbMethods.updateTokens(userInfo.id, tokenInfo.access_token, tokenInfo.refresh_token);
-  }
-
-  // Get database index id of user
-  var id = await dbMethods.getUserId(userInfo.id);
-  var ret = {
-    id: id,
-    access_token: tokenInfo.access_token
-  }
-  return ret;
-}
-
-
-// Get a user's PROFILE INFO
-function getUserInfo(accessToken) {
-  console.log("* Running getUserInfo");
-  console.log(`Access token: ${accessToken}`);
-  var reqOptions = {
-    headers: { "content-type": "application/x-www-form-urlencoded" },
-    url: "https://api.spotify.com/v1/me",
-    method: "GET",
-    headers: {
-      Authorization: "Bearer " + accessToken
-    }
-  };
-
-  var regPromise = rp(reqOptions);
-  return regPromise;
-} 
 
 ///////////////////////////////////////////////
 // SONG/PLAYLIST FUNCTIONS
