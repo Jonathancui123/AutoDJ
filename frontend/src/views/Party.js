@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Host from "./Host";
+import Guest from "./Guest";
 import config from "../constants.js";
 
 
@@ -7,6 +8,7 @@ class Party extends Component {
     state = {};
 
     backendAddress = config.backendAddress;
+
     constructor() {
         super();
         this.state = {
@@ -16,6 +18,8 @@ class Party extends Component {
           playlistName: "",
           playlistDuration: null
         };
+
+        this.handleUpdate = this.handleUpdate.bind(this)
       }
     
       refreshPage() {
@@ -23,6 +27,9 @@ class Party extends Component {
       }
     
       componentDidMount() {
+        // Check if the user is logged in here
+
+        // Below assumes that the user is logged in
         const { match: { params } } = this.props;
         this.state.playlistId = params.playlistId;
         console.log("Sending request to: " + `${this.backendAddress}/isPartyHost/${this.state.playlistId}`)
@@ -45,10 +52,41 @@ class Party extends Component {
           });
       }
 
-    render() { 
-        const element = <h1>isHost: {this.state.isHost}</h1>;
 
-        return ( element  );
+    handleUpdate(){
+        //Change backend to handle update requests first
+
+        // fetch(this.backendAddress + "/updatePlaylist", {
+        //     method: "POST",
+        //     headers: { "Content-Type": "application/json" },
+        // }).then(res => {
+        //     this.refreshPage();
+        // });
+        alert("Party component should send update request to server now")
+    }
+      
+    render() { 
+        if (this.state.isHost){
+            return ( <Host 
+                users={this.state.users}
+                playlistID={this.state.playlistID}
+                playlistName={this.state.playlistName}
+                playlistDuration={this.state.playlistDuration}
+                handleUpdate={this.handleUpdate}
+                />);
+        } else {
+            return (
+                <Guest 
+                users={this.state.users}
+                playlistID={this.state.playlistID}
+                playlistName={this.state.playlistName}
+                playlistDuration={this.state.playlistDuration}
+                // handleUpdate={this.handleUpdate}
+                />
+            )
+        }
+
+        
     }
 }
  
