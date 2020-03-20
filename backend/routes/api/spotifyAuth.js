@@ -41,10 +41,12 @@ router.get('/loggedin', (req, res) => {
     addUser(code)
         .then((ret) => {
             var id = ret.id
+            var spotifyId = ret.spotifyId
             var access_token = ret.access_token
 
             req.session.userData = {
                 id: id,
+                spotifyId: spotifyId,
                 access_token: access_token
             };
 
@@ -112,6 +114,7 @@ async function addUser(code) {
     var id = await dbMethods.getUserId(userInfo.id);
     var ret = {
         id: id,
+        spotifyId: userInfo.id,
         access_token: tokenInfo.access_token
     }
     return ret;

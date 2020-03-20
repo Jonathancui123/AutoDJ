@@ -3,6 +3,8 @@ import Squares from '../components/squares';
 import Button from "react-bootstrap/Button";
 import config from '../constants';
 
+// Replaces old host page
+
 class Select extends Component {
     backendAddress = config.backendAddress;
 
@@ -60,7 +62,7 @@ class Select extends Component {
         })
             .then(res => { return res.json(); })
             .then(res => {
-                this.props.history.push(`/host/${res.playlistId}`);
+                this.props.history.push(`/party/${res.playlistId}`);
             });
     }
 

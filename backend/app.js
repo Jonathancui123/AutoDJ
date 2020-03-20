@@ -63,7 +63,8 @@ app.use(authRouter);
 // Get user's info (name, spotifyId, parties)
 app.get('/getUserInfo', (req, res) => {
   console.log('* /getUserInfo called');
-  // console.log(req.session);
+  console.log(req.session);
+  console.log("session id: ", req.session.id)
   // console.log(`Returned session id: ${req.session.id}`);
   dbMethods.getUserInfo(req.session.userData.id)
     .then((info) => {
@@ -76,13 +77,29 @@ app.get('/getPartyInfo/:playlistId', async (req, res) => {
   console.log(`* /getPartyInfo/${req.params.playlistId} called`);
   const playlistId = req.params.playlistId;
   const partyInfo = await dbMethods.getPartyInfo(playlistId);
-  console.log(partyInfo);
+  console.log("Party info: ", partyInfo);
   res.send(partyInfo);
+});
+
+app.get('/isPartyHost/:playlistId', async (req, res) => {
+  console.log(`* /isPartyHost/${req.params.playlistId} called`);
+  const playlistId = req.params.playlistId;
+  const partyInfo = await dbMethods.getPartyInfo(playlistId);
+  console.log("req session id: ", req.session.id)
+  console.log("req.session.userdata.spotifyId: ", req.session.userData.spotifyId)
+  console.log("partyInfo.host.spotifyId: ", partyInfo.host.spotifyId)
+
+  var partyAndHostInfo = JSON.parse(JSON.stringify(partyInfo))
+  partyAndHostInfo.isHost = ((req.session.userData.spotifyId == partyAndHostInfo.host.spotifyId) ? true : false);
+  console.log("Returning partyAndHostInfo: ", partyAndHostInfo);
+  res.send(partyAndHostInfo);
 });
 
 // Create new party/playlist
 app.post('/newParty', async (req, res) => {
   console.log('* /newParty called');
+  console.log("session id: ", req.session.id)
+
   const playlistName = req.body.playlistName;
   const genres = req.body.genres.split("/");
   const playlistDur = 60 * 1000 * parseInt(req.body.duration);

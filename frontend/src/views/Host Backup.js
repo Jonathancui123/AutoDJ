@@ -14,7 +14,7 @@ class Host extends React.Component {
 
   backendAddress = config.backendAddress;
 
-  constructor(props) {
+  constructor() {
     super();
     this.state = {
       users: [],
