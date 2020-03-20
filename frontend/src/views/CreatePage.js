@@ -1,10 +1,6 @@
 import React from "react";
-import Container from "react-bootstrap/Container";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import Form from "react-bootstrap/Form";
+import Squares from '../components/squares';
 import Button from "react-bootstrap/Button";
-import { Redirect } from "react-router-dom";
 import config from "../constants.js";
 
 
@@ -16,25 +12,23 @@ class Create extends React.Component {
   constructor() {
     super();
     this.state = {
-      userID: "",
-      userDP: "woopsies",
-      genres: "",
-      playlistName: "",
-      playlistURI: "Null",
-      duration: null
+      name: "<placeholder>",
+      spotifyId: "",
+      parties: []
     };
   }
 
   componentDidMount() {
-    fetch(this.backendAddress + "/clientRegisterUser")
+    fetch(this.backendAddress + "/getUserInfo")
       .then(res => {
         return res.json();
       })
       .then(res => {
         console.log(res);
         this.setState({
-          userDP: res.display_name,
-          userID: res.spotifyID
+          name: res.name,
+          spotifyId: res.spotifyId,
+          parties: res.parties
         });
       })
       .catch(err => console.log(err));
@@ -51,42 +45,29 @@ class Create extends React.Component {
 
   createPlaylist = event => {
     event.preventDefault();
-    // alert(
-    //   "called create playlist submitting: " +
-    //     this.state.genres + " " +
-    //     this.state.playlistName + " " + 
-    //     this.state.duration
-    // );
     fetch(this.backendAddress + "/createPlaylist", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         genres: this.state.genres,
         playlistName: this.state.playlistName,
-        userID: this.state.userID,
+        userId: this.state.userId,
         duration: this.state.duration
       })
     })
       // .then(res => res.json())
       .then(res => {
-        this.props.history.push("/host");
+        this.props.history.push(`/host/${res.playlistId}`);
       });
   };
 
   render() {
     return (
       <div className="square-container">
-        <div className="squares square1" />
-        <div className="squares square2" />
-        <div className="squares square3" />
-        <div className="squares square4" />
-        <div className="squares square5" />
-        <div className="squares square6" />
-        <div className="squares square7" />
-        {/* <Logo className="logo" /> */}
+        <Squares />
         <div className="content-container">
           <div id="create">
-            <h1>Welcome, {this.state.userDP}</h1>
+            <h1>Welcome, {this.state.name}</h1>
             <h2>What do you want to hear?</h2>
             <form onSubmit={this.createPlaylist}>
               <input

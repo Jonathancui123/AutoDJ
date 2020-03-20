@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import Button from "react-bootstrap/Button";
+import Squares from '../components/squares';
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Player from "../components/player";
@@ -18,7 +18,7 @@ class Host extends React.Component {
     super();
     this.state = {
       users: [],
-      playlistID: "",
+      playlistId: "",
       playlistName: "",
       playlistDuration: null
     };
@@ -29,43 +29,27 @@ class Host extends React.Component {
   }
 
   componentDidMount() {
-    // alert("COMPONENT MOUNTED")
-    fetch(this.backendAddress + "/clientRegisterUser")
-      .then(res => {
-        return res.json();
+    const { match: { params } } = this.props;
+    this.state.playlistId = params.playlistId;
+    fetch(`${this.backendAddress}/getPartyInfo/${this.state.playlistId}`)
+      .then(response => {
+        return response.json();
       })
-      .then(res => {
-        // alert("USER REGISTERED")
-        fetch(this.backendAddress + "/getInfo")
-          .then(response => {
-            return response.json();
-          })
-          .then(response => {
-            // alert("SETTING STATE")
-
-            this.setState({
-              users: response.users,
-              playlistID: response.playlistID,
-              playlistName: response.playlistName,
-              duration: response.playlistDur
-            });
-          })
-
-      })
-
+      .then(response => {
+        this.setState({
+          users: response.members,
+          playlistID: response.playlistId,
+          playlistName: response.playlistName
+        });
+      });
+    console.log(this.state);
   }
 
   callUpdate = () => {
-    // alert("FETCHING UPDATE")
     fetch(this.backendAddress + "/updatePlaylist", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      // body: JSON.stringify({
-      //   genres: this.state.genres
-      // })
     }).then(res => {
-      // alert("RESPONSE RECEIVED")
-      // this.props.history.push("/host");
       this.refreshPage();
     });
   };
@@ -74,18 +58,12 @@ class Host extends React.Component {
     return (
       <div class="host">
         <div className="square-container">
-          <div className="squares square1" />
-          <div className="squares square2" />
-          <div className="squares square3" />
-          <div className="squares square4" />
-          <div className="squares square5" />
-          <div className="squares square6" />
-          <div className="squares square7" />
+          <Squares />
           <div className="content-container">
             <Row>
               <Col xs={7}>
                 <div className="playerPanel">
-                  <Player playlistID={this.state.playlistID} />
+                  <Player playlistID={this.state.playlistId} />
                 </div>
               </Col>
               <Col xs={5}>
@@ -93,9 +71,10 @@ class Host extends React.Component {
                   <h1 style={{ marginBottom: "10px" }}>{this.state.playlistName}</h1>
                   <Members users={this.state.users} />
                   <br></br>
-                  <Button id="update" onClick={this.callUpdate}>
+                  {/* Temporarily removed update functionality while migrating to database */}
+                  {/* <Button id="update" onClick={this.callUpdate}>
                     Update
-                  </Button>
+                  </Button> */}
                 </div>
               </Col>
             </Row>

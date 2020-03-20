@@ -8,7 +8,8 @@ import * as serviceWorker from "./serviceWorker";
 
 import App from "./views/App";
 import Create from "./views/CreatePage";
-import Host from "./views/host";
+import Host from "./views/Host";
+import Select from "./views/Select";
 
 // DONT FORGET TO SET CURR_ENV=development for development
 
@@ -17,11 +18,8 @@ ReactDOM.render(
     <Switch>
       <Route path="/home" render={props => <App {...props} />} />
       <Route path="/create" render={props => <Create {...props} />} />
-      {/* <Route
-        path="/landing-page"
-        render={props => <LandingPage {...props} />}
-      /> */}
-      <Route path="/host" render={props => <Host {...props} />} />
+      <Route path="/select" render={props => <Select {...props} />} />
+      <Route path="/host/:playlistId" render={props => <Host {...props} />} />
       <Redirect from="/" to="/home" />
     </Switch>
   </BrowserRouter>,

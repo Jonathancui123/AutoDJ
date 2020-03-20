@@ -10,7 +10,7 @@ Create page:
 Allow the host to name their playlist on the create page
 Allow the host to choose playlist duration
 Tell the host to expect a playlist to be created on their account
-
+- Add an error page if user tries to access a party that does not exist
 
 SERVER:
 Reorganizing app.js into 3 route files:
