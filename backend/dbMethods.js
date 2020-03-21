@@ -136,6 +136,20 @@ async function addParty(userId, playlistId) {
     })
 }
 
+async function joinParty(spotifyId, playlistId) {
+    const newUser = makeNewPartyUser(spotifyId, 'guest');
+    await Party.updateOne({ playlistId: playlistId }, {
+        $push: {
+            members: newUser
+        }
+    });
+    await User.updateOne({ spotifyId: spotifyId }, {
+        $push: {
+            parties: spotifyId
+        }
+    });
+}
+
 // TODO: Update party function (new spotify link, host, etc)
 
 ///////////////////////////////////////////////
@@ -174,6 +188,7 @@ module.exports = {
     getPartyInfo: getPartyInfo,
     updateTokens: updateTokens,
     addParty: addParty,
+    joinParty: joinParty,
     updateSongs: updateSongs,
     getSongBank: getSongBank
 }

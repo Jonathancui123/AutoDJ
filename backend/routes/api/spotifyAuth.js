@@ -30,6 +30,21 @@ router.get('/login', (req, res) => {
     );
 });
 
+// Login Page WITH REDIRECT
+router.get('/login/:redirect', (req, res) => {
+    console.log(clientId);
+    var scopes =
+        'user-read-private user-read-email playlist-modify-public user-top-read';
+    console.log('login req received');
+    res.redirect(
+        'https://accounts.spotify.com/authorize?' +
+        'response_type=code' +
+        '&client_id=' + clientId +
+        (scopes ? '&scope=' + encodeURIComponent(scopes) : '') +
+        '&redirect_uri=' + encodeURIComponent(`${frontendAddress}/party/${req.query.redirect}`)
+    );
+});
+
 // Redirect after login
 router.get('/loggedin', (req, res) => {
     console.log('* /loggedin called');
@@ -62,38 +77,38 @@ router.get('/loggedin', (req, res) => {
 function getToken(code) {
     console.log('* Running getToken');
     var reqOptions = {
-      //Request access token by trading authorization code
-      method: "POST",
-      headers: { "content-type": "application/x-www-form-urlencoded" },
-      url: "https://accounts.spotify.com/api/token",
-      body:
-        "grant_type=authorization_code&code=" + code +
-        "&redirect_uri=" + encodeURIComponent(backendAddress + "/loggedin") +
-        "&client_id=" + clientId +
-        "&client_secret=" + clientSecret
+        //Request access token by trading authorization code
+        method: "POST",
+        headers: { "content-type": "application/x-www-form-urlencoded" },
+        url: "https://accounts.spotify.com/api/token",
+        body:
+            "grant_type=authorization_code&code=" + code +
+            "&redirect_uri=" + encodeURIComponent(backendAddress + "/loggedin") +
+            "&client_id=" + clientId +
+            "&client_secret=" + clientSecret
     };
-  
+
     const userInfoPromise = rp(reqOptions);
     return userInfoPromise;
-  }
+}
 
 // Get a user's PROFILE INFO <-- appears to be unused: March 19th 7:30pm
 function getUserInfo(accessToken) {
     console.log("* Running getUserInfo");
     console.log(`Access token: ${accessToken}`);
     var reqOptions = {
-      headers: { "content-type": "application/x-www-form-urlencoded" },
-      url: "https://api.spotify.com/v1/me",
-      method: "GET",
-      headers: {
-        Authorization: "Bearer " + accessToken
-      }
+        headers: { "content-type": "application/x-www-form-urlencoded" },
+        url: "https://api.spotify.com/v1/me",
+        method: "GET",
+        headers: {
+            Authorization: "Bearer " + accessToken
+        }
     };
-  
+
     var regPromise = rp(reqOptions);
     return regPromise;
-  } 
-  
+}
+
 
 // Add a user to database
 async function addUser(code) {
