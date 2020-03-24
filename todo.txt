@@ -5,8 +5,8 @@ DOCKER>??
 
 REACT:
 // Implement "guest" view
-// Create conditional rendering for "host" and "guest"
 Create page:
+Fix genre submission form
 Allow the host to name their playlist on the create page
 Allow the host to choose playlist duration
 Tell the host to expect a playlist to be created on their account
