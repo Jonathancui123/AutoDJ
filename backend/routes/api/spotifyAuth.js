@@ -11,39 +11,51 @@ const clientSecret = config.clientSecret;
 const clientId = config.clientId;
 const frontendAddress = config.frontendAddress;
 const backendAddress = config.backendAddress;
+const defaultRedirect = frontendAddress + '/select'
 console.log("client id is:", clientId);
 console.log("frontend address is:", frontendAddress);
 
 
 // Login Page WITH REDIRECT
-router.get('/login/:redirect', (req, res) => {
-    console.log(clientId);
-    var scopes =
-        'user-read-private user-read-email playlist-modify-public user-top-read';
-    console.log('login req received. Redirect is: ', req.query.redirect);
-    res.redirect(
-        'https://accounts.spotify.com/authorize?' +
-        'response_type=code' +
-        '&client_id=' + clientId +
-        (scopes ? '&scope=' + encodeURIComponent(scopes) : '') +
-        '&redirect_uri=' + encodeURIComponent(`${frontendAddress}/party/${req.query.redirect}`)
-    );
-});
-
-// Login Page - authorizing the app to get user data
 router.get('/login', (req, res) => {
     console.log(clientId);
     var scopes =
         'user-read-private user-read-email playlist-modify-public user-top-read';
-    console.log('login req received');
+
+    if (typeof req.query.redirect !== 'undefined') {
+        req.session.redirect = {
+            url: frontendAddress + '/' + req.query.redirect
+        }
+        console.log("")
+    }
+
+    console.log('login req received. Redirect specified as :', req.session.redirect)
+
+
     res.redirect(
         'https://accounts.spotify.com/authorize?' +
         'response_type=code' +
         '&client_id=' + clientId +
         (scopes ? '&scope=' + encodeURIComponent(scopes) : '') +
         '&redirect_uri=' + encodeURIComponent(backendAddress + '/loggedin')
-    );
+    )
+
 });
+
+// Login Page - authorizing the app to get user data
+// router.get('/login', (req, res) => {
+//     console.log(clientId);
+//     var scopes =
+//         'user-read-private user-read-email playlist-modify-public user-top-read';
+//     console.log('login req received');
+//     res.redirect(
+//         'https://accounts.spotify.com/authorize?' +
+//         'response_type=code' +
+//         '&client_id=' + clientId +
+//         (scopes ? '&scope=' + encodeURIComponent(scopes) : '') +
+//         '&redirect_uri=' + encodeURIComponent(backendAddress + '/loggedin')
+//     );
+// });
 
 // Redirect after login
 router.get('/loggedin', (req, res) => {
@@ -51,7 +63,15 @@ router.get('/loggedin', (req, res) => {
     console.log('Client secret ', clientSecret);
 
     var code = req.query.code;
+    var redirect = defaultRedirect
+    if (typeof req.session.redirect !== 'undefined') {
+        redirect = req.session.redirect.url;
+        delete req.session.redirect
+        console.log("Session redirect deleted")
+    }
+
     console.log('User code: ', code);
+    console.log("From /loggedin redirecting to:", redirect)
 
     addUser(code)
         .then((ret) => {
@@ -68,7 +88,7 @@ router.get('/loggedin', (req, res) => {
             console.log(`Saved user id: ${req.session.userData.id}`);
             console.log(`Saved session id: ${req.session.id}`);
             console.log(`Saved user access token: ${req.session.userData.access_token}`)
-            res.redirect(frontendAddress + '/select');
+            res.redirect(redirect);
         });
 });
 

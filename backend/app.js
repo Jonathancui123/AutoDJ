@@ -66,11 +66,16 @@ app.get('/getUserInfo', (req, res) => {
 	console.log(req.session);
 	console.log("session id: ", req.session.id)
 	// console.log(`Returned session id: ${req.session.id}`);
-	dbMethods.getUserInfo(req.session.userData.id)
-		.then((info) => {
-			res.send(info);
-		})
-		.catch((err) => console.log('Could not get user info, ' + err));
+	try {
+		dbMethods.getUserInfo(req.session.userData.id)
+			.then((info) => {
+				res.send(info);
+			})
+			.catch((err) => console.log('Could not get user info, ' + err));
+	}
+	catch (err) {
+		console.log(err.message);
+	}
 });
 
 // Get party's info

@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
 import Squares from '../components/squares';
 import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
 import config from '../constants';
+import enforceLogin from '../components/enforceLogin';
+import loginModal from '../components/loginModal';
 
 // Replaces old host page
 
@@ -16,12 +19,24 @@ class Select extends Component {
             parties: [],
             genres: "",
             playlistName: "",
-            duration: ""
+            duration: "",
+            loggedIn: true
         }
     }
 
     componentDidMount() {
         console.log('Component mounted');
+        enforceLogin("select")
+            .then(loggedInBool => {
+
+                this.setState({
+                    loggedIn: loggedInBool
+                })
+            })
+            .catch(err => {
+                console.log('Could not verify login');
+            });
+
         fetch(`${this.backendAddress}/getUserInfo`, {
             method: "GET",
             credentials: "include"
@@ -38,6 +53,7 @@ class Select extends Component {
                 });
             })
             .catch(err => console.log(err));
+
     }
 
     handleChange = event => {
@@ -67,11 +83,14 @@ class Select extends Component {
     }
 
     render() {
+
         return (
+
             <div>
                 <div className="square-container">
                     <Squares />
                     <div className="content-container">
+
                         <div id="create">
                             <h1>Welcome, {this.state.name}</h1>
                             <h2>What do you want to hear?</h2>
@@ -108,6 +127,9 @@ class Select extends Component {
                     </div>
                 </div>
             </div>
+
+
+
         );
     }
 }
