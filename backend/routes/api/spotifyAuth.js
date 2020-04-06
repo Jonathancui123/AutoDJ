@@ -15,6 +15,21 @@ console.log("client id is:", clientId);
 console.log("frontend address is:", frontendAddress);
 
 
+// Login Page WITH REDIRECT
+router.get('/login/:redirect', (req, res) => {
+    console.log(clientId);
+    var scopes =
+        'user-read-private user-read-email playlist-modify-public user-top-read';
+    console.log('login req received. Redirect is: ', req.query.redirect);
+    res.redirect(
+        'https://accounts.spotify.com/authorize?' +
+        'response_type=code' +
+        '&client_id=' + clientId +
+        (scopes ? '&scope=' + encodeURIComponent(scopes) : '') +
+        '&redirect_uri=' + encodeURIComponent(`${frontendAddress}/party/${req.query.redirect}`)
+    );
+});
+
 // Login Page - authorizing the app to get user data
 router.get('/login', (req, res) => {
     console.log(clientId);
@@ -27,21 +42,6 @@ router.get('/login', (req, res) => {
         '&client_id=' + clientId +
         (scopes ? '&scope=' + encodeURIComponent(scopes) : '') +
         '&redirect_uri=' + encodeURIComponent(backendAddress + '/loggedin')
-    );
-});
-
-// Login Page WITH REDIRECT
-router.get('/login/:redirect', (req, res) => {
-    console.log(clientId);
-    var scopes =
-        'user-read-private user-read-email playlist-modify-public user-top-read';
-    console.log('login req received');
-    res.redirect(
-        'https://accounts.spotify.com/authorize?' +
-        'response_type=code' +
-        '&client_id=' + clientId +
-        (scopes ? '&scope=' + encodeURIComponent(scopes) : '') +
-        '&redirect_uri=' + encodeURIComponent(`${frontendAddress}/party/${req.query.redirect}`)
     );
 });
 
