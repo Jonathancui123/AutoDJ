@@ -4,6 +4,7 @@ const dbUrl = require("./config/keys").mongoURI;
 
 // Make sure you have a running DB called 'autoDJ': /localhost:27017/autoDJ
 // Needs 3 collections in the autoDJ db called 'counters', 'parties', 'users'
+// Run dbInit when setting up db for the first time
 
 mongoose
     .connect(dbUrl, {

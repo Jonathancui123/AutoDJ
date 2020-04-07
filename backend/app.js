@@ -9,22 +9,23 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 
 // Our modules
-const queueMethods = require('./queueMethods');
 const dbMethods = require('./dbMethods');
 const config = require('./config/keys');
-const authRouter = require('./routes/api/spotifyAuth.js')
+const authRouter = require('./routes/api/spotifyAuth.js');
+const partyRouter = require('./routes/api/partyManager.js');
+const userRouter = require('./routes/api/userManager.js');
 
 // DONT FORGET TO SET CLIENT SECRET IN ENV --> USE CMD (NOT POWERSHELL) AS ADMIN
 
 // Environment vars
 const PORT = process.env.PORT || 3000;
-
 // Config -- import these variables to modules
 const clientSecret = config.clientSecret;
 const clientId = config.clientId;
 const frontendAddress = config.frontendAddress;
 const backendAddress = config.backendAddress;
 
+// Use middleware
 const app = express();
 app.use(cors({
 	origin: frontendAddress,
@@ -51,7 +52,7 @@ app.use((req, res, next) => {
 });
 
 ///////////////////////////////////////////////
-// ROUTES
+// ROUTERS
 ///////////////////////////////////////////////
 app.get('/', (req, res) => {
 	res.sendFile(path.join(__dirname + '/views/index.html'));
@@ -59,113 +60,9 @@ app.get('/', (req, res) => {
 
 // Handles all routes for spotify authentication
 app.use(authRouter);
+app.use(partyRouter)
+app.use(userRouter);
 
-// Get user's info (name, spotifyId, parties)
-app.get('/getUserInfo', (req, res) => {
-	console.log('* /getUserInfo called');
-	console.log(req.session);
-	console.log("session id: ", req.session.id)
-	// console.log(`Returned session id: ${req.session.id}`);
-	try {
-		dbMethods.getUserInfo(req.session.userData.id)
-			.then((info) => {
-				res.send(info);
-			})
-			.catch((err) => console.log('Could not get user info, ' + err));
-	}
-	catch (err) {
-		console.log(err.message);
-	}
-});
-
-// Get party's info
-app.get('/getPartyInfo/:playlistId', async (req, res) => {
-	console.log(`* /getPartyInfo/${req.params.playlistId} called`);
-	const playlistId = req.params.playlistId;
-	const partyInfo = await dbMethods.getPartyInfo(playlistId);
-	console.log("Party info: ", partyInfo);
-	res.send(partyInfo);
-});
-
-// Check if current user is the host of the party - Is it req.params or req.query?
-app.get('/isPartyHost/:playlistId', async (req, res) => {
-	console.log(`* /isPartyHost/${req.params.playlistId} called`);
-	const playlistId = req.params.playlistId;
-	const partyInfo = await dbMethods.getPartyInfo(playlistId);
-	console.log("req session id: ", req.session.id)
-	console.log("req.session.userdata.spotifyId: ", req.session.userData.spotifyId)
-	console.log("partyInfo.host.spotifyId: ", partyInfo.host.spotifyId)
-
-	var partyAndHostInfo = JSON.parse(JSON.stringify(partyInfo))
-	partyAndHostInfo.isHost = ((req.session.userData.spotifyId == partyAndHostInfo.host.spotifyId) ? true : false);
-	console.log("Returning partyAndHostInfo: ", partyAndHostInfo);
-	res.send(partyAndHostInfo);
-});
-
-// Create new party/playlist
-app.post('/newParty', async (req, res) => {
-	console.log('* /newParty called');
-	console.log("session id: ", req.session.id)
-
-	const playlistName = req.body.playlistName;
-	const genres = req.body.genres.split("/");
-	const playlistDur = 60 * 1000 * parseInt(req.body.duration);
-	const retrievedUserData = await dbMethods.getUserInfo(req.session.userData.id);
-	const accessToken = retrievedUserData.accessToken;
-	const userId = retrievedUserData.spotifyId;
-	console.log('Variable declaration done');
-	console.log(`Access token: ${accessToken}`);
-	console.log(`Playlist name: ${playlistName}`);
-	console.log(`User ID: ${userId}`);
-
-	// Generate new playlist
-	var tempBank = await queueMethods.getSongs(accessToken);
-	tempBank = await queueMethods.addSongsToBank(tempBank, accessToken);
-	console.log(tempBank.slice(0, 10));
-	var createdPlaylist = await queueMethods.createNewPlaylist(accessToken, playlistName, userId);
-	const playlistId = JSON.parse(createdPlaylist).id;
-	console.log(`Playlist ID: ${playlistId}`);
-	var genreOnlyBank = queueMethods.createGenredBank(genres, tempBank);
-	var shortListURI = queueMethods.genShortListURI(genreOnlyBank, playlistDur);
-	console.log('Playlist generated');
-
-	// Make new party & host object
-	const host = await dbMethods.makeNewPartyUser(userId, 'host');
-	const partyId = await dbMethods.makeNewParty(host, playlistName, playlistId);
-	console.log('Party created');
-
-	// Add party to current user's profile
-	await dbMethods.addParty(req.session.userData.id, playlistId);
-
-	try {
-		await queueMethods.addSongsToPlaylist(accessToken, shortListURI, playlistId);
-		res.send({
-			status: "success",
-			playlistId: playlistId
-		});
-	} catch {
-		console.log('Could not add songs to playlist');
-		res.send({
-			status: "fail"
-		});
-	}
-});
-
-// Join a party
-app.post('/joinParty/:playlistId', async (req, res) => {
-	console.log(`* /joinParty/${req.query.playlistId} called`);
-	const partyMembers = await dbMethods.getPartyInfo(req.query.playlistId).members;
-	partyMembers = partyMembers.map(member => member.spotifyId);
-	if (!partyMembers.include(req.session.userData.spotifyId)) {
-		await dbMethods.joinParty(req.session.userData.spotifyId, req.query.playlistId);
-	}
-});
-
-// Check if person is logged in (return true if logged in)
-app.get('/checkLogin', (req, res) => {
-	console.log('* /checkLogin called');
-	res.send(req.session.userData ? true : false);
-});
 
 // Run this every 59 mins to refresh the access token for the user
 function refresh_access() {
