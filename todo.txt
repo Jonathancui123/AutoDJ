@@ -7,17 +7,10 @@ REACT:
 // Implement "guest" view
 Create page:
 Fix genre submission form
-Allow the host to name their playlist on the create page
-Allow the host to choose playlist duration
 Tell the host to expect a playlist to be created on their account
 - Add an error page if user tries to access a party that does not exist
 
 SERVER:
-Reorganizing app.js into 3 route files:
-- Authorization (with spotify API)
-- Getting user/playlist info (from Spotify API)
-- Modifying/creating party playlist
-Handle multiple visits to the login page from the same user
 Search for the desired genre in Spotify's genre names e.g. "pop rap" <= pop
 Query everyone's names in the same call as their tastes profile from spotify
 Add party links (unique invite links to each party) --> support several parties
