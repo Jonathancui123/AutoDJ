@@ -17,3 +17,4 @@ Add party links (unique invite links to each party) --> support several parties
 Handle the case where there are insufficient songs in the songbank needed for the requested duration
 Order the songs by BPM/Pitch/Something useful
 Perform a check to see if the saved spotify ID exists as a playlist (Editing playlists from previous sessions)
+How will we update out-of-date information in our database?
