@@ -11,6 +11,7 @@ import Create from "./views/CreatePage";
 import Host from "./views/Host";
 import Party from "./views/Party";
 import Select from "./views/Select";
+import Update from "./views/Update";
 
 // DONT FORGET TO SET CURR_ENV=development for development
 
@@ -20,6 +21,7 @@ ReactDOM.render(
       <Route path="/home" render={props => <App {...props} />} />
       <Route path="/create" render={props => <Create {...props} />} />
       <Route path="/select" render={props => <Select {...props} />} />
+      <Route path="/update" render={props => <Update {...props} />} />
       <Route path="/party/:playlistId" render={props => <Party {...props} />} />
       <Redirect from="/" to="/home" />
     </Switch>

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { withRouter } from 'react-router-dom';
 import Squares from '../components/squares';
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
@@ -8,11 +9,11 @@ import loginModal from '../components/loginModal';
 
 // Replaces old host page
 
-class Select extends Component {
+class Update extends Component {
     backendAddress = config.backendAddress;
 
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
             name: "<placeholder>",
             spotifyId: "",
@@ -20,14 +21,14 @@ class Select extends Component {
             genres: "",
             playlistName: "",
             duration: "",
-            playlistId: "",
+            // playlistId: "",
             loggedIn: true
         }
     }
 
     componentDidMount() {
         console.log('Component mounted');
-        enforceLogin("select")
+        enforceLogin("update")
             .then(loggedInBool => {
 
                 this.setState({
@@ -37,6 +38,24 @@ class Select extends Component {
             .catch(err => {
                 console.log('Could not verify login');
             });
+
+        fetch(`${this.backendAddress}/getPartyInfo/${this.props.location.state.playlistId}`, {
+            method: "GET",
+            credentials: "include"
+        })
+            .then(res => {
+                return res.json();
+            })
+            .then(res => {
+                console.log(res);
+                this.setState({
+                    genres: res.genres,
+                    playlistName: res.playlistName,
+                    duration: res.duration / 60000
+                })
+            })
+            .catch(err => console.log("ERROR: User may have deleted playlist"));
+        // TODO: MAKE ERROR PAGE
 
         fetch(`${this.backendAddress}/getUserInfo`, {
             method: "GET",
@@ -65,21 +84,22 @@ class Select extends Component {
         });
     };
 
-    newParty = event => {
+    updatePlaylist = event => {
         event.preventDefault();
-        fetch(`${this.backendAddress}/newParty`, {
+        fetch(`${this.backendAddress}/updatePlaylist`, {
             headers: { "Content-Type": "application/json" },
-            method: "POST",
+            method: "PUT",
             credentials: "include",
             body: JSON.stringify({
                 genres: this.state.genres,
                 playlistName: this.state.playlistName,
-                duration: this.state.duration
+                duration: this.state.duration,
+                playlistId: this.props.location.state.playlistId
             })
         })
             .then(res => { return res.json(); })
             .then(res => {
-                this.props.history.push(`/party/${res.playlistId}`);
+                this.props.history.push(`/party/${this.props.location.state.playlistId}`);
             });
     }
 
@@ -92,24 +112,15 @@ class Select extends Component {
                     <Squares />
                     <div className="content-container">
 
-                        <div id="create">
-                            <h1>Welcome, {this.state.name}</h1>
-                            <h2>What do you want to hear?</h2>
-                            <form onSubmit={this.newParty}>
+                        <div id="updateBlock">
+                            <h1>Update Playlist: {this.state.playlistName}</h1>
+                            <form onSubmit={this.updatePlaylist}>
                                 <input
                                     name="genres"
                                     type="text"
                                     value={this.state.genres}
                                     onChange={this.handleChange}
                                     placeholder="genre1/genre2/genre3"
-                                />
-                                <br></br>
-                                <input
-                                    name="playlistName"
-                                    type="text"
-                                    value={this.state.playlistName}
-                                    onChange={this.handleChange}
-                                    placeholder="playlist name"
                                 />
                                 <br></br>
                                 <input
@@ -121,7 +132,7 @@ class Select extends Component {
                                 />
                                 <br></br>
                                 <Button className="cssbutton" type="submit">
-                                    Go!
+                                    Update!
                                 </Button>
                             </form>
                         </div>
@@ -135,4 +146,4 @@ class Select extends Component {
     }
 }
 
-export default Select;
+export default withRouter(Update);

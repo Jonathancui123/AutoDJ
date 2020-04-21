@@ -66,8 +66,8 @@ router.get('/loggedin', (req, res) => {
     var redirect = defaultRedirect
     if (typeof req.session.redirect !== 'undefined') {
         redirect = req.session.redirect.url;
-        delete req.session.redirect
-        console.log("Session redirect deleted")
+        delete req.session.redirect;
+        console.log("Session redirect deleted");
     }
 
     console.log('User code: ', code);

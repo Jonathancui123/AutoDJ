@@ -7,7 +7,9 @@ const partySchema = new mongoose.Schema({
   members: [partyUserSchema],
   host: partyUserSchema,
   playlistName: String,
-  playlistId: String
+  playlistId: String,
+  genres: String,
+  duration: Number
 });
 
 //Returns a CLASS of object with the above schema

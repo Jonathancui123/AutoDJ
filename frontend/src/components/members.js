@@ -6,7 +6,7 @@ class Members extends Component {
   render() {
     var users = this.props.users;
     var memberList = users.map(user => (
-      <tr style={{ height: "30px" }}>
+      <tr>
         <td style={{ paddingLeft: "20px" }}>{user.name}</td>
         <td style={{ paddingBottom: 0, paddingRight: 0, textAlign: "right" }}>
           <iframe
@@ -27,13 +27,13 @@ class Members extends Component {
     ));
 
     return (
-      <div style={{ height: "60%" }}>
+      <div style={{ height: "57.2vh" }}>
         <h2>In the house:</h2>
         <Table
           striped
           hover
           variant="dark"
-          style={{ overflowY: "auto", height: "100px" }}
+          style={{ overflowY: "auto" }}
         >
           <tbody>{memberList}</tbody>
         </Table>

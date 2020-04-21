@@ -6,7 +6,8 @@ import Button from "react-bootstrap/Button";
 import Player from "../components/player";
 import Members from "../components/members";
 import config from "../constants.js";
-
+import Update from "./Update";
+import { withRouter } from "react-router-dom";
 
 import "./Styles.css";
 
@@ -31,7 +32,9 @@ class Host extends React.Component {
   }
 
   callUpdate = () => {
-    this.props.handleUpdate();
+    this.props.history.push("/update", {
+      playlistId: this.props.playlistID
+    });
   };
 
   render() {
@@ -65,4 +68,4 @@ class Host extends React.Component {
   }
 }
 
-export default Host;
+export default withRouter(Host);

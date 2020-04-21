@@ -66,11 +66,54 @@ router.post('/newParty', async (req, res) => {
 
     // Make new party & host object
     const host = await dbMethods.makeNewPartyUser(userId, 'host');
-    const partyId = await dbMethods.makeNewParty(host, playlistName, playlistId);
+    const partyId = await dbMethods.makeNewParty(host, playlistName, playlistId, req.body.genres, playlistDur);
     console.log('Party created');
 
     // Add party to current user's profile
     await dbMethods.addParty(req.session.userData.id, playlistId);
+
+    try {
+        await queueMethods.addSongsToPlaylist(accessToken, shortListURI, playlistId);
+        res.send({
+            status: "success",
+            playlistId: playlistId
+        });
+    } catch {
+        console.log('Could not add songs to playlist');
+        res.send({
+            status: "fail"
+        });
+    }
+});
+
+// Update current playlist
+router.put('/updatePlaylist', async (req, res) => {
+    console.log('* /updatePlaylist called');
+    console.log("session id: ", req.session.id)
+
+    const playlistName = req.body.playlistName;
+    const genres = req.body.genres.split("/");
+    const playlistId = req.body.playlistId;
+    const playlistDur = 60 * 1000 * parseInt(req.body.duration);
+    const retrievedUserData = await dbMethods.getUserInfo(req.session.userData.id);
+    const accessToken = retrievedUserData.accessToken;
+    const userId = retrievedUserData.spotifyId;
+    console.log('Variable declaration done');
+    console.log(`Access token: ${accessToken}`);
+    console.log(`Playlist name: ${playlistName}`);
+    console.log(`User ID: ${userId}`);
+    console.log(`Playlist ID: ${playlistId}`);
+
+    // Create new shortlist
+    var tempBank = await queueMethods.getSongs(accessToken);
+    tempBank = await queueMethods.addSongsToBank(tempBank, accessToken);
+    console.log(tempBank.slice(0, 10));
+    var genreOnlyBank = queueMethods.createGenredBank(genres, tempBank);
+    var shortListURI = queueMethods.genShortListURI(genreOnlyBank, playlistDur);
+    console.log('Playlist generated');
+
+    // Update database entry for party
+    await dbMethods.updateParty(playlistName, playlistId, req.body.genres, playlistDur);
 
     try {
         await queueMethods.addSongsToPlaylist(accessToken, shortListURI, playlistId);

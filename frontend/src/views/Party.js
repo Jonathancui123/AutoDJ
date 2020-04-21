@@ -11,8 +11,8 @@ class Party extends Component {
 
   backendAddress = config.backendAddress;
 
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       isHost: false,
       users: [],
@@ -22,7 +22,7 @@ class Party extends Component {
       loggedIn: true
     };
 
-    this.handleUpdate = this.handleUpdate.bind(this)
+    // this.handleUpdate = this.handleUpdate.bind(this)
   }
 
   refreshPage() {
@@ -88,26 +88,6 @@ class Party extends Component {
         });
         console.log(this.state);
       });
-    // })
-
-
-
-  }
-
-
-  handleUpdate() {
-    //Change backend to handle update requests first
-
-    // fetch(this.backendAddress + "/updatePlaylist", {
-    //     method: "POST",
-    //     headers: { "Content-Type": "application/json" },
-    // }).then(res => {
-    //     this.refreshPage();
-    // });
-
-
-
-    alert("Party component should send update request to server now")
   }
 
   render() {
@@ -122,7 +102,6 @@ class Party extends Component {
         playlistID={this.state.playlistID}
         playlistName={this.state.playlistName}
         playlistDuration={this.state.playlistDuration}
-        handleUpdate={this.handleUpdate}
       />);
     } else {
       return (
@@ -131,7 +110,6 @@ class Party extends Component {
           playlistID={this.state.playlistID}
           playlistName={this.state.playlistName}
           playlistDuration={this.state.playlistDuration}
-        // handleUpdate={this.handleUpdate}
         />
       )
     }
