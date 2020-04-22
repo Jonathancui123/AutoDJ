@@ -11,6 +11,7 @@ class Party extends Component {
   state = {};
 
   backendAddress = config.backendAddress;
+  frontendAddress = config.frontendAddress;
 
   constructor(props) {
     super(props);
@@ -33,27 +34,6 @@ class Party extends Component {
   componentDidMount() {
     const { match: { params } } = this.props;
     this.state.playlistId = params.playlistId;
-
-    // Check if the user is logged in here
-    // fetch(`${this.backendAddress}/checkLogin`, {
-    //   method: "GET",
-    //   credentials: "include"
-    // }).then(res => {
-    //   return res.json();
-    // })
-    //   .then(res => {
-    //     console.log(`Response from /checkLogin: ${res}`);
-    //     if (!res) {
-    //       console.log('User not logged in');
-    //       this.setState({
-    //         loggedIn: false
-    //       });
-    //       fetch(`${this.backendAddress}/login/${this.state.playlistId}`, {
-    //         method: "GET",
-    //         credentials: "include"
-    //       });
-    //     } else 
-
     enforceLogin(`party/${this.state.playlistId}`)
       .then(loggedInBool => {
         this.setState({
@@ -108,6 +88,7 @@ class Party extends Component {
       )
     } else if (this.state.isHost) {
       return (<Host
+        shareLink={this.frontendAddress + "/party/" + this.state.playlistId}
         users={this.state.users}
         playlistID={this.state.playlistID}
         playlistName={this.state.playlistName}
@@ -116,6 +97,7 @@ class Party extends Component {
     } else {
       return (
         <Guest
+          shareLink={this.frontendAddress + "/party/" + this.state.playlistId}
           users={this.state.users}
           playlistID={this.state.playlistID}
           playlistName={this.state.playlistName}

@@ -8,6 +8,8 @@ import Members from "../components/members";
 import config from "../constants.js";
 import Update from "./Update";
 import { withRouter } from "react-router-dom";
+import CopyLink from "../components/copyLink.js"
+
 
 import "./Styles.css";
 
@@ -53,9 +55,9 @@ class Host extends React.Component {
                 <div className="membersPanel">
                   <h1 style={{ marginBottom: "10px" }}>{this.props.playlistName}</h1>
                   <Members users={this.props.users} />
-                  <br></br>
-                  {/* Temporarily removed update functionality while migrating to database */}
-                  <Button id="update" onClick={this.callUpdate}>
+                  <CopyLink link={this.props.shareLink} />
+
+                  <Button id="update" className="bigWhiteButton" onClick={this.callUpdate}>
                     Update
                   </Button>
                 </div>

@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import Squares from "../components/squares";
 import photo from "../images/error.jpg";
+import Button from "react-bootstrap/Button";
+import config from "../constants"
 
 class Error extends Component {
     state = {
@@ -35,6 +37,11 @@ class Error extends Component {
                         <h1>Error!</h1>
                         <h2>{this.state.messages.code}</h2>
                         <img src={photo} alt="gg" />
+                        <div>
+                            <Button id="return" className="bigWhiteButton" href={config.frontendAddress}>
+                                Return to home page
+                        </Button>
+                        </div>
                     </div>
                 </div>
             </div>);

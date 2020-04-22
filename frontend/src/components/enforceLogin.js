@@ -16,8 +16,8 @@ function enforceLogin(redirect = "select") {
                 console.log(`Response from /checkLogin: ${res}`);
                 if (!res) {
                     // alert('User not logged in');
-                    resolve(false)
-                    window.location.href = `${backendAddress}/login?redirect=${redirect}`
+                    resolve(false);
+                    window.location.href = `${backendAddress}/login?redirect=${redirect}`;
                 } else {
                     // alert("User is logged in already");
                     resolve(true);

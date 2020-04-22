@@ -6,7 +6,7 @@
   justify-content: center;
 }
 
-#join {
+.bigWhiteButton {
   height: 150px;
   width: 500px;
   background-color: transparent;
@@ -16,19 +16,23 @@
   font-size: 3em;
 }
 
-#join:hover {
+.bigWhiteButton:hover {
   background-color: white;
   color: #282c34;
+}
+
+#return {
+  margin-top: 15px;
+  height: 100px;
+  padding-top: 15px;
+
+  font-size: 2.5em;
 }
 
 #update {
   height: 150px;
   width: 100%;
-  background-color: transparent;
   padding-top: 0px;
-  border-color: white;
-  border-width: 5px;
-  font-size: 3em;
 }
 
 #update:hover {
@@ -46,6 +50,28 @@
   display: block;
   color: white;
   padding-top: 30vh;
+}
+
+#copyField {
+  border-color: rgba(255, 255, 255, 0.774);
+  border-width: 2px;
+  border-right-style: hidden;
+  background-color: #382149;
+  color: rgba(255, 255, 255, 0.918);
+}
+
+#copyButton{
+  width: 5.5em;
+  margin-top: 0px;
+  padding: 4px;
+  border-width: 2px;
+  border-color: white;
+  font-size: 1em;
+}
+
+#copyLabel {
+  background-color: transparent;
+  color: rgba(255, 255, 255, 0.795);
 }
 
 html,

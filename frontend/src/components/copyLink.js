@@ -13,14 +13,22 @@ class CopyLink extends Component {
     render() {
         return (
             <div>
+                <label id="copyLabel">Share your party invite link:</label>
                 <InputGroup className="mb-3">
-                    <FormControl
-                        plaintext readOnly defaultValue={this.props.link}
+                    <FormControl id="copyField"
+                        readOnly defaultValue={this.props.link}
                     />
                     <InputGroup.Append>
                         <CopyToClipboard text={this.props.link}
-                            onCopy={() => this.setState({ copied: true })}>
-                            <Button>Copy</Button>
+                            onCopy={() => {
+                                this.setState({ copied: true })
+                                setTimeout(() => {
+                                    this.setState({ copied: false })
+                                }, 3000)
+                            }}>
+                            <Button id="copyButton" className="cssbutton">
+                                {this.state.copied ? "Copied!" : "Copy"}
+                            </Button>
                         </CopyToClipboard>
                     </InputGroup.Append>
                 </InputGroup>

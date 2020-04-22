@@ -27,7 +27,7 @@ class Members extends Component {
     ));
 
     return (
-      <div style={{ height: "57.2vh" }}>
+      <div style={{ height: "45vh" }}>
         <h2>In the house:</h2>
         <Table
           striped
