@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { withRouter } from "react-router-dom";
 import Host from "./Host";
 import Guest from "./Guest";
 import config from "../constants.js";
@@ -61,6 +62,9 @@ class Party extends Component {
       })
       .catch(err => {
         console.log('Could not verify login');
+        this.props.history.push("/error", {
+          code: 2
+        });
       });
 
     // Below assumes that the user is logged in
@@ -87,7 +91,13 @@ class Party extends Component {
           playlistDuration: response.playlistDuration
         });
         console.log(this.state);
-      });
+      })
+      .catch(() => {
+        console.log("Failed to enter party");
+        this.props.history.push("/error", {
+          code: 3
+        });
+      })
   }
 
   render() {
@@ -118,4 +128,4 @@ class Party extends Component {
   }
 }
 
-export default Party;
+export default withRouter(Party);

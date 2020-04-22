@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { withRouter } from "react-router-dom";
 import Squares from '../components/squares';
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
@@ -36,6 +37,9 @@ class Select extends Component {
             })
             .catch(err => {
                 console.log('Could not verify login');
+                this.props.history.push("/error", {
+                    code: 2
+                });
             });
 
         fetch(`${this.backendAddress}/getUserInfo`, {
@@ -53,7 +57,12 @@ class Select extends Component {
                     parties: res.parties
                 });
             })
-            .catch(err => console.log(err));
+            .catch(err => {
+                console.log(err);
+                this.props.history.push("/error", {
+                    code: 4
+                });
+            });
 
     }
 
@@ -80,7 +89,13 @@ class Select extends Component {
             .then(res => { return res.json(); })
             .then(res => {
                 this.props.history.push(`/party/${res.playlistId}`);
-            });
+            })
+            .catch(err => {
+                console.log(err);
+                this.props.history.push("/error", {
+                    code: 5
+                });
+            })
     }
 
     render() {
@@ -135,4 +150,4 @@ class Select extends Component {
     }
 }
 
-export default Select;
+export default withRouter(Select);

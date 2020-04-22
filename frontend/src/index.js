@@ -12,6 +12,7 @@ import Host from "./views/Host";
 import Party from "./views/Party";
 import Select from "./views/Select";
 import Update from "./views/Update";
+import Error from "./views/Error";
 
 // DONT FORGET TO SET CURR_ENV=development for development
 
@@ -23,6 +24,7 @@ ReactDOM.render(
       <Route path="/select" render={props => <Select {...props} />} />
       <Route path="/update" render={props => <Update {...props} />} />
       <Route path="/party/:playlistId" render={props => <Party {...props} />} />
+      <Route path="/error" render={props => <Error {...props} />} />
       <Redirect from="/" to="/home" />
     </Switch>
   </BrowserRouter>,

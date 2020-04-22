@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import Squares from '../components/squares';
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import Button from "react-bootstrap/Button";
 import Player from "../components/player";
 import Members from "../components/members";
 import config from "../constants.js";
@@ -29,10 +28,6 @@ class Guest extends React.Component {
     componentDidMount() {
         console.log("State is: ", this.state);
     }
-
-    callUpdate = () => {
-        this.props.handleUpdate();
-    };
 
     render() {
         return (
