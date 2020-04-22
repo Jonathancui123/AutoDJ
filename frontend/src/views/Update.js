@@ -37,6 +37,9 @@ class Update extends Component {
             })
             .catch(err => {
                 console.log('Could not verify login');
+                this.props.history.push("/error", {
+                    code: 2
+                });
             });
 
         fetch(`${this.backendAddress}/getPartyInfo/${this.props.location.state.playlistId}`, {
@@ -54,7 +57,12 @@ class Update extends Component {
                     duration: res.duration / 60000
                 })
             })
-            .catch(err => console.log("ERROR: User may have deleted playlist"));
+            .catch(err => {
+                console.log("ERROR: User may have deleted playlist");
+                this.props.history.push("/error", {
+                    code: 1
+                });
+            });
         // TODO: MAKE ERROR PAGE
 
         fetch(`${this.backendAddress}/getUserInfo`, {
@@ -72,7 +80,12 @@ class Update extends Component {
                     parties: res.parties
                 });
             })
-            .catch(err => console.log(err));
+            .catch(err => {
+                console.log(err)
+                this.props.history.push("/error", {
+                    code: 4
+                });
+            });
 
     }
 
@@ -100,7 +113,13 @@ class Update extends Component {
             .then(res => { return res.json(); })
             .then(res => {
                 this.props.history.push(`/party/${this.props.location.state.playlistId}`);
-            });
+            })
+            .catch(err => {
+                console.log(err);
+                this.props.history.push("/error", {
+                    code: 1
+                });
+            })
     }
 
     render() {

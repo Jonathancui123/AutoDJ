@@ -7,7 +7,7 @@ class Members extends Component {
     var users = this.props.users;
     var memberList = users.map(user => (
       <tr>
-        <td style={{ paddingLeft: "20px" }}>{user.name}</td>
+        <td style={{ paddingLeft: "20px", paddingTop: "11px", fontSize: "1.2rem" }}>{user.name}</td>
         <td style={{ paddingBottom: 0, paddingRight: 0, textAlign: "right" }}>
           <iframe
             src={
@@ -16,7 +16,7 @@ class Members extends Component {
               "&size=basic&theme=dark"
             }
             width="200"
-            height="25"
+            height="35"
             scrolling="no"
             frameborder="0"
             style={{ border: "none", overflow: "hidden" }}
