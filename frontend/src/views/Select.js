@@ -24,17 +24,8 @@ class Select extends Component {
             duration: "",
             playlistId: "",
             loggedIn: false,
-            genres: []
-            // {
-            //     pop: false,
-            //     hip_hop: false,
-            //     rap: false,
-            //     country: false,
-            //     rnb: false,
-            //     rock: false,
-            //     edm: false,
-            //     classical: false
-            // }
+            genres: [],
+            others: ""
         }
     }
 
@@ -95,10 +86,9 @@ class Select extends Component {
     handleGenres = event => {
         var id = event.target.id;
         var checked = event.target.checked;
-        console.log(checked)
         // state.genres.filter(function (value) { return (value !== id) })
         function checkVal(value) {
-            return (value != id)
+            return (value !== id)
         }
         if (!checked) {
             this.setState((state, props) => {
@@ -116,6 +106,7 @@ class Select extends Component {
     }
 
     newParty = event => {
+        window.alert("Sending out request")
         event.preventDefault();
         fetch(`${this.backendAddress}/newParty`, {
             headers: { "Content-Type": "application/json" },
@@ -124,7 +115,8 @@ class Select extends Component {
             body: JSON.stringify({
                 genres: this.state.genres,
                 playlistName: this.state.playlistName,
-                duration: this.state.duration
+                duration: this.state.duration,
+                others: this.state.others
             })
         })
             .then(res => { return res.json(); })
@@ -145,7 +137,7 @@ class Select extends Component {
     render() {
         var checkboxes = [["pop", "hip hop"], ["rap", "country"], ["r&b", "rock"], ["edm", "classical"]].map(row => (
             <Form.Row style={{ width: '50%', marginLeft: 'auto', marginRight: 'auto' }}>
-                <Form.Group as={Col}>
+                <Form.Group as={Col} style={{ textAlign: 'left' }}>
                     <Form.Check
                         // checked={this.state.genres.includes(row[0])}
                         type="checkbox"
@@ -154,8 +146,8 @@ class Select extends Component {
                         onChange={this.handleGenres}
                     />
                 </Form.Group>
-                <Form.Group as={Col} >
-                    <Form.Check style={{ display: 'inline' }}
+                <Form.Group as={Col} style={{ textAlign: 'left' }}>
+                    <Form.Check
                         // checked={this.state.genres.includes(row[1])}
                         inline={true}
                         type="checkbox"
@@ -179,13 +171,13 @@ class Select extends Component {
                                 {checkboxes}
 
 
-                                {/* <input
-                                name="genres"
-                                type="text"
-                                value={this.state.genres}
-                                onChange={this.handleChange}
-                                placeholder="genre1/genre2/genre3"
-                            /> */}
+                                <input
+                                    name="others"
+                                    type="text"
+                                    value={this.state.others}
+                                    onChange={this.handleChange}
+                                    placeholder="k-pop, indie, yodeling"
+                                />
                                 <br></br>
                                 <input
                                     name="playlistName"
