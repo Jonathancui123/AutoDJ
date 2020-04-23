@@ -60,13 +60,14 @@ router.post('/newParty', async (req, res) => {
     var createdPlaylist = await queueMethods.createNewPlaylist(accessToken, playlistName, userId);
     const playlistId = JSON.parse(createdPlaylist).id;
     console.log(`Playlist ID: ${playlistId}`);
+    await dbMethods.addSongs(tempBank, playlistId);
     var genreOnlyBank = queueMethods.createGenredBank(genres, tempBank);
     var shortListURI = queueMethods.genShortListURI(genreOnlyBank, playlistDur);
     console.log('Playlist generated');
 
     // Make new party & host object
     const host = await dbMethods.makeNewPartyUser(userId, 'host');
-    const partyId = await dbMethods.makeNewParty(host, playlistName, playlistId, req.body.genres, playlistDur);
+    await dbMethods.makeNewParty(host, playlistName, playlistId, req.body.genres, playlistDur);
     console.log('Party created');
 
     // Add party to current user's profile

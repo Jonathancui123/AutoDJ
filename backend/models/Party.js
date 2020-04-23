@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const partyUserSchema = require('./PartyUser');
+const songSchema = require('./Song');
 
 //Defines the party schema for mongoose
 const partySchema = new mongoose.Schema({
@@ -9,7 +10,8 @@ const partySchema = new mongoose.Schema({
   playlistName: String,
   playlistId: String,
   genres: String,
-  duration: Number
+  duration: Number,
+  songs: [songSchema]
 });
 
 //Returns a CLASS of object with the above schema

@@ -3,13 +3,12 @@ const request = require("request");
 const dbMethods = require('./dbMethods');
 
 // Song class
-function Song(id, name, artist, genres, score, played, link, duration) {
+function Song(id, name, artist, genres, score, link, duration) {
   this.id = id;
   this.name = name;
   this.artist = artist;
   this.genres = genres;
   this.score = score;
-  this.played = played;
   this.link = link;
   this.dur = duration;
 }
@@ -144,7 +143,6 @@ function addSongsToBank(body, accessToken) {
                 returnedSongs[songCounter].artists[0],
                 temp_genres,
                 1,
-                false,
                 returnedSongs[songCounter].uri,
                 returnedSongs[songCounter].duration_ms
               )

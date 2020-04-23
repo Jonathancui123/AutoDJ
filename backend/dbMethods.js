@@ -5,6 +5,7 @@ const User = require('./models/User');
 const Party = require('./models/Party');
 const PartyUser = require('./models/PartyUser');
 const Counter = require('./models/Counter');
+const Song = require('./models/Song');
 
 // Database connection
 const dbUrl = require('./config/keys.js').mongoURI;
@@ -170,15 +171,6 @@ async function joinParty(spotifyId, playlistId) {
 // SONG/PLAYLIST METHODS
 ///////////////////////////////////////////////
 
-async function updateSongs(tempBank, partyId) {
-    var result = await Party.updateOne({
-        _id: partyId
-    }, {
-        $set: { songs: tempBank }
-    })
-    return result;
-}
-
 // POTENTIALLY REMOVE
 async function getSongBank(partyId) {
     var result = await Party.find({
@@ -187,6 +179,15 @@ async function getSongBank(partyId) {
         songs: 1
     });
     return result;
+}
+
+// Append new user's songs to party's song bank
+async function addSongs(playlistId, songList) {
+    await Party.updateOne({ playlistId: playlistId }, {
+        $push: {
+            songs: { $each: songList }
+        }
+    });
 }
 
 module.exports = {
@@ -204,6 +205,6 @@ module.exports = {
     updateTokens: updateTokens,
     addParty: addParty,
     joinParty: joinParty,
-    updateSongs: updateSongs,
-    getSongBank: getSongBank
+    getSongBank: getSongBank,
+    addSongs: addSongs
 }
