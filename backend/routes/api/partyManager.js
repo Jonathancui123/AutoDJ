@@ -33,7 +33,7 @@ router.get('/isPartyHost/:playlistId', async (req, res) => {
 
     var partyAndHostInfo = JSON.parse(JSON.stringify(partyInfo))
     partyAndHostInfo.isHost = ((req.session.userData.spotifyId == partyAndHostInfo.host.spotifyId) ? true : false);
-    console.log("Returning partyAndHostInfo: ", partyAndHostInfo);
+    // console.log("Returning partyAndHostInfo: ", partyAndHostInfo);
     res.send(partyAndHostInfo);
 });
 
@@ -60,15 +60,20 @@ router.post('/newParty', async (req, res) => {
     var createdPlaylist = await queueMethods.createNewPlaylist(accessToken, playlistName, userId);
     const playlistId = JSON.parse(createdPlaylist).id;
     console.log(`Playlist ID: ${playlistId}`);
-    await dbMethods.addSongs(tempBank, playlistId);
-    var genreOnlyBank = queueMethods.createGenredBank(genres, tempBank);
-    var shortListURI = queueMethods.genShortListURI(genreOnlyBank, playlistDur);
-    console.log('Playlist generated');
 
     // Make new party & host object
     const host = await dbMethods.makeNewPartyUser(userId, 'host');
-    const partyId = await dbMethods.makeNewParty(host, playlistName, playlistId, genres.toString(), playlistDur);
+    await dbMethods.makeNewParty(host, playlistName, playlistId, genres.toString(), playlistDur);
+    await dbMethods.addSongs(tempBank, playlistId);
     console.log('Party created');
+
+    // Filter out songs that fit genre preferences
+    var retrievedSongBank = await dbMethods.getSongBank(playlistId);
+    var genreOnlyBank = queueMethods.createGenredBank(genres, retrievedSongBank);
+    console.log("Genred song bank:", genreOnlyBank);
+    var shortListURI = queueMethods.genShortListURI(genreOnlyBank, playlistDur);
+    console.log("ShortlistURI:", shortListURI);
+    console.log('Playlist generated');
 
     // Add party to current user's profile
     await dbMethods.addParty(req.session.userData.id, playlistId);
@@ -93,7 +98,8 @@ router.put('/updatePlaylist', async (req, res) => {
     console.log("session id: ", req.session.id)
 
     const playlistName = req.body.playlistName;
-    const genres = req.body.genres.concat(req.body.others.split(",").map(str => str.trim()));
+    // const genres = req.body.genres.concat(req.body.others.split(",").map(str => str.trim()));
+    const genres = req.body.genres.split("/");
     const playlistId = req.body.playlistId;
     const playlistDur = 60 * 1000 * parseInt(req.body.duration);
     const retrievedUserData = await dbMethods.getUserInfo(req.session.userData.id);
@@ -106,11 +112,12 @@ router.put('/updatePlaylist', async (req, res) => {
     console.log(`Playlist ID: ${playlistId}`);
 
     // Create new shortlist
-    var tempBank = await queueMethods.getSongs(accessToken);
-    tempBank = await queueMethods.addSongsToBank(tempBank, accessToken);
-    console.log(tempBank.slice(0, 10));
-    var genreOnlyBank = queueMethods.createGenredBank(genres, tempBank);
+    var retrievedSongBank = await dbMethods.getSongBank(playlistId);
+    console.log(retrievedSongBank.slice(0, 10));
+    var genreOnlyBank = queueMethods.createGenredBank(genres, retrievedSongBank);
+    console.log("Genred song bank:", genreOnlyBank);
     var shortListURI = queueMethods.genShortListURI(genreOnlyBank, playlistDur);
+    console.log("ShortlistURI:", shortListURI);
     console.log('Playlist generated');
 
     // Update database entry for party
@@ -137,6 +144,16 @@ router.post('/joinParty/:playlistId', async (req, res) => {
     partyMembers = partyMembers.map(member => member.spotifyId);
     if (!partyMembers.include(req.session.userData.spotifyId)) {
         await dbMethods.joinParty(req.session.userData.spotifyId, req.query.playlistId);
+
+        const retrievedUserData = await dbMethods.getUserInfo(req.session.userData.id);
+        const accessToken = retrievedUserData.accessToken;
+        const userId = retrievedUserData.spotifyId;
+
+        // Add songs to party in database
+        var tempBank = await queueMethods.getSongs(accessToken);
+        tempBank = await queueMethods.addSongsToBank(tempBank, accessToken);
+        console.log(tempBank.slice(0, 10));
+        await dbMethods.addSongs(tempBank, playlistId)
     }
 });
 

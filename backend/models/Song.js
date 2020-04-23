@@ -8,7 +8,8 @@ var songSchema = new mongoose.Schema({
     genres: [String],
     score: Number,
     link: String,
-    dur: Number
+    dur: Number,
+    popularity: Number
 });
 
 module.exports = songSchema;

@@ -172,22 +172,22 @@ async function joinParty(spotifyId, playlistId) {
 ///////////////////////////////////////////////
 
 // POTENTIALLY REMOVE
-async function getSongBank(partyId) {
-    var result = await Party.find({
-        _id: partyId
-    }).select({
-        songs: 1
+async function getSongBank(playlistId) {
+    var result = await Party.findOne({
+        playlistId: playlistId
     });
-    return result;
+    return result.songs;
 }
 
 // Append new user's songs to party's song bank
-async function addSongs(playlistId, songList) {
-    await Party.updateOne({ playlistId: playlistId }, {
-        $push: {
-            songs: { $each: songList }
-        }
-    });
+async function addSongs(songList, playlistId) {
+    songList.forEach(async (song) => {
+        await Party.updateOne({ playlistId: playlistId }, {
+            $push: {
+                songs: song
+            }
+        })
+    })
 }
 
 module.exports = {

@@ -2,17 +2,6 @@ const rp = require("request-promise");
 const request = require("request");
 const dbMethods = require('./dbMethods');
 
-// Song class
-function Song(id, name, artist, genres, score, link, duration) {
-  this.id = id;
-  this.name = name;
-  this.artist = artist;
-  this.genres = genres;
-  this.score = score;
-  this.link = link;
-  this.dur = duration;
-}
-
 // Returns an array of all song objects from the main bank that have at least one of the selected genres
 function createGenredBank(selectedGenres, songBank) {
   console.log('* createGenredBank called');
@@ -22,13 +11,24 @@ function createGenredBank(selectedGenres, songBank) {
   for (var i = 0; i < songBank.length; i++) {
     var genresOfSong = songBank[i].genres;
     for (var j = 0; j < selectedGenres.length; j++) {
-      if (genresOfSong.toString().includes(selectedGenres[j])) {
+      if (genresOfSong && genresOfSong.toString().includes(selectedGenres[j])) {
         genredBank.push(songBank[i]);
         // console.log("Adding to genre only bank: ", songBank[i]);
         break;
       }
     }
   }
+
+  genredBank = genredBank.sort((a, b) => {
+    if (a.popularity < b.popularity) {
+      return 1;
+    }
+    if (a.popularity > b.popularity) {
+      return -1;
+    }
+    return 0;
+  });
+
   // console.log("Genred bank: " + genredBank);
   return genredBank;
 }
@@ -111,15 +111,7 @@ function addSongsToBank(body, accessToken) {
   var nextSongId = 0;
 
   // List of songs in order of popularity
-  var returnedSongs = JSON.parse(body).items.sort((a, b) => {
-    if (a.popularity < b.popularity) {
-      return 1;
-    }
-    if (a.popularity > b.popularity) {
-      return -1;
-    }
-    return 0;
-  });
+  var returnedSongs = JSON.parse(body).items;
   console.log("Finished getting and sorting songs");
 
   var tempBank = [];
@@ -137,15 +129,16 @@ function addSongsToBank(body, accessToken) {
             tempBank[index].score++;
           } else {
             tempBank.push(
-              new Song(
-                nextSongId,
-                returnedSongs[songCounter].name,
-                returnedSongs[songCounter].artists[0],
-                temp_genres,
-                1,
-                returnedSongs[songCounter].uri,
-                returnedSongs[songCounter].duration_ms
-              )
+              {
+                id: nextSongId,
+                name: returnedSongs[songCounter].name,
+                artist: returnedSongs[songCounter].artists[0].name,
+                genres: temp_genres,
+                score: 1,
+                link: returnedSongs[songCounter].uri,
+                dur: returnedSongs[songCounter].duration_ms,
+                popularity: returnedSongs[songCounter].popularity
+              }
             );
             console.log(`${nextSongId}: ${returnedSongs[songCounter].name}`);
             nextSongId++;

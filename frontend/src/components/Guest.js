@@ -30,6 +30,26 @@ class Guest extends React.Component {
     }
 
     render() {
+        let player, members;
+        if (this.props.playlistID) {
+            player = <div className="playerPanel">
+                <Player playlistID={this.props.playlistID} />
+            </div>;
+        } else {
+            player = "";
+        }
+
+        if (this.props.users && this.props.playlistName) {
+            members = <div className="membersPanel">
+                <h1 style={{ marginBottom: "10px" }}>{this.props.playlistName}</h1>
+                <Members users={this.props.users} />
+                <br></br>
+            </div>
+        } else {
+            members = "";
+        }
+
+
         return (
             <div class="host">
                 <div className="square-container">
@@ -37,16 +57,10 @@ class Guest extends React.Component {
                     <div className="content-container">
                         <Row>
                             <Col xs={7}>
-                                <div className="playerPanel">
-                                    <Player playlistID={this.props.playlistID} />
-                                </div>
+                                {player}
                             </Col>
                             <Col xs={5}>
-                                <div className="membersPanel">
-                                    <h1 style={{ marginBottom: "10px" }}>{this.props.playlistName}</h1>
-                                    <Members users={this.props.users} />
-                                    <br></br>
-                                </div>
+                                {members}
                             </Col>
                         </Row>
                     </div>
