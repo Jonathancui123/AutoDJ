@@ -70,9 +70,7 @@ router.post('/newParty', async (req, res) => {
     // Filter out songs that fit genre preferences
     var retrievedSongBank = await dbMethods.getSongBank(playlistId);
     var genreOnlyBank = queueMethods.createGenredBank(genres, retrievedSongBank);
-    console.log("Genred song bank:", genreOnlyBank);
     var shortListURI = queueMethods.genShortListURI(genreOnlyBank, playlistDur);
-    console.log("ShortlistURI:", shortListURI);
     console.log('Playlist generated');
 
     // Add party to current user's profile
@@ -113,11 +111,8 @@ router.put('/updatePlaylist', async (req, res) => {
 
     // Create new shortlist
     var retrievedSongBank = await dbMethods.getSongBank(playlistId);
-    console.log(retrievedSongBank.slice(0, 10));
     var genreOnlyBank = queueMethods.createGenredBank(genres, retrievedSongBank);
-    console.log("Genred song bank:", genreOnlyBank);
     var shortListURI = queueMethods.genShortListURI(genreOnlyBank, playlistDur);
-    console.log("ShortlistURI:", shortListURI);
     console.log('Playlist generated');
 
     // Update database entry for party
