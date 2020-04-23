@@ -1,4 +1,5 @@
 NOTE: Test if the environment variable for react works with heroku (it may be unable to communicate with backend)
+Maybe somehow show the person that contributed to each song?
 
 MONGO DB
 DOCKER>??
@@ -13,9 +14,9 @@ Enable phone native sharing options: https://css-tricks.com/how-to-use-the-web-s
 Automatically refresh info on party page for all members when new people join (don't require manual refresh)
 
 SERVER:
+Extrapolate to find songs that will truly satisfy everyone. Perhaps by an artist similarity API?
 Search for the desired genre in Spotify's genre names e.g. "pop rap" <= pop
 Query everyone's names in the same call as their tastes profile from spotify
-Add party links (unique invite links to each party) --> support several parties
 Handle the case where there are insufficient songs in the songbank needed for the requested duration
 Order the songs by BPM/Pitch/Something useful
 Perform a check to see if the saved spotify ID exists as a playlist (Editing playlists from previous sessions)
