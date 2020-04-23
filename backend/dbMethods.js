@@ -128,9 +128,11 @@ async function getAccessToken(id) {
 }
 
 async function getPartyInfo(playlistId) {
+    console.log(`* getPartyInfo called with playlistId: ${playlistId} `);
     const info = await Party.findOne({
         playlistId: playlistId
     });
+    console.log(`* getPartyInfo returning info NOW`);
     return info;
 }
 

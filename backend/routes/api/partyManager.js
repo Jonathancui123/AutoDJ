@@ -135,7 +135,7 @@ router.put('/updatePlaylist', async (req, res) => {
 // Join a party
 router.post('/joinParty/:playlistId', async (req, res) => {
     console.log(`* /joinParty/${req.params.playlistId} called`);
-    var partyMembers = await dbMethods.getPartyInfo(req.params.playlistId).members;
+    const partyMembers = await dbMethods.getPartyInfo(req.params.playlistId).members;
     console.log("partyMembers variable is: ", partyMembers);
     partyMembers = partyMembers.map(member => member.spotifyId);
     if (!partyMembers.include(req.session.userData.spotifyId)) {
