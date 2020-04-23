@@ -12,14 +12,14 @@ class Party extends Component {
 
   backendAddress = config.backendAddress;
   frontendAddress = config.frontendAddress;
-  redirectString = `party/${this.state.playlistId}`
+  redirectString = `party/${this.state.playlistID}`
 
   constructor(props) {
     super(props);
     this.state = {
       isHost: false,
       users: [],
-      playlistId: "",
+      playlistID: "",
       playlistName: "",
       playlistDuration: null,
       loggedIn: false
@@ -34,8 +34,8 @@ class Party extends Component {
 
   loadPartyPage() {
     // Below assumes that the user is logged in
-    console.log("Sending request to: " + `${this.backendAddress}/isPartyHost/${this.state.playlistId}`)
-    fetch(`${this.backendAddress}/isPartyHost/${this.state.playlistId}`, {
+    console.log("Sending request to: " + `${this.backendAddress}/isPartyHost/${this.state.playlistID}`)
+    fetch(`${this.backendAddress}/isPartyHost/${this.state.playlistID}`, {
       method: "GET",
       credentials: "include"
     })
@@ -44,15 +44,15 @@ class Party extends Component {
       })
       .then(response => {
         if (!response.isHost) {
-          fetch(`${this.backendAddress}/joinParty/${this.state.playlistId}`, {
-            method: "GET",
+          window.alert("sending fetch");
+          fetch(`${this.backendAddress}/joinParty/${this.state.playlistID}`, {
+            method: "POST",
             credentials: "include"
           });
         }
         this.setState({
           isHost: response.isHost,
           users: response.members,
-          playlistID: response.playlistId,
           playlistName: response.playlistName,
           playlistDuration: response.playlistDuration
         });
@@ -68,7 +68,7 @@ class Party extends Component {
 
 
   componentDidMount() {
-    enforceLogin(`party/${this.state.playlistId}`)
+    enforceLogin(`party/${this.state.playlistID}`)
       .then(loggedInBool => {
         this.setState({
           loggedIn: loggedInBool
@@ -88,14 +88,14 @@ class Party extends Component {
 
   render() {
     const { match: { params } } = this.props;
-    this.state.playlistId = params.playlistId;
-    this.redirectString = `party/${this.state.playlistId}`;
+    this.state.playlistID = params.playlistID;
+    this.redirectString = `party/${this.state.playlistID}`;
 
     if (!this.state.loggedIn) {
       // alert('User not logged in!');
       return (
         <div> <Guest
-          shareLink={this.frontendAddress + "/party/" + this.state.playlistId}
+          shareLink={this.frontendAddress + "/party/" + this.state.playlistID}
           users={this.state.users}
           playlistID={this.state.playlistID}
           playlistName={this.state.playlistName}
@@ -106,7 +106,7 @@ class Party extends Component {
       )
     } else if (this.state.isHost) {
       return (<Host
-        shareLink={this.frontendAddress + "/party/" + this.state.playlistId}
+        shareLink={this.frontendAddress + "/party/" + this.state.playlistID}
         users={this.state.users}
         playlistID={this.state.playlistID}
         playlistName={this.state.playlistName}
@@ -115,7 +115,7 @@ class Party extends Component {
     } else {
       return (
         <Guest
-          shareLink={this.frontendAddress + "/party/" + this.state.playlistId}
+          shareLink={this.frontendAddress + "/party/" + this.state.playlistID}
           users={this.state.users}
           playlistID={this.state.playlistID}
           playlistName={this.state.playlistName}

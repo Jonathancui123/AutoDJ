@@ -22,7 +22,7 @@ ReactDOM.render(
       <Route path="/create" render={props => <Create {...props} />} />
       <Route path="/select" render={props => <Select {...props} />} />
       <Route path="/update" render={props => <Update {...props} />} />
-      <Route path="/party/:playlistId" render={props => <Party {...props} />} />
+      <Route path="/party/:playlistID" render={props => <Party {...props} />} />
       <Route path="/error" render={props => <Error {...props} />} />
       <Redirect from="/" to="/home" />
     </Switch>
