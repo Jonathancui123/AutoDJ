@@ -90,11 +90,6 @@ function refresh_access() {
 	);
 }
 
-app.post("/test", (req, res) => {
-	console.log("Recieved test post request", req.body);
-	res.send("Thank you sir");
-});
-
 ///////////////////////////////////////////////
 // SONG/PLAYLIST FUNCTIONS
 ///////////////////////////////////////////////
