@@ -1,17 +1,17 @@
 import React, { Component } from "react";
-import Squares from '../components/squares';
+import Squares from './squares';
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
-import Player from "../components/player";
-import Members from "../components/members";
+import Player from "./player";
+import Members from "./members";
 import config from "../constants.js";
-import Update from "./Update";
+import Update from "../views/Update";
 import { withRouter } from "react-router-dom";
-import CopyLink from "../components/copyLink.js"
+import CopyLink from "./copyLink.js"
 
 
-import "./Styles.css";
+import "../views/Styles.css";
 
 class Host extends React.Component {
   state = {};

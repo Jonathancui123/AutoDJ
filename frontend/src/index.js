@@ -8,7 +8,6 @@ import * as serviceWorker from "./serviceWorker";
 
 import App from "./views/App";
 import Create from "./views/CreatePage";
-import Host from "./views/Host";
 import Party from "./views/Party";
 import Select from "./views/Select";
 import Update from "./views/Update";

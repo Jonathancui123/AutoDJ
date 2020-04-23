@@ -1,17 +1,18 @@
 import React, { Component } from 'react';
 import { withRouter } from "react-router-dom";
-import Host from "./Host";
-import Guest from "./Guest";
+import Host from "../components/Host";
+import Guest from "../components/Guest";
 import config from "../constants.js";
 import { Redirect } from "react-router-dom";
 import enforceLogin from '../components/enforceLogin';
-import loginModal from '../components/loginModal';
+import LoginModal from '../components/loginModal';
 
 class Party extends Component {
   state = {};
 
   backendAddress = config.backendAddress;
   frontendAddress = config.frontendAddress;
+  redirectString = `party/${this.state.playlistId}`
 
   constructor(props) {
     super(props);
@@ -21,7 +22,7 @@ class Party extends Component {
       playlistId: "",
       playlistName: "",
       playlistDuration: null,
-      loggedIn: true
+      loggedIn: false
     };
 
     // this.handleUpdate = this.handleUpdate.bind(this)
@@ -31,22 +32,7 @@ class Party extends Component {
     window.location.reload(true);
   }
 
-  componentDidMount() {
-    const { match: { params } } = this.props;
-    this.state.playlistId = params.playlistId;
-    enforceLogin(`party/${this.state.playlistId}`)
-      .then(loggedInBool => {
-        this.setState({
-          loggedIn: loggedInBool
-        })
-      })
-      .catch(err => {
-        console.log('Could not verify login');
-        this.props.history.push("/error", {
-          code: 2
-        });
-      });
-
+  loadPartyPage() {
     // Below assumes that the user is logged in
     console.log("Sending request to: " + `${this.backendAddress}/isPartyHost/${this.state.playlistId}`)
     fetch(`${this.backendAddress}/isPartyHost/${this.state.playlistId}`, {
@@ -80,11 +66,43 @@ class Party extends Component {
       })
   }
 
+
+  componentDidMount() {
+    enforceLogin(`party/${this.state.playlistId}`)
+      .then(loggedInBool => {
+        this.setState({
+          loggedIn: loggedInBool
+        })
+        if (loggedInBool) {
+          this.loadPartyPage();
+        }
+      })
+      .catch(err => {
+        console.log('Could not verify login');
+        this.props.history.push("/error", {
+          code: 2
+        });
+      });
+  }
+
+
   render() {
+    const { match: { params } } = this.props;
+    this.state.playlistId = params.playlistId;
+    this.redirectString = `party/${this.state.playlistId}`;
+
     if (!this.state.loggedIn) {
       // alert('User not logged in!');
       return (
-        <div> Not logged in</div>
+        <div> <Guest
+          shareLink={this.frontendAddress + "/party/" + this.state.playlistId}
+          users={this.state.users}
+          playlistID={this.state.playlistID}
+          playlistName={this.state.playlistName}
+          playlistDuration={this.state.playlistDuration}
+        />
+          <div><LoginModal redirect={this.redirectString} currentPage="party" /></div></div>
+
       )
     } else if (this.state.isHost) {
       return (<Host

@@ -2,10 +2,9 @@ import React, { Component } from 'react';
 import { withRouter } from "react-router-dom";
 import Squares from '../components/squares';
 import Button from "react-bootstrap/Button";
-import Modal from "react-bootstrap/Modal";
 import config from '../constants';
 import enforceLogin from '../components/enforceLogin';
-import loginModal from '../components/loginModal';
+import LoginModal from '../components/loginModal';
 
 // Replaces old host page
 
@@ -15,33 +14,18 @@ class Select extends Component {
     constructor() {
         super();
         this.state = {
-            name: "<placeholder>",
+            name: "",
             spotifyId: "",
             parties: [],
             genres: "",
             playlistName: "",
             duration: "",
             playlistId: "",
-            loggedIn: true
+            loggedIn: false
         }
     }
 
-    componentDidMount() {
-        console.log('Component mounted');
-        enforceLogin("select")
-            .then(loggedInBool => {
-
-                this.setState({
-                    loggedIn: loggedInBool
-                })
-            })
-            .catch(err => {
-                console.log('Could not verify login');
-                this.props.history.push("/error", {
-                    code: 2
-                });
-            });
-
+    loadSelectPage() {
         fetch(`${this.backendAddress}/getUserInfo`, {
             method: "GET",
             credentials: "include"
@@ -63,6 +47,27 @@ class Select extends Component {
                     code: 4
                 });
             });
+    }
+
+    componentDidMount() {
+        console.log('Component mounted');
+        enforceLogin("select")
+            .then(loggedInBool => {
+                this.setState({
+                    loggedIn: loggedInBool
+                })
+                if (this.state.loggedIn) {
+                    this.loadSelectPage();
+                }
+            })
+            .catch(err => {
+                console.log('Could not verify login');
+                this.props.history.push("/error", {
+                    code: 2
+                });
+            });
+
+
 
     }
 
@@ -98,56 +103,65 @@ class Select extends Component {
             })
     }
 
+
     render() {
+        var selectPage = (<div>
+            <div className="square-container">
+                <Squares />
+                <div className="content-container">
 
-        return (
-
-            <div>
-                <div className="square-container">
-                    <Squares />
-                    <div className="content-container">
-
-                        <div id="create">
-                            <h1>Welcome, {this.state.name}</h1>
-                            <h2>What do you want to hear?</h2>
-                            <form onSubmit={this.newParty}>
-                                <input
-                                    name="genres"
-                                    type="text"
-                                    value={this.state.genres}
-                                    onChange={this.handleChange}
-                                    placeholder="genre1/genre2/genre3"
-                                />
-                                <br></br>
-                                <input
-                                    name="playlistName"
-                                    type="text"
-                                    value={this.state.playlistName}
-                                    onChange={this.handleChange}
-                                    placeholder="playlist name"
-                                />
-                                <br></br>
-                                <input
-                                    name="duration"
-                                    type="text"
-                                    value={this.state.duration}
-                                    onChange={this.handleChange}
-                                    placeholder="playlist duration (min)"
-                                />
-                                <br></br>
-                                <Button className="cssbutton" type="submit">
-                                    Go!
-                                </Button>
-                            </form>
-                        </div>
+                    <div id="create">
+                        <h1>Welcome, {this.state.name}</h1>
+                        <h2>What do you want to hear?</h2>
+                        <form onSubmit={this.newParty}>
+                            <input
+                                name="genres"
+                                type="text"
+                                value={this.state.genres}
+                                onChange={this.handleChange}
+                                placeholder="genre1/genre2/genre3"
+                            />
+                            <br></br>
+                            <input
+                                name="playlistName"
+                                type="text"
+                                value={this.state.playlistName}
+                                onChange={this.handleChange}
+                                placeholder="playlist name"
+                            />
+                            <br></br>
+                            <input
+                                name="duration"
+                                type="text"
+                                value={this.state.duration}
+                                onChange={this.handleChange}
+                                placeholder="playlist duration (min)"
+                            />
+                            <br></br>
+                            <Button className="cssbutton" type="submit">
+                                Go!
+                            </Button>
+                        </form>
                     </div>
                 </div>
             </div>
+        </div>
+        )
 
-
-
-        );
+        if (!this.state.loggedIn) {
+            return (
+                <div> {selectPage}
+                    <div><LoginModal redirect="select" currentPage="select" /></div>
+                </div>
+            )
+        }
+        else {
+            return (
+                <div>{selectPage}</div>
+            );
+        }
     }
+
 }
 
 export default withRouter(Select);

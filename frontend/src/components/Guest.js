@@ -1,13 +1,13 @@
 import React, { Component } from "react";
-import Squares from '../components/squares';
+import Squares from './squares';
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import Player from "../components/player";
-import Members from "../components/members";
+import Player from "./player";
+import Members from "./members";
 import config from "../constants.js";
 
 
-import "./Styles.css";
+import "../views/Styles.css";
 
 class Guest extends React.Component {
     state = {};

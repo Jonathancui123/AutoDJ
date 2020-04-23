@@ -17,7 +17,8 @@ function enforceLogin(redirect = "select") {
                 if (!res) {
                     // alert('User not logged in');
                     resolve(false);
-                    window.location.href = `${backendAddress}/login?redirect=${redirect}`;
+                    //Deprecated: Use the following to immediately redirect without showing modal:
+                    // window.location.href = `${backendAddress}/login?redirect=${redirect}`;
                 } else {
                     // alert("User is logged in already");
                     resolve(true);
