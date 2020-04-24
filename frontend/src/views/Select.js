@@ -74,7 +74,6 @@ class Select extends Component {
 
     }
 
-
     // value = { this.state.genres }
     // onChange = { this.handleChange }
 
@@ -84,10 +83,9 @@ class Select extends Component {
             <div className="square-container">
                 <Squares />
                 <div className="content-container">
-
-                    <div id="create">
+                    <div className="playlistOptionsPage" >
                         <h1>Welcome, {this.state.name}</h1>
-                        <PlaylistOptions allowName={true} redirectFunction={this.redirectFunction} />
+                        <PlaylistOptions allowName={true} redirectFunction={this.redirectFunction} onSubmit="newParty" />
                     </div>
                 </div>
             </div>

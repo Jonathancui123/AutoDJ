@@ -95,39 +95,6 @@ class Update extends Component {
 
     }
 
-    handleChange = event => {
-        const name = event.target.name;
-        const value = event.target.value;
-        this.setState({
-            [name]: value,
-        });
-    };
-
-    updatePlaylist = event => {
-        event.preventDefault();
-        fetch(`${this.backendAddress}/updatePlaylist`, {
-            headers: { "Content-Type": "application/json" },
-            method: "PUT",
-            credentials: "include",
-            body: JSON.stringify({
-                genres: this.state.genres,
-                playlistName: this.state.playlistName,
-                duration: this.state.duration,
-                playlistId: this.props.location.state.playlistId
-            })
-        })
-            .then(res => { return res.json(); })
-            .then(res => {
-                this.props.history.push(`/party/${this.props.location.state.playlistId}`);
-            })
-            .catch(err => {
-                console.log(err);
-                this.props.history.push("/error", {
-                    code: 1
-                });
-            })
-    }
-
     render() {
 
         return (
@@ -137,9 +104,9 @@ class Update extends Component {
                     <Squares />
                     <div className="content-container">
 
-                        <div id="updateBlock">
+                        <div className="playlistOptionsPage" >
                             <h1>Update Playlist: {this.state.playlistName}</h1>
-                            <PlaylistOptions redirectFunction={this.redirectFunction} />
+                            <PlaylistOptions redirectFunction={this.redirectFunction} onSubmit="updatePlaylist" />
                         </div>
                     </div>
                 </div>

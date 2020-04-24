@@ -48,7 +48,35 @@ class PlaylistOptions extends Component {
 
     }
 
+    updatePlaylist = event => {
+        event.preventDefault();
+        fetch(`${this.backendAddress}/updatePlaylist`, {
+            headers: { "Content-Type": "application/json" },
+            method: "PUT",
+            credentials: "include",
+            body: JSON.stringify({
+                genres: this.state.genres,
+                playlistName: this.state.playlistName,
+                duration: this.state.duration,
+                playlistId: this.props.location.state.playlistId
+            })
+        })
+            .then(res => { return res.json(); })
+            .then(res => {
+                this.props.history.push(`/party/${this.props.location.state.playlistId}`);
+            })
+            .catch(err => {
+                console.log(err);
+                this.props.history.push("/error", {
+                    code: 1
+                });
+            })
+    }
+
+
     newParty = event => {
+        window.alert("NewParty Called")
+        console.log("state at submission: ", this.state)
         event.preventDefault();
         fetch(`${this.backendAddress}/newParty`, {
             headers: { "Content-Type": "application/json" },
@@ -71,6 +99,11 @@ class PlaylistOptions extends Component {
                     code: 5
                 });
             })
+    }
+
+    submitBehaviors = {
+        newParty: this.newParty,
+        updatePlaylist: this.updatePlaylist
     }
 
     render() {
@@ -100,7 +133,7 @@ class PlaylistOptions extends Component {
 
         return (
             <div style={{ width: '50%', marginLeft: 'auto', marginRight: 'auto' }}>
-                <Form onSubmit={this.newParty}>
+                <Form onSubmit={this.submitBehaviors[this.props.onSubmit]}>
                     <br></br>
                     <input
                         style={{ display: this.props.allowName ? "inline" : "none" }}

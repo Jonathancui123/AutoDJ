@@ -40,17 +40,12 @@
   color: #282c34;
 }
 
-#create {
+.playlistOptionsPage {
   display: block;
   color: white;
-  padding-top: 20vh;
+  padding-top: 60px;
 }
 
-#updateBlock {
-  display: block;
-  color: white;
-  padding-top: 30vh;
-}
 
 #copyField {
   border-color: rgba(255, 255, 255, 0.774);

@@ -51,7 +51,7 @@ class Guest extends React.Component {
 
 
         return (
-            <div class="host">
+            <div className="host">
                 <div className="square-container">
                     <Squares />
                     <div className="content-container">
