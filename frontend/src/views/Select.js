@@ -1,13 +1,10 @@
 import React, { Component } from 'react';
 import { withRouter } from "react-router-dom";
 import Squares from '../components/squares';
-import Button from "react-bootstrap/Button";
 import config from '../constants';
 import enforceLogin from '../components/enforceLogin';
 import LoginModal from '../components/loginModal';
-
-import Col from 'react-bootstrap/Col';
-import Form from 'react-bootstrap/Form'
+import PlaylistOptions from '../components/playlistOptions';
 
 // Replaces old host page
 
@@ -20,13 +17,11 @@ class Select extends Component {
             name: "",
             spotifyId: "",
             parties: [],
-            playlistName: "",
-            duration: "",
             playlistId: "",
             loggedIn: false,
-            genres: [],
-            others: ""
         }
+        this.redirectFunction = this.redirectFunction.bind(this);
+
     }
 
     loadSelectPage() {
@@ -53,6 +48,10 @@ class Select extends Component {
             });
     }
 
+    redirectFunction(url) {
+        this.props.history.push(url);
+    }
+
     componentDidMount() {
         console.log('Component mounted');
         enforceLogin("select")
@@ -75,89 +74,12 @@ class Select extends Component {
 
     }
 
-    handleChange = event => {
-        const name = event.target.name;
-        const value = event.target.value;
-        this.setState({
-            [name]: value,
-        });
-    };
-
-    handleGenres = event => {
-        var id = event.target.id;
-        var checked = event.target.checked;
-        // state.genres.filter(function (value) { return (value !== id) })
-        function checkVal(value) {
-            return (value !== id)
-        }
-        if (!checked) {
-            this.setState((state, props) => {
-                return { genres: state.genres.filter(checkVal) };
-            })
-        } else {
-            this.setState((state, props) => {
-                return { genres: state.genres.concat([id]) };
-            })
-        }
-        setTimeout(() => {
-            console.log(this.state.genres);
-        }, 500);
-
-    }
-
-    newParty = event => {
-        window.alert("Sending out request")
-        event.preventDefault();
-        fetch(`${this.backendAddress}/newParty`, {
-            headers: { "Content-Type": "application/json" },
-            method: "POST",
-            credentials: "include",
-            body: JSON.stringify({
-                genres: this.state.genres,
-                playlistName: this.state.playlistName,
-                duration: this.state.duration,
-                others: this.state.others
-            })
-        })
-            .then(res => { return res.json(); })
-            .then(res => {
-                this.props.history.push(`/party/${res.playlistId}`);
-            })
-            .catch(err => {
-                console.log(err);
-                this.props.history.push("/error", {
-                    code: 5
-                });
-            })
-    }
 
     // value = { this.state.genres }
     // onChange = { this.handleChange }
 
     render() {
-        var checkboxes = [["pop", "hip hop"], ["rap", "country"], ["r&b", "rock"], ["edm", "classical"]].map(row => (
-            <Form.Row style={{ width: '50%', marginLeft: 'auto', marginRight: 'auto' }}>
-                <Form.Group as={Col} style={{ textAlign: 'left' }}>
-                    <Form.Check
-                        // checked={this.state.genres.includes(row[0])}
-                        type="checkbox"
-                        id={row[0]}
-                        label={row[0]}
-                        onChange={this.handleGenres}
-                    />
-                </Form.Group>
-                <Form.Group as={Col} style={{ textAlign: 'left' }}>
-                    <Form.Check
-                        // checked={this.state.genres.includes(row[1])}
-                        inline={true}
-                        type="checkbox"
-                        id={row[1]}
-                        label={row[1]}
-                        onChange={this.handleGenres}
-                    />
-                </Form.Group>
-            </Form.Row>
-        ))
+
         var selectPage = (<div>
             <div className="square-container">
                 <Squares />
@@ -165,41 +87,7 @@ class Select extends Component {
 
                     <div id="create">
                         <h1>Welcome, {this.state.name}</h1>
-                        <h2>What do you want to hear?</h2>
-                        <div style={{ width: '50%', marginLeft: 'auto', marginRight: 'auto' }}>
-                            <Form onSubmit={this.newParty}>
-                                {checkboxes}
-
-
-                                <input
-                                    name="others"
-                                    type="text"
-                                    value={this.state.others}
-                                    onChange={this.handleChange}
-                                    placeholder="k-pop, indie, yodeling"
-                                />
-                                <br></br>
-                                <input
-                                    name="playlistName"
-                                    type="text"
-                                    value={this.state.playlistName}
-                                    onChange={this.handleChange}
-                                    placeholder="playlist name"
-                                />
-                                <br></br>
-                                <input
-                                    name="duration"
-                                    type="text"
-                                    value={this.state.duration}
-                                    onChange={this.handleChange}
-                                    placeholder="playlist duration (min)"
-                                />
-                                <br></br>
-                                <Button className="cssbutton" type="submit">
-                                    Go!
-                            </Button>
-                            </Form>
-                        </div>
+                        <PlaylistOptions allowName={true} redirectFunction={this.redirectFunction} />
                     </div>
                 </div>
             </div>

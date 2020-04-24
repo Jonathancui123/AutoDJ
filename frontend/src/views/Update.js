@@ -5,6 +5,8 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import config from '../constants';
 import enforceLogin from '../components/enforceLogin';
+import PlaylistOptions from '../components/playlistOptions';
+
 import loginModal from '../components/loginModal';
 
 // Replaces old host page
@@ -18,13 +20,18 @@ class Update extends Component {
             name: "<placeholder>",
             spotifyId: "",
             parties: [],
-            genres: "",
-            playlistName: "",
-            duration: "",
             // playlistId: "",
             loggedIn: true
+
         }
+        this.redirectFunction = this.redirectFunction.bind(this);
+
     }
+
+    redirectFunction(url) {
+        this.props.history.push(url);
+    }
+
 
     componentDidMount() {
         console.log('Component mounted');
@@ -133,27 +140,7 @@ class Update extends Component {
 
                         <div id="updateBlock">
                             <h1>Update Playlist: {this.state.playlistName}</h1>
-                            <form onSubmit={this.updatePlaylist}>
-                                <input
-                                    name="genres"
-                                    type="text"
-                                    value={this.state.genres}
-                                    onChange={this.handleChange}
-                                    placeholder="genre1/genre2/genre3"
-                                />
-                                <br></br>
-                                <input
-                                    name="duration"
-                                    type="text"
-                                    value={this.state.duration}
-                                    onChange={this.handleChange}
-                                    placeholder="playlist duration (min)"
-                                />
-                                <br></br>
-                                <Button className="cssbutton" type="submit">
-                                    Update!
-                                </Button>
-                            </form>
+                            <PlaylistOptions redirectFunction={this.redirectFunction} />
                         </div>
                     </div>
                 </div>
