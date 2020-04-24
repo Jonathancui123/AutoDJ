@@ -173,7 +173,7 @@ async function joinParty(spotifyId, playlistId) {
 // SONG/PLAYLIST METHODS
 ///////////////////////////////////////////////
 
-// POTENTIALLY REMOVE
+// Retrieve song bank for a party
 async function getSongBank(playlistId) {
     var result = await Party.findOne({
         playlistId: playlistId
@@ -183,13 +183,30 @@ async function getSongBank(playlistId) {
 
 // Append new user's songs to party's song bank
 async function addSongs(songList, playlistId) {
-    songList.forEach(async (song) => {
+    var songBank = {};
+    const currSongs = await getSongBank(playlistId);
+    currSongs.forEach(song => {
+        songBank[song.link] = song;
+    });
+    songList.forEach(song => {
+        if (song.link in songBank) {
+            songBank[song.link].score++;
+        } else {
+            songBank[song.link] = song;
+        }
+    });
+    await Party.updateOne({ playlistId: playlistId }, {
+        $set: {
+            songs: []
+        }
+    });
+    Object.keys(songBank).forEach(async song => {
         await Party.updateOne({ playlistId: playlistId }, {
             $push: {
-                songs: song
+                songs: songBank[song]
             }
-        })
-    })
+        });
+    });
 }
 
 module.exports = {
