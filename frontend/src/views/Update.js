@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import Squares from '../components/squares';
-import Button from "react-bootstrap/Button";
-import Modal from "react-bootstrap/Modal";
+
 import config from '../constants';
 import enforceLogin from '../components/enforceLogin';
 import PlaylistOptions from '../components/playlistOptions';
