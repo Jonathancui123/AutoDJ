@@ -154,7 +154,7 @@ async function addParty(userId, playlistId) {
 }
 
 async function joinParty(spotifyId, playlistId) {
-    const newUser = makeNewPartyUser(spotifyId, 'guest');
+    const newUser = await makeNewPartyUser(spotifyId, 'guest');
     await Party.updateOne({ playlistId: playlistId }, {
         $push: {
             members: newUser

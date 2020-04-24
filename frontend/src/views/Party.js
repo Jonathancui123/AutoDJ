@@ -32,10 +32,10 @@ class Party extends Component {
     window.location.reload(true);
   }
 
-  loadPartyPage() {
+  async loadPartyPage() {
     // Below assumes that the user is logged in
     console.log("Sending request to: " + `${this.backendAddress}/isPartyHost/${this.state.playlistID}`)
-    fetch(`${this.backendAddress}/isPartyHost/${this.state.playlistID}`, {
+    await fetch(`${this.backendAddress}/isPartyHost/${this.state.playlistID}`, {
       method: "GET",
       credentials: "include"
     })
