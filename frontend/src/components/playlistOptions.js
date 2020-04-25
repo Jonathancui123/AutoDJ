@@ -49,14 +49,16 @@ class PlaylistOptions extends Component {
 
     updatePlaylist = event => {
         event.preventDefault();
+        console.log(`Sending update request to ${this.backendAddress}/updatePlaylist with the following state:`)
+        console.log(this.state);
+
         fetch(`${this.backendAddress}/updatePlaylist`, {
             headers: { "Content-Type": "application/json" },
             method: "PUT",
             credentials: "include",
-
             body: JSON.stringify({
                 genres: this.state.genres,
-                playlistName: this.state.playlistName,
+                playlistName: this.props.playlistName,
                 duration: this.state.duration,
                 playlistId: this.props.playlistID
             })

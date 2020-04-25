@@ -128,7 +128,12 @@ class Update extends Component {
                         <div className="content-container">
 
                             <div className="playlistOptionsPage" >
-                                <PlaylistOptions title={"Update Playlist: " + this.state.playlistName} redirectFunction={this.redirectFunction} playlistID={this.state.playlistID} onSubmit="updatePlaylist" />
+                                <PlaylistOptions 
+                                title={"Update Playlist: " + this.state.playlistName} 
+                                redirectFunction={this.redirectFunction} 
+                                playlistID={this.state.playlistID} 
+                                playlistName={this.state.playlistName}
+                                onSubmit="updatePlaylist" />
                             </div>
                         </div>
                     </div>
