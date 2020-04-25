@@ -12,7 +12,6 @@ class Party extends Component {
 
   backendAddress = config.backendAddress;
   frontendAddress = config.frontendAddress;
-  redirectString = `party/${this.state.playlistID}`
 
   constructor(props) {
     super(props);
@@ -25,7 +24,9 @@ class Party extends Component {
       loggedIn: false
     };
 
-    // this.handleUpdate = this.handleUpdate.bind(this)
+    const { match: { params } } = this.props;
+    this.state.playlistID = params.playlistID;
+    this.redirectString = `party/${this.state.playlistID}`;
   }
 
   refreshPage() {
@@ -87,10 +88,6 @@ class Party extends Component {
 
 
   render() {
-    const { match: { params } } = this.props;
-    this.state.playlistID = params.playlistID;
-    this.redirectString = `party/${this.state.playlistID}`;
-
     if (!this.state.loggedIn) {
       // alert('User not logged in!');
       return (

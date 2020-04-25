@@ -34,9 +34,7 @@ class Host extends React.Component {
   }
 
   callUpdate = () => {
-    this.props.history.push("/update", {
-      playlistId: this.props.playlistID
-    });
+    this.props.history.push(`/update/${this.props.playlistID}`);
   };
 
   render() {

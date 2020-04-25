@@ -56,6 +56,9 @@ async function makeNewParty(host, playlistName, playlistId, genres, duration) {
 }
 
 async function updateParty(playlistName, playlistId, genres, duration) {
+    console.log("Info on genres at dbMethod:updateParty")
+    console.log(typeof genres)
+    console.log(genres)
     await Party.updateOne({
         playlistId: playlistId
     }, {

@@ -30,6 +30,8 @@ router.get('/isPartyHost/:playlistId', async (req, res) => {
     console.log("req session id: ", req.session.id)
     console.log("req.session.userdata.spotifyId: ", req.session.userData.spotifyId)
     console.log("partyInfo.host.spotifyId: ", partyInfo.host.spotifyId)
+    console.log("partyInfo.playlistName: ", partyInfo.playlistName)
+
 
     var partyAndHostInfo = JSON.parse(JSON.stringify(partyInfo))
     partyAndHostInfo.isHost = ((req.session.userData.spotifyId == partyAndHostInfo.host.spotifyId) ? true : false);
@@ -63,7 +65,7 @@ router.post('/newParty', async (req, res) => {
 
     // Make new party & host object
     const host = await dbMethods.makeNewPartyUser(userId, 'host');
-    await dbMethods.makeNewParty(host, playlistName, playlistId, genres.toString(), playlistDur);
+    await dbMethods.makeNewParty(host, playlistName, playlistId, genres, playlistDur);
     await dbMethods.addSongs(tempBank, playlistId);
     console.log('Party created');
 
@@ -97,7 +99,7 @@ router.put('/updatePlaylist', async (req, res) => {
 
     const playlistName = req.body.playlistName;
     // const genres = req.body.genres.concat(req.body.others.split(",").map(str => str.trim()));
-    const genres = req.body.genres.split("/");
+    const genres = req.body.genres;
     const playlistId = req.body.playlistId;
     const playlistDur = 60 * 1000 * parseInt(req.body.duration);
     const retrievedUserData = await dbMethods.getUserInfo(req.session.userData.id);
@@ -124,6 +126,7 @@ router.put('/updatePlaylist', async (req, res) => {
             status: "success",
             playlistId: playlistId
         });
+        console.log("Sending response for update request")
     } catch {
         console.log('Could not add songs to playlist');
         res.send({
