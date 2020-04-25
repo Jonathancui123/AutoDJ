@@ -5,7 +5,7 @@ class Squares extends Component {
     state = {}
     render() {
         return (
-            <div>
+            <div className="innerSquareContainer">
                 <div className="squares square1" />
                 <div className="squares square2" />
                 <div className="squares square3" />

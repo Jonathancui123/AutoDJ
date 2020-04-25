@@ -8,7 +8,7 @@ class Player extends Component {
         src={"https://open.spotify.com/embed/playlist/" + this.props.playlistID}
         width="100%"
         height="100%"
-        frameborder="0"
+        frameBorder="0"
         allowtransparency="true"
         allow="encrypted-media"
       ></iframe>

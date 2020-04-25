@@ -24,13 +24,13 @@ class Error extends Component {
     componentDidMount() {
         console.log("Component mounted");
         this.setState({
-            code: this.props.location.state[this.state.code]
+            // code: this.props.location.state[this.state.code]
         });
     }
 
     render() {
         return (
-            <div class="error">
+            <div className="error">
                 <div className="square-container">
                     <Squares />
                     <div className="content-container" style={{ paddingTop: "15vh" }}>

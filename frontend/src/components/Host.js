@@ -34,14 +34,12 @@ class Host extends React.Component {
   }
 
   callUpdate = () => {
-    this.props.history.push("/update", {
-      playlistId: this.props.playlistID
-    });
+    this.props.history.push(`/update/${this.props.playlistID}`);
   };
 
   render() {
     return (
-      <div class="host">
+      <div className="host">
         <div className="square-container">
           <Squares />
           <div className="content-container">

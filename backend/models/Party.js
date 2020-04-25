@@ -9,7 +9,7 @@ const partySchema = new mongoose.Schema({
   host: partyUserSchema,
   playlistName: String,
   playlistId: String,
-  genres: String,
+  genres: Object,
   duration: Number,
   songs: [songSchema]
 });

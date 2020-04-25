@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import Squares from '../components/squares';
-import Button from "react-bootstrap/Button";
-import Modal from "react-bootstrap/Modal";
+import LoginModal from '../components/loginModal';
+
 import config from '../constants';
 import enforceLogin from '../components/enforceLogin';
 import PlaylistOptions from '../components/playlistOptions';
-
-import loginModal from '../components/loginModal';
 
 // Replaces old host page
 
@@ -18,38 +16,25 @@ class Update extends Component {
         super(props);
         this.state = {
             name: "<placeholder>",
+            isHost: true,
             spotifyId: "",
             parties: [],
             // playlistId: "",
             loggedIn: true
-
         }
         this.redirectFunction = this.redirectFunction.bind(this);
 
+        const { match: { params } } = this.props;
+        this.state.playlistID = params.playlistID;
     }
 
     redirectFunction(url) {
         this.props.history.push(url);
     }
 
+    loadUpdatePage() {
 
-    componentDidMount() {
-        console.log('Component mounted');
-        enforceLogin("update")
-            .then(loggedInBool => {
-
-                this.setState({
-                    loggedIn: loggedInBool
-                })
-            })
-            .catch(err => {
-                console.log('Could not verify login');
-                this.props.history.push("/error", {
-                    code: 2
-                });
-            });
-
-        fetch(`${this.backendAddress}/getPartyInfo/${this.props.location.state.playlistId}`, {
+        fetch(`${this.backendAddress}/isPartyHost/${this.state.playlistID}`, {
             method: "GET",
             credentials: "include"
         })
@@ -57,11 +42,14 @@ class Update extends Component {
                 return res.json();
             })
             .then(res => {
-                console.log(res);
+                console.log("isPartyHost: ", res);
+                if (!res.isHost) {
+                    this.props.history.push(`/party/${this.props.playlistID}`)
+                }
                 this.setState({
-                    genres: res.genres,
+                    isHost: res.isHost,
                     playlistName: res.playlistName,
-                    duration: res.duration / 60000
+                    playlistDuration: res.playlistDuration
                 })
             })
             .catch(err => {
@@ -80,7 +68,7 @@ class Update extends Component {
                 return res.json();
             })
             .then(res => {
-                console.log(res);
+                console.log("GetUserInfo: ", res);
                 this.setState({
                     name: res.name,
                     spotifyId: res.spotifyId,
@@ -96,59 +84,62 @@ class Update extends Component {
 
     }
 
-    handleChange = event => {
-        const name = event.target.name;
-        const value = event.target.value;
-        this.setState({
-            [name]: value,
-        });
-    };
+    componentDidMount() {
+        console.log('Update Component mounted');
+        console.log('componentDidMount playlistID in state: ', this.state.playlistID);
+        enforceLogin("update")
+            .then(loggedInBool => {
+                this.setState({
+                    loggedIn: loggedInBool
+                })
+                if (loggedInBool) {
+                    this.loadUpdatePage();
+                }
+            })
 
-    updatePlaylist = event => {
-        event.preventDefault();
-        fetch(`${this.backendAddress}/updatePlaylist`, {
-            headers: { "Content-Type": "application/json" },
-            method: "PUT",
-            credentials: "include",
-            body: JSON.stringify({
-                genres: this.state.genres,
-                playlistName: this.state.playlistName,
-                duration: this.state.duration,
-                playlistId: this.props.location.state.playlistId
-            })
-        })
-            .then(res => { return res.json(); })
-            .then(res => {
-                this.props.history.push(`/party/${this.props.location.state.playlistId}`);
-            })
+
             .catch(err => {
-                console.log(err);
+                console.log('Could not verify login');
                 this.props.history.push("/error", {
-                    code: 1
+                    code: 2
                 });
-            })
+            });
+
     }
 
     render() {
+        console.log("Current playlistID from state: ", this.state.playlistID);
+        console.log("Current playlistName from state: ", this.state.playlistName);
+        if (!this.state.loggedIn) {
 
-        return (
+            // alert('User not logged in!');
+            return (
 
-            <div>
-                <div className="square-container">
-                    <Squares />
-                    <div className="content-container">
+                <div><LoginModal redirect={this.redirectString} currentPage="party" /></div>
 
-                        <div id="updateBlock">
-                            <h1>Update Playlist: {this.state.playlistName}</h1>
-                            <PlaylistOptions redirectFunction={this.redirectFunction} />
+            )
+        }
+        else {
+            return (
+
+                <div>
+                    <div className="square-container">
+                        <Squares />
+                        <div className="content-container">
+
+                            <div className="playlistOptionsPage" >
+                                <PlaylistOptions 
+                                title={"Update Playlist: " + this.state.playlistName} 
+                                redirectFunction={this.redirectFunction} 
+                                playlistID={this.state.playlistID} 
+                                playlistName={this.state.playlistName}
+                                onSubmit="updatePlaylist" />
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-
-
-
-        );
+            );
+        }
     }
 }
 

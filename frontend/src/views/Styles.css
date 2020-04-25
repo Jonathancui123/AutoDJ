@@ -44,17 +44,69 @@ p {
   color: #282c34;
 }
 
-#create {
-  display: block;
+.playlistOptionsPage {
+  display: flex;
+  flex-direction: column;
   color: white;
-  padding-top: 20vh;
+  min-height: 100vh;
 }
 
-#updateBlock {
-  display: block;
-  color: white;
-  padding-top: 30vh;
+.playlistOptionsPage:before, .playlistOptionsPage:after {
+  content: '';
+display: block;
+height: 24px;
+-webkit-box-flex: 1;
+box-flex: 1;
+-webkit-flex-grow: 1;
+flex-grow: 1;
+} 
+
+.noPaddingContainer{
+  margin: 0;
+  padding: 0;
 }
+
+.formRow{
+  display: flex;
+}
+
+.formCol{
+  width: 0;
+  -webkit-box-flex: 0;
+  box-flex: 0;
+  -webkit-flex-grow: 0;
+  flex-grow: 0;
+}
+
+
+.formContent {
+  width: 100%;
+  padding: 24px 24px 36px 24px;
+}
+
+@media (min-width: 768px){
+  .formContent {
+    /* -webkit-box-flex: 2;
+box-flex: 2;
+-webkit-flex-grow: 2;
+flex-grow: 2; */
+  max-width: 600px;
+  min-width: 600px;
+
+  padding: 48px 40px 36px 40px;
+  border-style: solid;
+  border-radius: 15px;
+  border-color: white;
+  border-width: 5px;
+}
+.formCol{
+  -webkit-box-flex: 1;
+box-flex: 1;
+-webkit-flex-grow: 1;
+flex-grow: 1;
+}}
+
+
 
 #copyField {
   border-color: rgba(255, 255, 255, 0.774);
@@ -109,10 +161,10 @@ input::-webkit-inner-spin-button {
 input {
   background-color: transparent;
   color: white;
-  border-width: 0 0 5px 0;
+  border-width: 0 0 3px 0;
   padding-left: 10px;
   caret-color: white;
-  font-size: 3em;
+  font-size: 1.5em;
   text-align: center;
 }
 
@@ -163,15 +215,24 @@ input.joinLink {
 }
 
 .square-container {
-  height: 100vh;
+  min-height: 100vh;
   background-color: #171941;
   position: relative;
   overflow: hidden;
 }
 
+.innerSquareContainer{
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  min-width: 1000px;
+}
+
 .content-container {
   position: relative;
-  height: 100vh;
+  min-height: 100vh;
   width: 100vw;
   display: block;
   /* margin-right: auto;

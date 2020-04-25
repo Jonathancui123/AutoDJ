@@ -6,6 +6,8 @@ import enforceLogin from '../components/enforceLogin';
 import LoginModal from '../components/loginModal';
 import PlaylistOptions from '../components/playlistOptions';
 
+import Container from 'react-bootstrap/Container'
+
 // Replaces old host page
 
 class Select extends Component {
@@ -74,7 +76,6 @@ class Select extends Component {
 
     }
 
-
     // value = { this.state.genres }
     // onChange = { this.handleChange }
 
@@ -84,11 +85,9 @@ class Select extends Component {
             <div className="square-container">
                 <Squares />
                 <div className="content-container">
-
-                    <div id="create">
-                        <h1>Welcome, {this.state.name}</h1>
-                        <PlaylistOptions allowName={true} redirectFunction={this.redirectFunction} />
-                    </div>
+                    <Container fluid className="playlistOptionsPage noPaddingContainer">
+                        <PlaylistOptions title={"Welcome, " + this.state.name} allowName={true} redirectFunction={this.redirectFunction} onSubmit="newParty" />
+                    </Container>
                 </div>
             </div>
         </div>
