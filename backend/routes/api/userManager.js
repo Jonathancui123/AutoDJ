@@ -37,4 +37,18 @@ router.get('/checkLogin', (req, res) => {
     res.send(req.session.userData ? true : false);
 });
 
+// Get current most popular albums
+router.get('/getPopularAlbums', async (req, res) => {
+    console.log('* /getPopularAlbums called');
+    var albums = await dbMethods.getMostPopularAlbums();
+    res.send(albums);
+});
+
+// Get current number of listeners and parties
+router.get('/getCurrentStats', async (req, res) => {
+    console.log('* /getCurrentStats called');
+    var stats = await dbMethods.getCurrentStats();
+    res.send(stats)
+});
+
 module.exports = router;

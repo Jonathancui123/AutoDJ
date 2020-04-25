@@ -55,6 +55,8 @@ router.post('/newParty', async (req, res) => {
 
     // Generate new playlist
     var tempBank = await queueMethods.getSongs(accessToken);
+    console.log(JSON.parse(tempBank).items[0]);
+    await dbMethods.addAlbums(tempBank);
     tempBank = await queueMethods.addSongsToBank(tempBank, accessToken);
     console.log(tempBank.slice(0, 10));
     var createdPlaylist = await queueMethods.createNewPlaylist(accessToken, playlistName, userId);
@@ -148,8 +150,10 @@ router.post('/joinParty/:playlistId', async (req, res) => {
 
         // Add songs to party in database
         var tempBank = await queueMethods.getSongs(accessToken);
+        await dbMethods.addAlbums(tempBank);
         tempBank = await queueMethods.addSongsToBank(tempBank, accessToken);
-        await dbMethods.addSongs(tempBank, req.params.playlistId)
+        await dbMethods.addSongs(tempBank, req.params.playlistId);
+
     }
 });
 

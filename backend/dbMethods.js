@@ -6,6 +6,7 @@ const Party = require('./models/Party');
 const PartyUser = require('./models/PartyUser');
 const Counter = require('./models/Counter');
 const Song = require('./models/Song');
+const Album = require('./models/Album');
 
 // Database connection
 const dbUrl = require('./config/keys.js').mongoURI;
@@ -167,6 +168,16 @@ async function joinParty(spotifyId, playlistId) {
     });
 }
 
+async function getCurrentStats() {
+    const listeners = await User.count();
+    const parties = await Party.count();
+    const ret = {
+        "users": listeners,
+        "parties": parties
+    }
+    return ret;
+}
+
 // TODO: Update party function (new spotify link, host, etc)
 
 ///////////////////////////////////////////////
@@ -209,6 +220,47 @@ async function addSongs(songList, playlistId) {
     });
 }
 
+// Get the current albums in the database
+async function getAlbums() {
+    console.log("* getAlbums called")
+    const albums = await Album.find();
+    return albums;
+}
+
+// Adds user's top tracks' albums to database
+async function addAlbums(body) {
+    console.log("* addAlbums called");
+    var songList = JSON.parse(body).items;
+    for (const song of songList) {
+        var exists = await Album.findOne({ id: song.album.id });
+        if (exists) {
+            await Album.updateOne({ id: song.album.id }, {
+                $inc: {
+                    count: 1
+                }
+            });
+        } else {
+            const newAlbum = new Album({
+                id: song.album.id,
+                name: song.album.name,
+                artist: song.album.artists[0].name,
+                count: 1,
+                art: song.album.images[1].url,
+                link: song.album.external_urls.spotify
+            });
+            await newAlbum.save().then(result => console.log('Saved to DB: ', result));
+        }
+    }
+}
+
+// Get 20 most popular albums
+async function getMostPopularAlbums() {
+    var albums = await Album.find().sort({
+        count: -1
+    }).limit(12);
+    return albums;
+}
+
 module.exports = {
     makeNewUser: makeNewUser,
     makeNewParty: makeNewParty,
@@ -224,6 +276,10 @@ module.exports = {
     updateTokens: updateTokens,
     addParty: addParty,
     joinParty: joinParty,
+    getCurrentStats: getCurrentStats,
     getSongBank: getSongBank,
-    addSongs: addSongs
+    addSongs: addSongs,
+    getAlbums: getAlbums,
+    addAlbums: addAlbums,
+    getMostPopularAlbums: getMostPopularAlbums
 }
