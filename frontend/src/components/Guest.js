@@ -48,25 +48,49 @@ class Guest extends React.Component {
         } else {
             members = "";
         }
-
-
-        return (
-            <div className="host">
-                <div className="square-container">
-                    <Squares />
-                    <div className="content-container">
-                        <Row className="partyPage">
-                            <Col xs={7}>
-                                {player}
-                            </Col>
-                            <Col xs={5} className="rightPanel">
-                                {members}
-                            </Col>
-                        </Row>
+        if (this.props.renderMobile) {
+            return (
+                <div >
+                    <div className="square-container">
+                        <Squares />
+                        <div className="content-container">
+                            <div className="partyPage">
+                                <div className="mobileTopPanel">
+                                    <h2 style={{ marginBottom: "10px" }}>{this.props.playlistName}</h2>
+                                    
+                                    {player}
+                                    <p style={{color: "white", fontSize: "0.9em"}}>You'll see your music appear once the host refreshes the playlist!</p>
+                                </div>
+                                <div style={{ marginBottom: "20px" }}>
+                                    <Members users={this.props.users} />
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        );
+            )
+        }
+        if (!this.props.renderMobile) {
+            return (
+                <div >
+                    <div className="square-container">
+                        <Squares />
+                        <div className="content-container">
+                            <Row className="partyPage">
+                                <Col md={7}>
+                                    {player}
+                                </Col>
+                                <Col md={5} className="rightPanel">
+                                    {members}
+                                    <p style={{color: "white", fontSize: "0.9em"}}>You'll see your music appear once the host refreshes the playlist!</p>
+
+                                </Col>
+                            </Row>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
     }
 }
 

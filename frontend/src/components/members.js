@@ -7,8 +7,8 @@ class Members extends Component {
     var users = this.props.users;
     var memberList = users.map(user => (
       <tr key={user}>
-        <td style={{ paddingLeft: "20px", paddingTop: "11px", fontSize: "1.2rem" }}>{user.name}</td>
-        <td style={{ paddingBottom: 0, paddingRight: 0, textAlign: "right" }}>
+        <td style={{ paddingLeft: "20px", paddingTop: "11px", fontSize: "1.2rem", maxWidth: "50px"}}>{user.name}</td>
+        <td style={{ paddingBottom: 0, paddingRight: 0, textAlign: "right",  maxWidth: "50px" }}>
           <iframe
             src={
               "https://open.spotify.com/follow/1/?uri=" +
@@ -27,7 +27,7 @@ class Members extends Component {
     ));
 
     return (
-      <div>
+      <div style={{width:"100%" }}>
         <h3>In the house:</h3>
         <Table
           striped

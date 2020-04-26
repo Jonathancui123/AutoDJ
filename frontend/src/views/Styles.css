@@ -47,20 +47,33 @@ p {
 
 .playerPanel {
   text-align: left;
-  height: 97vh;
+  margin-bottom: 10px;
+  -webkit-box-flex: 1;
+  box-flex: 1;
+  -webkit-flex-grow: 1;
+  flex-grow: 1;
 }
 
+.partyPage {
+  padding: 24px 24px 36px 24px;
+  width: 100%;
+}
 
+.mobileTopPanel {
+  display: flex;
+  flex-direction: column;
+  height: 80vh;
+  margin-bottom: 10px;
+}
 
 @media (min-width: 768px){
   .partyPage {
     min-height:700px;
     height: 100vh;
-    padding: 40px 30px 40px 30px;
+    padding: 48px 40px 36px 40px;
   }
   .playerPanel {
     height: 100%;
-    /* padding: 40px 0px 40px 30px; */
   }
 
   .rightPanel {
@@ -72,7 +85,6 @@ p {
   }
 
   .membersPanel {
-
     -webkit-box-flex: 1;
     box-flex: 1;
     -webkit-flex-grow: 1;
@@ -129,10 +141,6 @@ flex-grow: 1;
 
 @media (min-width: 768px){
   .formContent {
-    /* -webkit-box-flex: 2;
-box-flex: 2;
--webkit-flex-grow: 2;
-flex-grow: 2; */
   max-width: 600px;
   min-width: 600px;
 
@@ -159,7 +167,7 @@ flex-grow: 1;
   color: rgba(255, 255, 255, 0.918);
 }
 
-#copyButton{
+#copyButton, #shareButton{
   width: 5.5em;
   margin-top: 0px;
   padding: 4px;

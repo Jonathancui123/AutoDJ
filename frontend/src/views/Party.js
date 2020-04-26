@@ -22,16 +22,23 @@ class Party extends Component {
       playlistID: "",
       playlistName: "",
       playlistDuration: null,
-      loggedIn: false
+      loggedIn: false,
+      renderMobile: window.innerWidth < 768,
     };
-
+    
     const { match: { params } } = this.props;
     this.state.playlistID = params.playlistID;
     this.redirectString = `party/${this.state.playlistID}`;
+    this.handleResize = this.handleResize.bind(this);
+
   }
 
   refreshPage() {
     window.location.reload(true);
+  }
+
+  handleResize(){
+    this.setState({renderMobile: (window.innerWidth < 768)});
   }
 
   async loadPartyPage() {
@@ -46,7 +53,6 @@ class Party extends Component {
       })
       .then(response => {
         if (!response.isHost) {
-          window.alert("sending fetch");
           fetch(`${this.backendAddress}/joinParty/${this.state.playlistID}`, {
             method: "POST",
             credentials: "include"
@@ -85,6 +91,11 @@ class Party extends Component {
           code: 2
         });
       });
+      window.addEventListener('resize', this.handleResize);
+
+  }
+  componentWillUnmount(){
+    window.removeEventListener('resize', this.handleResize);
   }
 
 
@@ -98,6 +109,7 @@ class Party extends Component {
           playlistID={this.state.playlistID}
           playlistName={this.state.playlistName}
           playlistDuration={this.state.playlistDuration}
+          renderMobile={this.state.renderMobile}
         />
           <div><LoginModal redirect={this.redirectString} currentPage="party" /></div></div>
 
@@ -109,6 +121,7 @@ class Party extends Component {
         playlistID={this.state.playlistID}
         playlistName={this.state.playlistName}
         playlistDuration={this.state.playlistDuration}
+        renderMobile={this.state.renderMobile}
       />);
     } else {
       return (
@@ -118,6 +131,7 @@ class Party extends Component {
           playlistID={this.state.playlistID}
           playlistName={this.state.playlistName}
           playlistDuration={this.state.playlistDuration}
+          renderMobile={this.state.renderMobile}
         />
       )
     }

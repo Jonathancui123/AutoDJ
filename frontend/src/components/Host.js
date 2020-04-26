@@ -9,6 +9,7 @@ import config from "../constants.js";
 import Update from "../views/Update";
 import { withRouter } from "react-router-dom";
 import CopyLink from "./copyLink.js"
+import ShareLink from "./shareLink.js"
 
 
 import "../views/Styles.css";
@@ -37,35 +38,72 @@ class Host extends React.Component {
     this.props.history.push(`/update/${this.props.playlistID}`);
   };
 
+ 
+
   render() {
-    return (
-      <div className="host">
-        <div className="square-container">
-          <Squares />
-          <div className="content-container">
-            <Row className="partyPage">
-              <Col xs md={7} style={{height: "100%"}}>
-                <div className="playerPanel">
-                  <Player playlistID={this.props.playlistID} />
+    let share;
+    if (navigator.share){
+      share = <ShareLink link={this.props.shareLink} playlistName={this.props.playlistName}/>;
+    }else {
+      share = <CopyLink link={this.props.shareLink} />;
+    }
+
+    if (this.props.renderMobile) {
+      return (
+        <div className="host">
+          <div className="square-container">
+            <Squares />
+            <div className="content-container">
+              <div className="partyPage">
+                <div className="mobileTopPanel">
+                  <h2 style={{ marginBottom: "10px" }}>{this.props.playlistName}</h2>
+                  {share}
+                  <div className="playerPanel">
+                    <Player playlistID={this.props.playlistID} />
+                  </div>
                 </div>
-              </Col>
-              <Col xs md={5} className="rightPanel">
-                <div className="membersPanel">
-                  <h1 style={{ marginBottom: "10px" }}>{this.props.playlistName}</h1>
-                  <Members users={this.props.users} />
+                <div style={{marginBottom: "20px"}}>
+                <Members users={this.props.users} />
                 </div>
-                <div className="hostPanel">
-                  <CopyLink link={this.props.shareLink} />
-                  <Button id="update" className="bigWhiteButton" onClick={this.callUpdate}>
-                    Update
+                <Button id="update" className="bigWhiteButton" onClick={this.callUpdate}>
+                  Update
                     </Button>
-                </div>
-              </Col>
-            </Row>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    );
+      )
+    }
+    if (!this.props.renderMobile) {
+      return (
+        <div className="host">
+          <div className="square-container">
+            <Squares />
+            <div className="content-container">
+              <Row className="partyPage">
+                <Col md={7} style={{ height: "100%" }}>
+                  <div className="playerPanel">
+                    <Player playlistID={this.props.playlistID} />
+                  </div>
+                </Col>
+                <Col md={5} className="rightPanel">
+                  <div className="membersPanel">
+                    <h1 style={{ marginBottom: "10px" }}>{this.props.playlistName}</h1>
+                    <Members users={this.props.users} />
+                  </div>
+                  <div className="hostPanel">
+                    <CopyLink link={this.props.shareLink} />
+                    <Button id="update" className="bigWhiteButton" onClick={this.callUpdate}>
+                      Update
+                      </Button>
+                  </div>
+                </Col>
+              </Row>
+            </div>
+          </div>
+        </div>
+      );
+    }
   }
 }
 
