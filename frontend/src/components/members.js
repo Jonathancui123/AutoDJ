@@ -27,13 +27,13 @@ class Members extends Component {
     ));
 
     return (
-      <div style={{ height: "45vh" }}>
-        <h2>In the house:</h2>
+      <div>
+        <h3>In the house:</h3>
         <Table
           striped
           hover
           variant="dark"
-          style={{ overflowY: "auto" }}
+          style={{ overflow: "scroll" }}
         >
           <tbody>{memberList}</tbody>
         </Table>

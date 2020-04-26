@@ -77,7 +77,7 @@ class PlaylistOptions extends Component {
 
 
     newParty = event => {
-        window.alert("NewParty Called")
+        
         console.log("state at submission: ", this.state)
         event.preventDefault();
         fetch(`${this.backendAddress}/newParty`, {

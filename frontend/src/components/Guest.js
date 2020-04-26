@@ -55,11 +55,11 @@ class Guest extends React.Component {
                 <div className="square-container">
                     <Squares />
                     <div className="content-container">
-                        <Row>
+                        <Row className="partyPage">
                             <Col xs={7}>
                                 {player}
                             </Col>
-                            <Col xs={5}>
+                            <Col xs={5} className="rightPanel">
                                 {members}
                             </Col>
                         </Row>

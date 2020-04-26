@@ -7,6 +7,7 @@ import { Redirect } from "react-router-dom";
 import enforceLogin from '../components/enforceLogin';
 import LoginModal from '../components/loginModal';
 
+
 class Party extends Component {
   state = {};
 

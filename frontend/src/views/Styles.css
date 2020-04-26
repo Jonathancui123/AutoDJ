@@ -44,6 +44,49 @@ p {
   color: #282c34;
 }
 
+
+.playerPanel {
+  text-align: left;
+  height: 97vh;
+}
+
+
+
+@media (min-width: 768px){
+  .partyPage {
+    min-height:700px;
+    height: 100vh;
+    padding: 40px 30px 40px 30px;
+  }
+  .playerPanel {
+    height: 100%;
+    /* padding: 40px 0px 40px 30px; */
+  }
+
+  .rightPanel {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 0px 0px 0px 15px;
+    text-align: left;
+  }
+
+  .membersPanel {
+
+    -webkit-box-flex: 1;
+    box-flex: 1;
+    -webkit-flex-grow: 1;
+    flex-grow: 1;
+  }
+
+  .hostPanel {
+    -webkit-box-flex: 0;
+    box-flex: 0;
+    -webkit-flex-grow: 0;
+    flex-grow: 0;
+  }
+}
+
 .playlistOptionsPage {
   display: flex;
   flex-direction: column;
@@ -148,6 +191,10 @@ h1 {
 h2 {
   font-size: 2.2rem;
   background-color: transparent;
+  color: white;
+}
+
+h3{
   color: white;
 }
 
@@ -320,16 +367,6 @@ input.joinLink {
   opacity: 0.1;
 }
 
-.playerPanel {
-  padding: 5% 3% 3% 5%;
-  text-align: left;
-  height: 97vh;
-}
-
-.membersPanel {
-  padding: 8% 8% 3% 3%;
-  text-align: left;
-}
 
 .panel {
   height: 270px;

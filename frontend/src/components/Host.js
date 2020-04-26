@@ -40,24 +40,25 @@ class Host extends React.Component {
   render() {
     return (
       <div className="host">
-        <div className="square-container">
+        <div classN ame="square-container">
           <Squares />
           <div className="content-container">
-            <Row>
-              <Col xs={7}>
+            <Row className="partyPage">
+              <Col xs md={7} style={{height: "100%"}}>
                 <div className="playerPanel">
                   <Player playlistID={this.props.playlistID} />
                 </div>
               </Col>
-              <Col xs={5}>
+              <Col xs md={5} className="rightPanel">
                 <div className="membersPanel">
                   <h1 style={{ marginBottom: "10px" }}>{this.props.playlistName}</h1>
                   <Members users={this.props.users} />
+                </div>
+                <div className="hostPanel">
                   <CopyLink link={this.props.shareLink} />
-
                   <Button id="update" className="bigWhiteButton" onClick={this.callUpdate}>
                     Update
-                  </Button>
+                    </Button>
                 </div>
               </Col>
             </Row>
