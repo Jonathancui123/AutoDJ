@@ -33,7 +33,7 @@ class Party extends Component {
     this.handleResize = this.handleResize.bind(this);
 
     const socket = io(`${this.backendAddress}?playlistID=${params.playlistID}`);
-
+    socket.on('updatedPlaylist', ()=>{this.refreshPage(); window.alert("RECEIVED REFRESH COMMAND");})
   }
 
   refreshPage() {

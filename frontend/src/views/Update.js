@@ -6,6 +6,7 @@ import LoginModal from '../components/loginModal';
 import config from '../constants';
 import enforceLogin from '../components/enforceLogin';
 import PlaylistOptions from '../components/playlistOptions';
+import io from 'socket.io-client';
 
 // Replaces old host page
 
@@ -26,6 +27,10 @@ class Update extends Component {
 
         const { match: { params } } = this.props;
         this.state.playlistID = params.playlistID;
+
+
+        const socket = io(`${this.backendAddress}?playlistID=${params.playlistID}`);
+        socket.on('updatedPlaylist', ()=>{this.refreshPage(); window.alert("RECEIVED REFRESH COMMAND");})
     }
 
     redirectFunction(url) {

@@ -8,6 +8,7 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 
+
 const queueMethods = require('../../queueMethods');
 const dbMethods = require('../../dbMethods');
 const config = require('../../config/keys');
@@ -112,11 +113,17 @@ async function pushDBToSpotifyPlaylist(playlistId, accessToken){
     //Push the playlist to Spotify 
     try{
         await queueMethods.addSongsToPlaylist(accessToken, shortListURI, playlistId);
+        //Emit on socket
+        io.to(playlistId).emit('updatedPlaylist')
+        console.log('IO: Emitting update status to room', playlistId)
     }
     catch{
-        console.log('ERROR: Could not push songs to Spotify playlist');
+        console.log('ERROR: Could not push songs to Spotify playlist, emitting anyways');
+        io.to(playlistId).emit('updatedPlaylist')
+        console.log('IO: Emitting update status to room', playlistId)
+        return Promise.reject(new Error(400));
     }
-    //Emit on socket
+    
 }
 
 // Update current playlist

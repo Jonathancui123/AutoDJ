@@ -136,10 +136,26 @@ app.get("/restartServer", (req, res) => {
 // Old behavior^
   io.on('connection', (socket) => {
 	console.log('IO: a user connected');
-	let playlistId = socket.handshake.query.playlistID;
-	console.log('IO: playlistId given: ', playlistId)
-	// ...
+	try{
+		var playlistId = socket.handshake.query.playlistID;
+		console.log('IO: playlistId given: ', playlistId);
+		socket.join(playlistId, ()=>{
+		let rooms = Object.keys(socket.rooms);
+		console.log("IO: New user is part of: ", rooms);	
+	})
+
+	
+	}
+	catch{
+		console.log('IO: Error with given playlist ID')
+	}
+
+	socket.on('disconnect', () => {
+		console.log('IO: user disconnected');
+	  });
   });
+
+ 
 
 http.listen(PORT, () => {
 	console.log(`AutoDJ is running on port ${PORT}`);
