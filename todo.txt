@@ -7,11 +7,8 @@ DOCKER>??
 REACT:
 // Implement "guest" view
 Create page:
-Fix genre submission form
 Tell the host to expect a playlist to be created on their account
-- Add an error page if user tries to access a party that does not exist
-Enable phone native sharing options: https://css-tricks.com/how-to-use-the-web-share-api/
-Automatically refresh info on party page for all members when new people join (don't require manual refresh) --> use SOCKET.IO
+Automatically refresh info on party page for all members when new people join (don't require manual refresh) and when the owner changes the genre/duration--> use SOCKET.IO
 
 
 SERVER:
