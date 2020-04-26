@@ -2,6 +2,8 @@ const rp = require("request-promise");
 const request = require("request");
 const dbMethods = require('./dbMethods');
 
+
+
 // Returns an array of all song objects from the main bank that have at least one of the selected genres
 function createGenredBank(selectedGenres, songBank) {
   console.log('* createGenredBank called');

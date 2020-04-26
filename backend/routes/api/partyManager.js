@@ -94,6 +94,31 @@ router.post('/newParty', async (req, res) => {
     }
 });
 
+async function pushDBToSpotifyPlaylist(playlistId, accessToken){
+    console.log('* /pushDBToSpotifyPlaylist called');
+    //Get info from DB about the party
+    const partyInfo = await dbMethods.getPartyInfo(playlistId);
+    const retrievedSongBank = partyInfo.songs;
+    const genres = partyInfo.genres;
+    const playlistDur = partyInfo.duration;
+    
+    // console.log(`Generating playlist at pushDBToSpotifyPlaylist with the following {genres: ${genres}, duration: ${playlistDur}}`)
+
+    //Generate the playlist to push
+    var genreOnlyBank = queueMethods.createGenredBank(genres, retrievedSongBank);
+    var shortListURI = queueMethods.genShortListURI(genreOnlyBank, playlistDur);
+    console.log('New playlist generated');
+
+    //Push the playlist to Spotify 
+    try{
+        await queueMethods.addSongsToPlaylist(accessToken, shortListURI, playlistId);
+    }
+    catch{
+        console.log('ERROR: Could not push songs to Spotify playlist');
+    }
+    //Emit on socket
+}
+
 // Update current playlist
 router.put('/updatePlaylist', async (req, res) => {
     console.log('* /updatePlaylist called');
@@ -113,28 +138,43 @@ router.put('/updatePlaylist', async (req, res) => {
     console.log(`User ID: ${userId}`);
     console.log(`Playlist ID: ${playlistId}`);
 
-    // Create new shortlist
-    var retrievedSongBank = await dbMethods.getSongBank(playlistId);
-    var genreOnlyBank = queueMethods.createGenredBank(genres, retrievedSongBank);
-    var shortListURI = queueMethods.genShortListURI(genreOnlyBank, playlistDur);
-    console.log('Playlist generated');
-
     // Update database entry for party
-    await dbMethods.updateParty(playlistName, playlistId, req.body.genres, playlistDur);
+    await dbMethods.updateParty(playlistName, playlistId, genres, playlistDur);
 
-    try {
-        await queueMethods.addSongsToPlaylist(accessToken, shortListURI, playlistId);
+    try {        
+        await pushDBToSpotifyPlaylist(playlistId, accessToken);
         res.send({
-            status: "success",
-            playlistId: playlistId
-        });
-        console.log("Sending response for update request")
+                    status: "success",
+                    playlistId: playlistId
+                });
+                console.log("Sending response for update request")
     } catch {
         console.log('Could not add songs to playlist');
-        res.send({
-            status: "fail"
-        });
+            res.send({
+                status: "fail"
+            });
     }
+
+    // // Create new shortlist
+    // var retrievedSongBank = await dbMethods.getSongBank(playlistId);
+    // var genreOnlyBank = queueMethods.createGenredBank(genres, retrievedSongBank);
+    // var shortListURI = queueMethods.genShortListURI(genreOnlyBank, playlistDur);
+    // console.log('Playlist generated');
+  
+
+    // try {
+    //     await queueMethods.addSongsToPlaylist(accessToken, shortListURI, playlistId);
+    //     res.send({
+    //         status: "success",
+    //         playlistId: playlistId
+    //     });
+    //     console.log("Sending response for update request")
+    // } catch {
+    //     console.log('Could not add songs to playlist');
+    //     res.send({
+    //         status: "fail"
+    //     });
+    // }
 });
 
 // Join a party
@@ -157,6 +197,8 @@ router.post('/joinParty/:playlistId', async (req, res) => {
         tempBank = await queueMethods.addSongsToBank(tempBank, accessToken);
         await dbMethods.addSongs(tempBank, req.params.playlistId);
 
+        // Reflect new music taste in the spotify playlist and emit the change
+        pushDBToSpotifyPlaylist(req.params.playlistId, accessToken)
     }
 });
 

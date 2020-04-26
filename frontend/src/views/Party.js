@@ -6,6 +6,7 @@ import config from "../constants.js";
 import { Redirect } from "react-router-dom";
 import enforceLogin from '../components/enforceLogin';
 import LoginModal from '../components/loginModal';
+import io from 'socket.io-client';
 
 
 class Party extends Component {
@@ -30,6 +31,8 @@ class Party extends Component {
     this.state.playlistID = params.playlistID;
     this.redirectString = `party/${this.state.playlistID}`;
     this.handleResize = this.handleResize.bind(this);
+
+    const socket = io(`${this.backendAddress}?playlistID=${params.playlistID}`);
 
   }
 

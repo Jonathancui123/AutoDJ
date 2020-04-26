@@ -27,6 +27,12 @@ const backendAddress = config.backendAddress;
 
 // Use middleware
 const app = express();
+
+//ATTEMPTING TO INSTALL SOCKET IO
+var http = require('http').createServer(app);
+var io = require('socket.io')(http);
+
+
 app.use(cors({
 	origin: frontendAddress,
 	credentials: true
@@ -123,6 +129,18 @@ app.get("/restartServer", (req, res) => {
 	res.sendFile(path.join(__dirname + "/views/clear.html"));
 });
 
-app.listen(PORT, () => {
+// app.listen(PORT, () => {
+// 	console.log(`AutoDJ is running on port ${PORT}`);
+// });
+
+// Old behavior^
+  io.on('connection', (socket) => {
+	console.log('IO: a user connected');
+	let playlistId = socket.handshake.query.playlistID;
+	console.log('IO: playlistId given: ', playlistId)
+	// ...
+  });
+
+http.listen(PORT, () => {
 	console.log(`AutoDJ is running on port ${PORT}`);
-});
+  });
