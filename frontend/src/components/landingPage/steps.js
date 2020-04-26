@@ -33,13 +33,7 @@ class Steps extends Component {
                 content={step.content}
                 picture={step.picture}
             />);
-        return (<div style={{
-            backgroundColor: "#282c34",
-            height: "65vh",
-            width: "100vw",
-            color: "white",
-            paddingTop: "4%"
-        }}>
+        return (<div id="steps">
             {steps}
         </div>);
     }
