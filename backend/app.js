@@ -1,3 +1,8 @@
+var io;
+var getIOInstance = function(){
+	return io;
+  };
+
 // Third Party
 const express = require('express');
 const path = require('path');
@@ -8,11 +13,13 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 
+const app = express();
+
 // Our modules
 const dbMethods = require('./dbMethods');
 const config = require('./config/keys');
 const authRouter = require('./routes/api/spotifyAuth.js');
-const partyRouter = require('./routes/api/partyManager.js');
+const partyRouter = require('./routes/api/partyManager.js')(app, getIOInstance);
 const userRouter = require('./routes/api/userManager.js');
 
 // DONT FORGET TO SET CLIENT SECRET IN ENV --> USE CMD (NOT POWERSHELL) AS ADMIN
@@ -26,11 +33,11 @@ const frontendAddress = config.frontendAddress;
 const backendAddress = config.backendAddress;
 
 // Use middleware
-const app = express();
 
 //ATTEMPTING TO INSTALL SOCKET IO
 var http = require('http').createServer(app);
-var io = require('socket.io')(http);
+io = require('socket.io')(http);
+
 
 
 app.use(cors({
@@ -134,29 +141,33 @@ app.get("/restartServer", (req, res) => {
 // });
 
 // Old behavior^
-  io.on('connection', (socket) => {
-	console.log('IO: a user connected');
-	try{
-		var playlistId = socket.handshake.query.playlistID;
-		console.log('IO: playlistId given: ', playlistId);
-		socket.join(playlistId, ()=>{
-		let rooms = Object.keys(socket.rooms);
-		console.log("IO: New user is part of: ", rooms);	
-	})
+io.on('connection', (socket) => {
+console.log('IO: a user connected');
+try{
+	var playlistId = socket.handshake.query.playlistID;
+	console.log('IO: playlistId given: ', playlistId);
+	socket.join(playlistId, ()=>{
+	let rooms = Object.keys(socket.rooms);
+	console.log("IO: New user is part of: ", rooms);	
+})
 
-	
-	}
-	catch{
-		console.log('IO: Error with given playlist ID')
-	}
 
-	socket.on('disconnect', () => {
-		console.log('IO: user disconnected');
-	  });
-  });
+}
+catch{
+	console.log('IO: Error with given playlist ID')
+}
+
+socket.on('disconnect', () => {
+	console.log('IO: user disconnected');
+	});
+});
 
  
 
 http.listen(PORT, () => {
 	console.log(`AutoDJ is running on port ${PORT}`);
   });
+
+module.exports = {
+	io:io
+}

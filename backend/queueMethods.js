@@ -92,6 +92,26 @@ function addSongsToPlaylist(accessToken, songURIList, playlistID) {
   return addSongsPromise;
 }
 
+async function addSongsToPlaylist(accessToken, songURIList, playlistID) {
+  var options = {
+    method: "PUT",
+    url: "https://api.spotify.com/v1/playlists/" + playlistID + "/tracks",
+    headers: {
+      Authorization: "Bearer " + accessToken,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ uris: songURIList })
+  };
+  let addSongsPromise = rp(options)
+  addSongsPromise.then(res=>{
+    return res;
+  })
+  .catch(err => {
+    console.log('ERROR: (addSongsToPlaylist) Could not push songs to Spotify playlist')
+    return err;
+  })
+}
+
 // Get user's top 100 songs (all genres)
 function getSongs(accessToken) {
   console.log("* getSongs called");

@@ -9,11 +9,17 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 
 
+
 const queueMethods = require('../../queueMethods');
 const dbMethods = require('../../dbMethods');
 const config = require('../../config/keys');
 const router = express.Router();
+const app = require('../../app');
 
+
+module.exports = function(app, getIOInstance){
+    
+    
 // Get party's info
 router.get('/getPartyInfo/:playlistId', async (req, res) => {
     console.log(`* /getPartyInfo/${req.params.playlistId} called`);
@@ -95,7 +101,9 @@ router.post('/newParty', async (req, res) => {
     }
 });
 
-async function pushDBToSpotifyPlaylist(playlistId, accessToken){
+
+
+async function pushDBToSpotifyPlaylist(playlistId, accessToken, getIOInstance){
     console.log('* /pushDBToSpotifyPlaylist called');
     //Get info from DB about the party
     const partyInfo = await dbMethods.getPartyInfo(playlistId);
@@ -114,12 +122,17 @@ async function pushDBToSpotifyPlaylist(playlistId, accessToken){
     try{
         await queueMethods.addSongsToPlaylist(accessToken, shortListURI, playlistId);
         //Emit on socket
-        io.to(playlistId).emit('updatedPlaylist')
+        
+        console.log("getIOInstance(): ", getIOInstance())
+     
+        getIOInstance().to(playlistId).emit('updatedPlaylist')
         console.log('IO: Emitting update status to room', playlistId)
     }
-    catch{
+    catch(err){
+        console.log(err);
         console.log('ERROR: Could not push songs to Spotify playlist, emitting anyways');
-        io.to(playlistId).emit('updatedPlaylist')
+        
+        getIOInstance().to(playlistId).emit('updatedPlaylist')
         console.log('IO: Emitting update status to room', playlistId)
         return Promise.reject(new Error(400));
     }
@@ -149,7 +162,7 @@ router.put('/updatePlaylist', async (req, res) => {
     await dbMethods.updateParty(playlistName, playlistId, genres, playlistDur);
 
     try {        
-        await pushDBToSpotifyPlaylist(playlistId, accessToken);
+        await pushDBToSpotifyPlaylist(playlistId, accessToken, getIOInstance);
         res.send({
                     status: "success",
                     playlistId: playlistId
@@ -205,8 +218,15 @@ router.post('/joinParty/:playlistId', async (req, res) => {
         await dbMethods.addSongs(tempBank, req.params.playlistId);
 
         // Reflect new music taste in the spotify playlist and emit the change
-        pushDBToSpotifyPlaylist(req.params.playlistId, accessToken)
+        pushDBToSpotifyPlaylist(req.params.playlistId, accessToken, getIOInstance)
     }
 });
+    
+    
+    return router
+}
 
-module.exports = router;
+
+
+
+// module.exports = router;
