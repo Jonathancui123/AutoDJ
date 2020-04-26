@@ -45,17 +45,10 @@ class ListeningRightNow extends Component {
             <Album info={album} place={index + 1} />
         )
         return (
-            <div style={{
-                height: "100vh",
-                width: "100vw",
-                paddingTop: "8%"
-            }}>
+            <div id="listeningRightNow">
                 <h1 style={{ fontSize: "3.5em" }}>Top albums right now</h1>
                 <h3>(With {this.state.users} users listening in {this.state.parties} parties)</h3>
-                <div style={{
-                    backgroundColor: "transparent",
-                    padding: "2% 2% 5% 2%"
-                }}>
+                <div id="listeningRightNowAlbums">
                     {albums}
                 </div>
             </div >
