@@ -32,7 +32,7 @@ class JoinPanel extends Component {
     render() {
         return (<div className="panel">
             <h2>Join a Party</h2>
-            <p style={{ marginBottom: "13%" }}>Share your music with the crowd! Paste the party link below and press ENTER to begin:</p>
+            <p style={{ marginBottom: "20px" }}>Share your music with the crowd! Paste the party link below and press ENTER to begin:</p>
             <input
                 name="link"
                 type="text"

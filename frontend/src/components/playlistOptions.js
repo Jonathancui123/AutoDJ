@@ -16,7 +16,7 @@ class PlaylistOptions extends Component {
             playlistName: "",
             duration: 20,
             genres: [],
-            others: ""
+            
         }
     }
 
@@ -49,7 +49,7 @@ class PlaylistOptions extends Component {
 
     updatePlaylist = event => {
         event.preventDefault();
-        console.log(`Sending update request to ${this.backendAddress}/updatePlaylist with the following state:`)
+        console.log(`Sending update request to ${this.backendAddress}/updatePlaylist with the following state (playlistName and playlistID are sent from props):`)
         console.log(this.state);
 
         fetch(`${this.backendAddress}/updatePlaylist`, {
@@ -88,7 +88,7 @@ class PlaylistOptions extends Component {
                 genres: this.state.genres,
                 playlistName: this.state.playlistName,
                 duration: this.state.duration,
-                others: this.state.others
+                
             })
         })
             .then(res => { return res.json(); })

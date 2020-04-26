@@ -22,31 +22,25 @@ function App() {
           <div className="app-header" style={{
             display: "block"
           }}>
-            <div style={{
-              display: "block",
-              height: "100%",
-              paddingTop: "10%"
-            }}>
+            <div className="landingHeader">
               <h1>🎸</h1>
               <h1 style={{
                 marginBottom: "30px"
               }}>AutoDJ</h1>
+              <div className="panelDiv">       
               <CreatePanel />
-              <JoinPanel />
+              <JoinPanel /></div>
+
             </div>
             <div style={{
               display: "block"
             }}>
               <Steps />
             </div>
-            <div style={{
+            <div className="albumsAndFooter" style={{
               display: "block"
             }}>
               <Listening />
-            </div>
-            <div style={{
-              display: "block"
-            }}>
               <Footer />
             </div>
           </div>

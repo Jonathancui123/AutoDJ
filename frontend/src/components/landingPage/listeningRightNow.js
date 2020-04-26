@@ -47,7 +47,7 @@ class ListeningRightNow extends Component {
         return (
             <div id="listeningRightNow">
                 <h1 style={{ fontSize: "3.5em" }}>Top albums right now</h1>
-                <h3>(With {this.state.users} users listening in {this.state.parties} parties)</h3>
+                <h3 >(With {this.state.users} users listening in {this.state.parties} parties)</h3>
                 <div id="listeningRightNowAlbums">
                     {albums}
                 </div>

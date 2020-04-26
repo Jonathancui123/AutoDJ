@@ -134,6 +134,7 @@ class Update extends Component {
                                 playlistID={this.state.playlistID} 
                                 playlistName={this.state.playlistName}
                                 onSubmit="updatePlaylist" />
+                                <p style={{color:"white", marginTop: "10px"}}>Updates may take a some time reflect in your playlist</p>
                             </div>
                         </div>
                     </div>

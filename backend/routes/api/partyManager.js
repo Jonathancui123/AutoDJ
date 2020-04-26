@@ -45,7 +45,7 @@ router.post('/newParty', async (req, res) => {
     console.log("session id: ", req.session.id)
 
     const playlistName = req.body.playlistName;
-    const genres = req.body.genres.concat(req.body.others.split(",").map(str => str.trim()));
+    const genres = req.body.genres;
     const playlistDur = 60 * 1000 * parseInt(req.body.duration);
     const retrievedUserData = await dbMethods.getUserInfo(req.session.userData.id);
     const accessToken = retrievedUserData.accessToken;

@@ -14,7 +14,7 @@ class CreatePanel extends Component {
     render() {
         return (<div className="panel">
             <h2>Host a Party</h2>
-            <p style={{ marginBottom: "10%" }}>Gather your friends and load up the jukebox. It's party time.</p>
+            <p style={{ marginBottom: "30px" }}>Gather your friends and load up the jukebox. It's party time.</p>
             <Button className="createButton" href={`${config.backendAddress}/login`}>Create a Playlist</Button>
         </div >);
     }
