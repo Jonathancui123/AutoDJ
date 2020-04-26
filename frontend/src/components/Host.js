@@ -40,7 +40,7 @@ class Host extends React.Component {
   render() {
     return (
       <div className="host">
-        <div classN ame="square-container">
+        <div className="square-container">
           <Squares />
           <div className="content-container">
             <Row className="partyPage">
