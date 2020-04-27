@@ -1,3 +1,8 @@
+1. Increase top tracks count (100 -> 200? 250?)
+2. Account for missing input values on Select
+3. Whatever that display error was that I just sent u
+4. ADD: Save & open playlist in Spotify option for guests, open in Spotify option for host
+
 NOTE: Test if the environment variable for react works with heroku (it may be unable to communicate with backend)
 Maybe somehow show the person that contributed to each song?
 
