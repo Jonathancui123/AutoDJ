@@ -406,7 +406,7 @@ input.joinLink {
   }
 
   .landingHeader{
-   padding: 48px 40px 36px 40px;
+   padding: 200px 40px 36px 40px;
 
   }
 }
@@ -492,19 +492,16 @@ img.stepPicture {
   min-height: 65vh;
   width: 100vw;
   color: white;
-  padding-top: 4%;
+  /* padding-top: 4%; */
 }
 
 #listeningRightNow {
   /* min-heigh  t: 100vh; */
   width: 100vw;
   padding: 24px 24px 36px 24px;
+  display: inline-block;
 }
-@media (min-width: 768px){
-  #listeninRightNow{
-    padding: 48px 40px 36px 40px;
-  }
-}
+
 .albumsAndFooter{
   min-height: 100vh;
 }
@@ -512,7 +509,19 @@ img.stepPicture {
 #listeningRightNowAlbums {
   background-color: transparent;
   margin-top: 20px;
+  display: inline-block;
   /* padding: 2% 2% 5% 2%; */
+}
+
+@media (min-width: 768px){
+  #listeningRightNow{
+    padding: 7% 40px 36px 40px;
+    min-height: 90vh;
+  }
+  #listeningRightNowAlbums {
+    margin-top: 50px;
+    max-width: 1300px;
+  }
 }
 
 /* Media queries for landing page */

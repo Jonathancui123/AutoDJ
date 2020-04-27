@@ -29,11 +29,12 @@ class Step extends Component {
             display: "inline-block",
             height: "300px",
             width: "280px",
-            margin: "50px"
+            margin: "50px",
+            marginTop: "15vh"
         }}>
             {picture}
             <h3 style={{ marginBottom: "10px" }}>{this.props.number}. {this.props.title}</h3>
-            <p>{this.props.content}</p>
+            <p style={{ display: "inline-block" }}>{this.props.content}</p>
         </div>);
     }
 }

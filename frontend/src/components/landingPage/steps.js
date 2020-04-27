@@ -14,7 +14,7 @@ class Steps extends Component {
             {
                 number: "2",
                 title: "Select what you want to hear",
-                content: "Choose from Spotify's most popular genres or input your own. Give your playlist a title and duration.",
+                content: "Choose from Spotify's most popular genres or input your own preferences. Give your playlist a title and duration.",
                 picture: "step2"
             },
             {
