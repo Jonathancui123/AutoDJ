@@ -12,6 +12,7 @@ add a down arrow on the first screen
 User thoughts:
 "Whats the difference between a playlist and a party" --> make a uniform naming scheme. It says "in the house"
 How do users access their old playlists after they navigate away?????
+We need to make it clear that the playlist is made of the top tracks of everyone in their party
 
 NOTE: Test if the environment variable for react works with heroku (it may be unable to communicate with backend)
 Maybe somehow show the person that contributed to each song?
