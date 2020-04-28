@@ -103,13 +103,13 @@ async function addSongsToPlaylist(accessToken, songURIList, playlistID) {
     body: JSON.stringify({ uris: songURIList })
   };
   let addSongsPromise = rp(options)
-  addSongsPromise.then(res=>{
+  addSongsPromise.then(res => {
     return res;
   })
-  .catch(err => {
-    console.log('ERROR: (addSongsToPlaylist) Could not push songs to Spotify playlist')
-    return err;
-  })
+    .catch(err => {
+      console.log('ERROR: (addSongsToPlaylist) Could not push songs to Spotify playlist')
+      return err;
+    })
 }
 
 // Get user's top 100 songs (all genres)
@@ -200,11 +200,49 @@ function songBankLookup(songBank, uri) {
   return -1;
 }
 
+// Follow a playlist (add to Spotify)
+function followPlaylist(playlistId, accessToken) {
+  console.log("* followPlaylist called");
+
+  let reqOptions = {
+    url: `https://api.spotify.com/v1/playlists/${playlistId}/followers`,
+    method: "PUT",
+    headers: {
+      "Authorization": "Bearer " + accessToken,
+      "Content-Type": "application/json"
+    }
+  };
+  let reqPromise = rp(reqOptions);
+  return reqPromise;
+}
+
+// Check whether user is following playlist
+function checkFollowPlaylist(playlistId, spotifyId, accessToken) {
+  console.log("* checkFollowPlaylist called");
+
+  let reqOptions = {
+    url: `https://api.spotify.com/v1/playlists/${playlistId}/followers/contains?ids=${spotifyId}`,
+    method: "GET",
+    headers: {
+      "Authorization": "Bearer " + accessToken,
+      "Content-Type": "application/json"
+    }
+  };
+  let reqPromise = rp(reqOptions);
+  reqPromise
+    .then(res => { return res; })
+    .catch(err => console.log(err.error));
+
+  return reqPromise;
+}
+
 module.exports = {
   genShortListURI: genShortListURI,
   createNewPlaylist: createNewPlaylist,
   addSongsToPlaylist: addSongsToPlaylist,
   createGenredBank: createGenredBank,
   getSongs: getSongs,
-  addSongsToBank: addSongsToBank
+  addSongsToBank: addSongsToBank,
+  followPlaylist: followPlaylist,
+  checkFollowPlaylist: checkFollowPlaylist
 };

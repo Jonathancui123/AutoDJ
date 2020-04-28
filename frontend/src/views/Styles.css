@@ -496,7 +496,7 @@ img.stepPicture {
 }
 
 #listeningRightNow {
-  /* min-heigh  t: 100vh; */
+  /* min-height: 100vh; */
   width: 100vw;
   padding: 24px 24px 36px 24px;
   display: inline-block;
@@ -522,6 +522,49 @@ img.stepPicture {
     margin-top: 50px;
     max-width: 1300px;
   }
+}
+
+#openButton {
+  border-color: white;
+  border-width: 5px;
+  border: solid;
+  color: white;
+  background-color: transparent;
+  height: 42px;
+}
+
+#openButton:hover {
+  background-color: white;
+  color: #282c34;
+  border-color: white;
+}
+
+#followingButton {
+  border-color: white;
+  border-width: 5px;
+  border: solid;
+  color: white;
+  background-color: #1db954;
+  height: 42px;
+  margin-right: 15px;
+  pointer-events: none;
+  cursor: default;
+}
+
+#notFollowingButton {
+  border-color: white;
+  border-width: 5px;
+  border: solid;
+  color: white;
+  background-color: transparent;
+  height: 42px;
+  margin-right: 15px;
+}
+
+#notFollowingButton:hover {
+  background-color: white;
+  color: #282c34;
+  border-color: white;
 }
 
 /* Media queries for landing page */

@@ -20,7 +20,7 @@ console.log("frontend address is:", frontendAddress);
 router.get('/login', (req, res) => {
     console.log(clientId);
     var scopes =
-        'user-read-private user-read-email playlist-modify-public user-top-read';
+        'user-read-private user-read-email user-top-read playlist-modify-public playlist-modify-private playlist-read-private';
 
     if (typeof req.query.redirect !== 'undefined') {
         req.session.redirect = {

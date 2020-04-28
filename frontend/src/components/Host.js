@@ -38,13 +38,13 @@ class Host extends React.Component {
     this.props.history.push(`/update/${this.props.playlistID}`);
   };
 
- 
+
 
   render() {
     let share;
-    if (navigator.share){
-      share = <ShareLink link={this.props.shareLink} playlistName={this.props.playlistName}/>;
-    }else {
+    if (navigator.share) {
+      share = <ShareLink link={this.props.shareLink} playlistName={this.props.playlistName} />;
+    } else {
       share = <CopyLink link={this.props.shareLink} />;
     }
 
@@ -62,8 +62,8 @@ class Host extends React.Component {
                     <Player playlistID={this.props.playlistID} />
                   </div>
                 </div>
-                <div style={{marginBottom: "20px"}}>
-                <Members users={this.props.users} />
+                <div style={{ marginBottom: "20px" }}>
+                  <Members users={this.props.users} />
                 </div>
                 <Button id="update" className="bigWhiteButton" onClick={this.callUpdate}>
                   Update
@@ -89,6 +89,9 @@ class Host extends React.Component {
                 <Col md={5} className="rightPanel">
                   <div className="membersPanel">
                     <h1 style={{ marginBottom: "10px" }}>{this.props.playlistName}</h1>
+                    <div style={{ marginBottom: "10px" }}>
+                      <Button target="_blank" href={`https://open.spotify.com/playlist/${this.props.playlistID}`} id="openButton">Open in Spotify</Button>
+                    </div>
                     <Members users={this.props.users} />
                   </div>
                   <div className="hostPanel">
