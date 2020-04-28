@@ -54,15 +54,15 @@ class Guest extends React.Component {
                             id: "followingButton",
                             href: "#"
                         }
-                    })
+                    });
                 } else {
                     this.setState({
                         follow: {
                             content: "Follow",
                             id: "notFollowingButton",
-                            href: ""
+                            href: "#"
                         }
-                    })
+                    });
                 }
             })
             .catch(err => console.log("ERROR", err));

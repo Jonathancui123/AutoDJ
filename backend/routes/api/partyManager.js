@@ -228,6 +228,7 @@ module.exports = function (app, getIOInstance) {
         const retrievedUserData = await dbMethods.getUserInfo(req.session.userData.id);
         const accessToken = retrievedUserData.accessToken;
         await queueMethods.followPlaylist(req.params.playlistId, accessToken);
+        res.send(true);
     });
 
     // Check if a user follows a playlist
