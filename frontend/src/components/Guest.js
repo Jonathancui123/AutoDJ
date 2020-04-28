@@ -97,7 +97,7 @@ class Guest extends React.Component {
 
         if (this.props.users && this.props.playlistName) {
             members = <div className="membersPanel">
-                <h1 style={{ marginBottom: "10px" }}>{this.props.playlistName}</h1>
+                <h1 style={{ marginBottom: "10px", fontSize: "3.6em" }}>{this.props.playlistName}</h1>
                 <div style={{ marginBottom: "10px" }}>
                     <Button
                         id={this.state.follow.id}

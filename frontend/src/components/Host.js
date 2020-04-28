@@ -88,7 +88,7 @@ class Host extends React.Component {
                 </Col>
                 <Col md={5} className="rightPanel">
                   <div className="membersPanel">
-                    <h1 style={{ marginBottom: "10px" }}>{this.props.playlistName}</h1>
+                    <h1 style={{ marginBottom: "10px", fontSize: "3.6em" }}>{this.props.playlistName}</h1>
                     <div style={{ marginBottom: "10px" }}>
                       <Button target="_blank" href={`https://open.spotify.com/playlist/${this.props.playlistID}`} id="openButton">Open in Spotify</Button>
                     </div>
