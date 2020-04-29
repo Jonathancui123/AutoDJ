@@ -16,7 +16,8 @@ class PlaylistOptions extends Component {
             playlistName: "",
             duration: 20,
             genres: [],
-            
+            validName: true,
+            validGenres: true
         }
     }
 
@@ -25,11 +26,14 @@ class PlaylistOptions extends Component {
         const value = event.target.value;
         this.setState({
             [name]: value,
+            validName: true
         });
+        
         // console.log(this.state);
     };
 
     handleGenres = event => {
+        this.setState({validGenres: true});
         var id = event.target.id;
         var checked = event.target.checked;
         // state.genres.filter(function (value) { return (value !== id) })
@@ -75,9 +79,35 @@ class PlaylistOptions extends Component {
             })
     }
 
+    validateForm(formType) {
+        var valid = true;
+        if (formType === 'newParty') {
+            if (this.state.playlistName.length < 1) {
+                this.setState({validName: false})
+                valid = false;
+                console.log("invalid name")
+            }
+        }
+
+        if (this.state.genres.length < 1) {
+            this.setState({validGenres: false})
+            valid = false;
+            console.log("invalid genres")
+        }
+        return valid;
+    }
 
     newParty = event => {
+
+        //Later: Extract the form validation from update and newParty to be a separate function. Not extracting yet because the update page doesn't handle playlist name field
+        if (this.validateForm('newParty') === false) {
+            event.preventDefault();
+            event.stopPropagation();
+            return;
+        }
+
         
+
         console.log("state at submission: ", this.state)
         event.preventDefault();
         fetch(`${this.backendAddress}/newParty`, {
@@ -88,7 +118,7 @@ class PlaylistOptions extends Component {
                 genres: this.state.genres,
                 playlistName: this.state.playlistName,
                 duration: this.state.duration,
-                
+
             })
         })
             .then(res => { return res.json(); })
@@ -143,16 +173,22 @@ class PlaylistOptions extends Component {
 
                         <h3>{this.props.title}</h3>
                         <Form onSubmit={this.submitBehaviors[this.props.onSubmit]}>
-                            <input
-                                style={{ display: this.props.allowName ? "inline" : "none", width: "100%" }}
-                                name="playlistName"
-                                type="text"
-                                value={this.state.playlistName}
-                                onChange={this.handleChange}
-                                placeholder="Playlist Name"
-                            />
+                            
+                            <Form.Group>
+                                <Form.Control
+                                    style={{ display: this.props.allowName ? "inline" : "none", width: "100%" }}
+                                    className="formInput"
+                                    name="playlistName"
+                                    type="text"
+                                    value={this.state.playlistName}
+                                    onChange={this.handleChange}
+                                    placeholder="Playlist Name"
+                                />
+                                <p className="invalid-feedback" style={{display: this.state.validName ? "none" : "block"}}>Please enter a playlist name</p>    
+                            </Form.Group>
                             <div style={{ paddingTop: "15px" }}>
                                 <h4 style={{ marginBottom: "10px" }}>Select genres to include:</h4>
+                                <p className="invalid-feedback" style={{display: this.state.validGenres ? "none" : "block"}}>Please select at least one genre</p>    
                                 <Row>
                                     <Col md={2}></Col>
                                     <Col md={10}>{checkboxes}</Col>

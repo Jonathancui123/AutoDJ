@@ -158,7 +158,15 @@ flex-grow: 1;
 }
 }
 
-
+.formInput {
+  background-color: transparent;
+  color: white;
+  border-width: 0 0 3px 0;
+  padding-left: 10px;
+  caret-color: white;
+  font-size: 1.5em;
+  text-align: center;
+}
 
 #copyField {
   border-color: rgba(255, 255, 255, 0.774);
@@ -239,6 +247,8 @@ input.joinLink {
   width: 80%;
   max-width: 300px;
 }
+
+
 
 .cssbutton {
   width: 150px;
