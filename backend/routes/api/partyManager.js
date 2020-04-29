@@ -7,6 +7,8 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
+var debug = require('debug')('partyManager');
+
 
 
 
@@ -62,22 +64,22 @@ module.exports = function (app, getIOInstance) {
         console.log(`Playlist name: ${playlistName}`);
         console.log(`User ID: ${userId}`);
 
-        try {
-            // Generate new playlist
-            var tempBank = await queueMethods.getSongs(accessToken);
-            console.log(JSON.parse(tempBank).items[0]);
-            await dbMethods.addAlbums(tempBank);
-            tempBank = await queueMethods.addSongsToBank(tempBank, accessToken);
-            console.log(tempBank.slice(0, 10));
-            var createdPlaylist = await queueMethods.createNewPlaylist(accessToken, playlistName, userId);
-            const playlistId = JSON.parse(createdPlaylist).id;
-            console.log(`Playlist ID: ${playlistId}`);
-        } catch {
-            console.log('Could not generate new playlist');
-            res.send({
-                status: "fail"
-            });
-        }
+        // try {
+        // Generate new playlist
+        var tempBank = await queueMethods.getSongs(accessToken);
+        console.log(JSON.parse(tempBank).items[0]);
+        await dbMethods.addAlbums(tempBank);
+        tempBank = await queueMethods.addSongsToBank(tempBank, accessToken);
+        console.log(tempBank.slice(0, 10));
+        var createdPlaylist = await queueMethods.createNewPlaylist(accessToken, playlistName, userId);
+        const playlistId = JSON.parse(createdPlaylist).id;
+        console.log(`Playlist ID: ${playlistId}`);
+        // } catch {
+        console.log('Could not generate new playlist');
+        res.send({
+            status: "fail"
+        });
+        // }
 
 
         // Make new party & host object
@@ -165,7 +167,6 @@ module.exports = function (app, getIOInstance) {
         console.log(`Playlist name: ${playlistName}`);
         console.log(`User ID: ${userId}`);
         console.log(`Playlist ID: ${playlistId}`);
-<<<<<<< Updated upstream
 
         // Update database entry for party
         await dbMethods.updateParty(playlistName, playlistId, genres, playlistDur);
@@ -251,75 +252,6 @@ module.exports = function (app, getIOInstance) {
     });
 
     return router;
-=======
-
-        // Update database entry for party
-        await dbMethods.updateParty(playlistName, playlistId, genres, playlistDur);
-
-        try {
-            await pushDBToSpotifyPlaylist(playlistId, accessToken, getIOInstance);
-            res.send({
-                status: "success",
-                playlistId: playlistId
-            });
-            console.log("Sending response for update request")
-        } catch {
-            console.log('Could not add songs to playlist');
-            res.send({
-                status: "fail"
-            });
-        }
-
-        // // Create new shortlist
-        // var retrievedSongBank = await dbMethods.getSongBank(playlistId);
-        // var genreOnlyBank = queueMethods.createGenredBank(genres, retrievedSongBank);
-        // var shortListURI = queueMethods.genShortListURI(genreOnlyBank, playlistDur);
-        // console.log('Playlist generated');
-
-
-        // try {
-        //     await queueMethods.addSongsToPlaylist(accessToken, shortListURI, playlistId);
-        //     res.send({
-        //         status: "success",
-        //         playlistId: playlistId
-        //     });
-        //     console.log("Sending response for update request")
-        // } catch {
-        //     console.log('Could not add songs to playlist');
-        //     res.send({
-        //         status: "fail"
-        //     });
-        // }
-    });
-
-    // Join a party
-    router.post('/joinParty/:playlistId', async (req, res) => {
-        console.log(`* /joinParty/${req.params.playlistId} called`);
-        var partyMembers = await dbMethods.getPartyInfo(req.params.playlistId);
-        partyMembers = partyMembers.members;
-        console.log("partyMembers variable is: ", partyMembers);
-        partyMembers = partyMembers.map(member => member.spotifyId);
-        if (!partyMembers.includes(req.session.userData.spotifyId)) {
-            await dbMethods.joinParty(req.session.userData.spotifyId, req.params.playlistId);
-
-            const retrievedUserData = await dbMethods.getUserInfo(req.session.userData.id);
-            const accessToken = retrievedUserData.accessToken;
-            const userId = retrievedUserData.spotifyId;
-
-            // Add songs to party in database
-            var tempBank = await queueMethods.getSongs(accessToken);
-            await dbMethods.addAlbums(tempBank);
-            tempBank = await queueMethods.addSongsToBank(tempBank, accessToken);
-            await dbMethods.addSongs(tempBank, req.params.playlistId);
-
-            // Reflect new music taste in the spotify playlist and emit the change
-            pushDBToSpotifyPlaylist(req.params.playlistId, accessToken, getIOInstance)
-        }
-    });
-
-
-    return router
->>>>>>> Stashed changes
 }
 
 
