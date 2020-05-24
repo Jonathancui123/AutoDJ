@@ -24,13 +24,14 @@ function App() {
           }}>
             <div className="landingHeader">
               <h1>🎸</h1>
-              <h1 style={{
+              <h1>AutoDJ</h1>
+              <h4 style={{
                 marginBottom: "30px"
-              }}>AutoDJ</h1>
-              <div className="panelDiv">       
-              <CreatePanel />
-              <JoinPanel /></div>
-
+              }}>Build custom collaborative playlists with your friends, combining everyone's tastes.</h4>
+              <div className="panelDiv">
+                <CreatePanel />
+                <JoinPanel />
+              </div>
             </div>
             <div style={{
               display: "block"
