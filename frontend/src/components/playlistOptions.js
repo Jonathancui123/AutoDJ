@@ -28,12 +28,12 @@ class PlaylistOptions extends Component {
             [name]: value,
             validName: true
         });
-        
+
         // console.log(this.state);
     };
 
     handleGenres = event => {
-        this.setState({validGenres: true});
+        this.setState({ validGenres: true });
         var id = event.target.id;
         var checked = event.target.checked;
         // state.genres.filter(function (value) { return (value !== id) })
@@ -83,14 +83,14 @@ class PlaylistOptions extends Component {
         var valid = true;
         if (formType === 'newParty') {
             if (this.state.playlistName.length < 1) {
-                this.setState({validName: false})
+                this.setState({ validName: false })
                 valid = false;
                 console.log("invalid name")
             }
         }
 
         if (this.state.genres.length < 1) {
-            this.setState({validGenres: false})
+            this.setState({ validGenres: false })
             valid = false;
             console.log("invalid genres")
         }
@@ -106,7 +106,7 @@ class PlaylistOptions extends Component {
             return;
         }
 
-        
+
 
         console.log("state at submission: ", this.state)
         event.preventDefault();
@@ -173,7 +173,7 @@ class PlaylistOptions extends Component {
 
                         <h3>{this.props.title}</h3>
                         <Form onSubmit={this.submitBehaviors[this.props.onSubmit]}>
-                            
+
                             <Form.Group>
                                 <Form.Control
                                     style={{ display: this.props.allowName ? "inline" : "none", width: "100%" }}
@@ -184,11 +184,11 @@ class PlaylistOptions extends Component {
                                     onChange={this.handleChange}
                                     placeholder="Playlist Name"
                                 />
-                                <p className="invalid-feedback" style={{display: this.state.validName ? "none" : "block"}}>Please enter a playlist name</p>    
+                                <p className="invalid-feedback" style={{ display: this.state.validName ? "none" : "block" }}>Please enter a playlist name</p>
                             </Form.Group>
                             <div style={{ paddingTop: "15px" }}>
                                 <h4 style={{ marginBottom: "10px" }}>Select genres to include:</h4>
-                                <p className="invalid-feedback" style={{display: this.state.validGenres ? "none" : "block"}}>Please select at least one genre</p>    
+                                <p className="invalid-feedback" style={{ display: this.state.validGenres ? "none" : "block" }}>Please select at least one genre</p>
                                 <Row>
                                     <Col md={2}></Col>
                                     <Col md={10}>{checkboxes}</Col>
