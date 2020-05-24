@@ -64,7 +64,7 @@ module.exports = function (app, getIOInstance) {
         console.log(`Playlist name: ${playlistName}`);
         console.log(`User ID: ${userId}`);
 
-        // try {
+        try {
         // Generate new playlist
         var tempBank = await queueMethods.getSongs(accessToken);
         console.log(JSON.parse(tempBank).items[0]);
@@ -72,18 +72,21 @@ module.exports = function (app, getIOInstance) {
         tempBank = await queueMethods.addSongsToBank(tempBank, accessToken);
         console.log(tempBank.slice(0, 10));
         var createdPlaylist = await queueMethods.createNewPlaylist(accessToken, playlistName, userId);
-        const playlistId = JSON.parse(createdPlaylist).id;
-        console.log(`Playlist ID: ${playlistId}`);
-        // } catch {
+        var playlistId = JSON.parse(createdPlaylist).id;
+        console.log(`Playlist Id: ${playlistId}`);
+        } catch {
         console.log('Could not generate new playlist');
         res.send({
             status: "fail"
         });
-        // }
+        }
 
 
         // Make new party & host object
         const host = await dbMethods.makeNewPartyUser(userId, 'host');
+
+
+        console.log(playlistId);
         await dbMethods.makeNewParty(host, playlistName, playlistId, genres, playlistDur);
         await dbMethods.addSongs(tempBank, playlistId);
         console.log('Party created');
