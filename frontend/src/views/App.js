@@ -9,6 +9,7 @@ import JoinPanel from "../components/landingPage/joinPanel";
 import Steps from "../components/landingPage/steps";
 import Listening from "../components/landingPage/listeningRightNow";
 import Footer from "../components/landingPage/footer";
+import chevron from "../images/down-chevron.png";
 
 function App() {
   return (
@@ -24,14 +25,17 @@ function App() {
           }}>
             <div className="landingHeader">
               <h1>🎸</h1>
-              <h1>AutoDJ</h1>
+              <h1 style={{
+                marginBottom: "20px"
+              }}>AutoDJ</h1>
               <h4 style={{
                 marginBottom: "30px"
-              }}>Build custom collaborative playlists with your friends, combining everyone's tastes.</h4>
-              <div className="panelDiv">
+              }}>Generate custom Spotify playlists for your party that combine everyone's tastes!</h4>
+              <div id="panelDiv">
                 <CreatePanel />
                 <JoinPanel />
               </div>
+              <img id="down-chevron" src={chevron}></img>
             </div>
             <div style={{
               display: "block"

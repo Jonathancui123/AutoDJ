@@ -26,22 +26,22 @@ class Party extends Component {
       loggedIn: false,
       renderMobile: window.innerWidth < 768,
     };
-    
+
     const { match: { params } } = this.props;
     this.state.playlistID = params.playlistID;
     this.redirectString = `party/${this.state.playlistID}`;
     this.handleResize = this.handleResize.bind(this);
 
     const socket = io(`${this.backendAddress}?playlistID=${params.playlistID}`);
-    socket.on('updatedPlaylist', ()=>{ this.props.history.push(`/party/${this.state.playlistID}`); this.refreshPage();})
+    socket.on('updatedPlaylist', () => { this.props.history.push(`/party/${this.state.playlistID}`); this.refreshPage(); console.log("RECEIVED SOCKET UPDATE") })
   }
 
   refreshPage() {
     window.location.reload(true);
   }
 
-  handleResize(){
-    this.setState({renderMobile: (window.innerWidth < 768)});
+  handleResize() {
+    this.setState({ renderMobile: (window.innerWidth < 768) });
   }
 
   async loadPartyPage() {
@@ -94,10 +94,10 @@ class Party extends Component {
           code: 2
         });
       });
-      window.addEventListener('resize', this.handleResize);
+    window.addEventListener('resize', this.handleResize);
 
   }
-  componentWillUnmount(){
+  componentWillUnmount() {
     window.removeEventListener('resize', this.handleResize);
   }
 
