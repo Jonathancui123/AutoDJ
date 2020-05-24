@@ -27,10 +27,10 @@ class Step extends Component {
             borderWidth: "5px",
             textAlign: "center",
             display: "inline-block",
-            height: "300px",
+            minHeight: "300px",
             width: "280px",
             margin: "50px",
-            marginTop: "15vh"
+            marginTop: "80px"
         }}>
             {picture}
             <h3 style={{ marginBottom: "10px" }}>{this.props.number}. {this.props.title}</h3>

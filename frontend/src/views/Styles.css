@@ -187,7 +187,21 @@ flex-grow: 1;
 
 #copyLabel {
   background-color: transparent;
+  display: inline-block;
   color: rgba(255, 255, 255, 0.795);
+}
+#copy-label-div{
+  position: relative;
+}
+
+#notif-circle {
+  /* position: absolute;
+  top: 0;
+  right: 0; */
+  height: 10px;
+  transform: translate(-0.3rem, -0.6rem);
+  -webkit-filter: brightness(2);
+  filter: brightness(2);
 }
 
 html,
@@ -416,11 +430,20 @@ input.joinLink {
   }
 
   .landingHeader{
-   padding: 150px 40px 36px 40px;
+   padding: 80px 40px 36px 40px;
 
   }
 }
 
+#panelDiv{
+  margin-bottom: 10px;
+}
+
+#down-chevron{
+  display: inline-block;
+  filter: invert();
+  height: 30px;
+}
 
 .createButton {
   background-color: transparent;
@@ -499,6 +522,10 @@ img.stepPicture {
 
 #steps {
   background-color: #282c34;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  flex-wrap: wrap;
   min-height: 65vh;
   width: 100vw;
   color: white;
