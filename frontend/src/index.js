@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
+import HttpsRedirect from "react-https-redirect";
 
 import "./index.css";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -18,7 +19,11 @@ import Error from "./views/Error";
 ReactDOM.render(
   <BrowserRouter>
     <Switch>
-      <Route path="/home" render={props => <App {...props} />} />
+      <Route path="/home" render={props =>
+        <HttpsRedirect>
+          <App {...props} />
+        </HttpsRedirect>
+      } />
       <Route path="/create" render={props => <Create {...props} />} />
       <Route path="/select" render={props => <Select {...props} />} />
       <Route path="/update/:playlistID" render={props => <Update {...props} />} />
