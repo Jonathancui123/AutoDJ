@@ -1,6 +1,6 @@
 const production = {
   backendAddress: "https://autodj-backend.herokuapp.com",
-  frontendAddress: "www.autodj.tech"
+  frontendAddress: "https://autodj-frontend.herokuapp.com"
 };
 
 const development = {
