@@ -4,6 +4,8 @@ import "../../views/Styles.css";
 import config from "../../constants";
 
 class ListeningRightNow extends Component {
+    state = {}
+
     constructor() {
         super()
         this.state = {
